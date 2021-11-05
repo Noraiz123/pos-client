@@ -1,22 +1,26 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from '../components/Login/Login';
 import ProtectedRoutes from '../config/ProtectedRoutes';
 import routes from '../config/routes';
 
 function App() {
   return (
     <Router>
-      <Switch>
+      <Routes>
         {routes.map((route, index) => (
-          <ProtectedRoutes
+          <Route
             path={route.path}
             exact={route.exact}
             key={index}
-            component={route.component}
-            isAuth={false}
+            element={
+              <ProtectedRoutes isAuth={false}>
+                <route.component />
+              </ProtectedRoutes>
+            }
           />
         ))}
-        <Route path='/Login' render={() => <div>This is Login Page</div>} />
-      </Switch>
+        <Route path='/Login' element={<Login />} />
+      </Routes>
     </Router>
   );
 }
