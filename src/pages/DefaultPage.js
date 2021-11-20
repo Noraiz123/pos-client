@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from '../components/Login/Login';
 import ProtectedRoutes from '../config/ProtectedRoutes';
 import routes from '../config/routes';
+import LoginPage from './LoginPage';
 
 function App() {
   return (
@@ -13,13 +13,13 @@ function App() {
             exact={route.exact}
             key={index}
             element={
-              <ProtectedRoutes isAuth={false}>
+              <ProtectedRoutes isAuth={true}>
                 <route.component />
               </ProtectedRoutes>
             }
           />
         ))}
-        <Route path='/Login' element={<Login />} />
+        <Route path='/Login' element={<LoginPage />} />
       </Routes>
     </Router>
   );
