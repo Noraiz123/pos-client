@@ -1,8 +1,9 @@
 import './config/globals';
 import ReactDOM from 'react-dom';
+import React from 'react';
 import './assets/theme/index.css';
 import DefaultPage from './pages/DefaultPage';
-import { Provider } from 'react-redux'
+import { Provider } from 'react-redux';
 import reportWebVitals from './config/reportWebVitals';
 
 import store from './config/store';

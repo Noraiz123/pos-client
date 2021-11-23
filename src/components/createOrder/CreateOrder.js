@@ -39,8 +39,8 @@ const CreateOrder = () => {
               <tbody>
                 {Array(10)
                   .fill()
-                  .map(() => (
-                    <tr>
+                  .map((e, index) => (
+                    <tr key={index}>
                       <td className=''>1</td>
                       <td className=''>500 ml Bottle</td>
                       <td className=''>3</td>

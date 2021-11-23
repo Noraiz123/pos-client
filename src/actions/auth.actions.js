@@ -1,7 +1,7 @@
 import { loginRequest } from "../api/auth";
 
 export function login(data) {
-  return (dispatch) => {
+  return () => {
     loginRequest(data)
       .then((res) => {
         window.location.href = '/' ;

@@ -17,8 +17,8 @@ const Products = () => {
       <div className='grid grid-cols-5'>
         {Array(20)
           .fill()
-          .map(() => (
-            <div className='border mt-6 p-4 cursor-pointer'>
+          .map((e , index) => (
+            <div key={index} className='border mt-6 p-4 cursor-pointer'>
               <div className='space-y-2 border-b p-2'>
                 <img src='https://thumbs.dreamstime.com/b/bottle-water-12522351.jpg' alt='product' className='h-56' />
                 <p className='text-center text-gray-400 font-bold'>500 ml Bottle</p>

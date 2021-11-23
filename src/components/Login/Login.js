@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { login } from '../../actions/auth.actions';
 
 const Login = () => {
-  // const [loginData, setLoginData] = useState({ username: '', password: '' });
   const dispatch = useDispatch();
 
   const handleLogin = (e) => {
