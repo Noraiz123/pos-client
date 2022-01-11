@@ -1,0 +1,9 @@
+.product-table {
+  tr {
+    @apply border-b border-black;
+  }
+  th,
+  td {
+    @apply px-10 text-center py-4 text-gray-500 border-r-2;
+  }
+}

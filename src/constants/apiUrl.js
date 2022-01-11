@@ -1,1 +1,1 @@
-export const BASE_URL = 'https://campaign-api-test.herokuapp.com';
+export const BASE_URL = 'https://konfor-api.herokuapp.com';
