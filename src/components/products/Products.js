@@ -1,6 +1,17 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createOrderAction } from '../../actions/order.actions';
 
 const Products = () => {
+  const dispatch = useDispatch();
+  const { products } = useSelector((state) => ({
+    products: state.products.products,
+  }));
+
+  const createOrder = (item) => {
+    dispatch(createOrderAction({ ...item, quantity: 1 }));
+  };
+
   return (
     <div className='p-10 bg-white ml-4 mt-6 w-full'>
       <div className='grid grid-cols-2'>
@@ -15,17 +26,16 @@ const Products = () => {
         </div>
       </div>
       <div className='grid grid-cols-5'>
-        {Array(20)
-          .fill()
-          .map((e , index) => (
-            <div key={index} className='border mt-6 p-4 cursor-pointer'>
+        {products &&
+          products.map((e, index) => (
+            <div key={e.skus.id} className='border mt-6 p-4 cursor-pointer' onClick={() => createOrder(e)}>
               <div className='space-y-2 border-b p-2'>
                 <img src='https://thumbs.dreamstime.com/b/bottle-water-12522351.jpg' alt='product' className='h-56' />
-                <p className='text-center text-gray-400 font-bold'>500 ml Bottle</p>
+                <p className='text-center text-gray-400 font-bold'>{e.name}</p>
               </div>
               <div className='text-center mt-3'>
-                <p className='text-gray-400'>STOCK 8</p>
-                <p className='text-green-500 font-extrabold'>Rs 10.00</p>
+                <p className='text-gray-400'>STOCK {e.skus?.quantity}</p>
+                <p className='text-green-500 font-extrabold'>Rs {e.skus?.price}</p>
               </div>
             </div>
           ))}

@@ -51,11 +51,11 @@ code {
 }
 
 .input-field {
-  @apply border border-gray-300 p-2 w-11/12 rounded-sm focus:outline-none text-gray-500;
+  @apply border border-gray-300 p-2  rounded-sm focus:outline-none text-gray-500;
 }
 
 .input-select {
-  @apply p-2 border border-gray-300 bg-white w-9/12 rounded-sm focus:outline-none text-gray-500;
+  @apply p-2 border border-gray-300 bg-white rounded-sm focus:outline-none text-gray-500;
 }
 
 .order-table th,
@@ -68,5 +68,5 @@ td {
 }
 
 .btn-outline {
-  @apply border border-gray-300 p-2 text-gray-500
+  @apply border border-gray-300 p-2 text-gray-500;
 }

@@ -1,7 +1,7 @@
 import './config/globals';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import './assets/theme/index.css';
+import './assets/theme/index.scss';
 import DefaultPage from './pages/DefaultPage';
 import { Provider } from 'react-redux';
 import reportWebVitals from './config/reportWebVitals';

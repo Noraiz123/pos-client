@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ViewGridAddIcon,
   FolderAddIcon,
@@ -11,18 +11,29 @@ import {
 
 import { LogoutIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
+import ProductsModal from '../Modals/ProductsModal';
+import AddProducts from '../Modals/AddProductModal';
+import UsersModal from '../Modals/UsersModal';
+import AddUserModal from '../Modals/AddUserModal';
+import AddCategory from '../Modals/AddCategory';
 
 const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [openAddProduct, setOpenAddProduct] = useState(false);
+  const [openAddCategory, setOpenAddCategory] = useState(false);
+  const [openAddUser, setOpenAddUser] = useState(false);
+  const [openUsers, setOpenUsers] = useState(false);
+
   return (
     <div>
       <div className='flex justify-between'>
         <div className='flex space-x-2'>
           <div className='flex'>
-            <button className='flex align-middle btn-green'>
+            <button className='flex align-middle btn-green' onClick={() => setIsOpen(true)}>
               <FolderAddIcon className='mr-2 h-6' />
               Products
             </button>
-            <button className='btn-sm-yellow'>
+            <button className='btn-sm-yellow' onClick={() => setOpenAddProduct(true)}>
               <PlusIcon className='h-6' />
             </button>
           </div>
@@ -32,7 +43,7 @@ const Header = () => {
               Categories
             </button>
             <button className='btn-sm-yellow'>
-              <PlusIcon className='h-6' />
+              <PlusIcon className='h-6' onClick={() => setOpenAddCategory(true)} />
             </button>
           </div>
           <button className='flex align-middle btn-blue'>
@@ -48,18 +59,18 @@ const Header = () => {
           <button className='flex btn-sm-green'>
             <CogIcon className='h-6' />
           </button>
-          <Link to="/transactions">
+          <Link to='/transactions'>
             <button className='flex align-middle btn-green'>
               <CreditCardIcon className='mr-2 h-6' />
               Transactions
             </button>
           </Link>
           <div className='flex'>
-            <button className='flex align-middle btn-green'>
+            <button className='flex align-middle btn-green' onClick={() => setOpenUsers(true)}>
               <UserIcon className='mr-2 h-6' />
               Users
             </button>
-            <button className='btn-sm-gray'>
+            <button className='btn-sm-gray' onClick={() => setOpenAddUser(true)}>
               <PlusIcon className='h-6' />
             </button>
           </div>
@@ -72,6 +83,11 @@ const Header = () => {
           </button>
         </div>
       </div>
+      <ProductsModal isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AddProducts isOpen={openAddProduct} setIsOpen={setOpenAddProduct} />
+      <AddCategory isOpen={openAddCategory} setIsOpen={setOpenAddCategory} />
+      <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} />
+      <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} />
     </div>
   );
 };
