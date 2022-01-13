@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { login, LoginRequest } from '../../actions/auth.actions';
+import { LoginRequest } from '../../actions/auth.actions';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -43,7 +43,7 @@ const Login = () => {
             >
               Sign In
             </button>
-            <a className='inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800' href='#'>
+            <a className='inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800' href='.'>
               Forgot Password?
             </a>
           </div>

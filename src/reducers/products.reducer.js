@@ -1,10 +1,20 @@
 import initialState from './initialState';
 import { actionTypes } from '../constants/actionTypes';
 
+const products = (items) => {
+  let skusArray = [];
+  for (let values of items) {
+    for (let skus of values.skus) {
+      skusArray.push({ ...values, skus });
+    }
+  }
+  return skusArray;
+};
+
 export default (state = initialState.products, action) => {
   switch (action.type) {
     case actionTypes.getProducts: {
-      return { ...state, products: action.payload.products };
+      return { ...state, products: products(action.payload.products) };
     }
     case actionTypes.getProduct: {
       return { ...state, product: action.payload };
@@ -16,7 +26,7 @@ export default (state = initialState.products, action) => {
       return { ...state, products: state.products.concat(action.payload) };
     }
     case actionTypes.editProduct: {
-      return { ...state, products: state.products.map((e) => (e.id === action.payload.id ? action.payload : e)) };
+      return { ...state, products: products(action.payload.products) };
     }
     case actionTypes.createSize: {
       return { ...state, productSizes: state.productSizes.concat(action.payload) };

@@ -135,8 +135,9 @@ export const DeleteProduct = (id) => async (dispatch) => {
 
 export const EditProduct = (id, data) => async (dispatch) => {
   const res = await updateProduct(id, data);
+  const get = await getProducts();
   if (res.status === 200) {
-    dispatch(editProductAction(res.data));
+    dispatch(editProductAction(get.data));
     return res;
   }
 };

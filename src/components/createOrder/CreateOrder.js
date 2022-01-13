@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   CheckIcon,
   PlusIcon,
@@ -10,14 +10,44 @@ import {
   TrashIcon,
 } from '@heroicons/react/solid';
 import { useSelector } from 'react-redux';
-import { deleteAllOrderItemsAction, deleteOrderItemAction } from '../../actions/order.actions';
+import {
+  ConfirmOrder,
+  createOrderAction,
+  deleteAllOrderItemsAction,
+  deleteOrderItemAction,
+} from '../../actions/order.actions';
 import { useDispatch } from 'react-redux';
+import CustomerModal from '../Modals/AddCustomerModal';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
-  const { currentOrder } = useSelector((state) => ({
+  const { currentOrder, currentCustomer } = useSelector((state) => ({
     currentOrder: state.orders.currentOrder,
+    currentCustomer: state.orders.currentCustomerDetails,
   }));
+
+  const handleOrderConfirmation = () => {
+    dispatch(
+      ConfirmOrder({
+        order: {
+          status: 'paid',
+          order_line_items_attributes: currentOrder.map((e) => ({
+            product_sku_id: e.skus.id,
+            quantity: e.quantity,
+          })),
+          customer_attributes: currentCustomer,
+        },
+      })
+    );
+  };
+  const [openCustomerModal, setOpenCustomerModal] = useState(false);
+
+  const handleQuantityChange = (item, e) => {
+    const { value } = e.target;
+    dispatch(createOrderAction({ ...item, quantity: parseInt(value) }));
+  };
+
+  const totalPrice = currentOrder && currentOrder.reduce((pre, next) => pre + parseInt(next.skus.price), 0);
   return (
     <div className='w-1/2 bg-white rounded-sm mt-6'>
       <div className='p-10 flex flex-col'>
@@ -26,13 +56,13 @@ const CreateOrder = () => {
             <option>Walk in customer</option>
             <option>Option B</option>
           </select>
-          <button className='btn-sm-green mx-4'>
+          <button className='btn-sm-green mx-4' onClick={() => setOpenCustomerModal(true)}>
             <PlusIcon className='h-6' />
           </button>
         </div>
         <div className='flex align-middle'>
           <input
-            type='text'
+            type='search'
             placeholder='Scan barcode or type the number then hit enter'
             className='input-field w-11/12'
           />
@@ -63,9 +93,14 @@ const CreateOrder = () => {
                       <td className=''>{index + 1}</td>
                       <td className=''>{e.name}</td>
                       <td className=''>
-                        <input type="number" className='input-field w-20' value={e.quantity} />
+                        <input
+                          type='number'
+                          className='input-field w-20'
+                          value={e.quantity}
+                          onChange={(value) => handleQuantityChange(e, value)}
+                        />
                       </td>
-                      <td className=''>4</td>
+                      <td className=''>{e.skus.price}</td>
                       <td className=''>
                         <button className='btn-sm-red' onClick={() => dispatch(deleteOrderItemAction(e))}>
                           <TrashIcon className='h-4' />
@@ -83,7 +118,7 @@ const CreateOrder = () => {
             <div>Total Discounts</div>
             <div className='col-span-2'>: 0</div>
             <div>Price</div>
-            <div>R0:00</div>
+            <div>RS {totalPrice}</div>
           </div>
           <div className='grid grid-cols-5 space-x-4'>
             <div>Discount</div>
@@ -106,12 +141,13 @@ const CreateOrder = () => {
             <HandIcon className='h-6 mr-2' />
             Hold
           </button>
-          <button className='btn-parrot flex'>
+          <button className='btn-parrot flex' onClick={handleOrderConfirmation}>
             <CashIcon className='h-6 mr-2' />
             Pay
           </button>
         </div>
       </div>
+      <CustomerModal isOpen={openCustomerModal} setIsOpen={setOpenCustomerModal} />
     </div>
   );
 };

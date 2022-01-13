@@ -17,9 +17,9 @@ const AddCategory = ({ isOpen, setIsOpen }) => {
   };
 
   const submitCategory = () => {
-    const { name, description } = categoryDetails;
-    if (name.length && description.length) {
-      dispatch(CreateCategory({ category: categoryDetails }));
+    const { name } = categoryDetails;
+    if (name.length) {
+      dispatch(CreateCategory({ category: categoryDetails })).then(() => setIsOpen(false))
     }
   };
   return (

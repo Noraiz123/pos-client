@@ -9,21 +9,18 @@ import AddProducts from './AddProductModal';
 
 const ProductsModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const { product } = useSelector((state) => ({
+  const { product, categories } = useSelector((state) => ({
     product: state.products.product,
+    categories: state.categories,
   }));
-  const initState = {
-    name: '',
-    skus_attributes: [{ product_color_id: null, product_size_id: null, price: null, quantity: null }],
-  };
+
   const [openAddProduct, setOpenAddProduct] = useState(false);
-  // const [productData, setProductData] = useState(initState);
   const { products } = useSelector((state) => ({
     products: state.products.products,
   }));
   useEffect(() => {
     dispatch(GetProducts());
-  }, []);
+  }, [dispatch]);
 
   const productDeleteHandler = (id) => {
     dispatch(DeleteProduct(id)).then(() => {
@@ -36,6 +33,12 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
       setIsOpen(false);
       setOpenAddProduct(true);
     });
+  };
+
+  const getCategory = (id) => {
+    const category = categories && categories.find((e) => e.id === id);
+
+    return category ? category.name : 'N/A';
   };
 
   return (
@@ -60,14 +63,14 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
               </thead>
               <tbody style={{ height: '200px', width: '200px', overflowY: 'scroll' }}>
                 {products &&
-                  products.map((e) => (
-                    <tr key={e.id}>
+                  products.map((e, index) => (
+                    <tr key={e.skus.id}>
                       <td></td>
-                      <td></td>
+                      <td>{index + 1}</td>
                       <td>{e.name}</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
+                      <td>{e.skus?.price}</td>
+                      <td>{e.skus?.quantity}</td>
+                      <td>{getCategory(e.category_id)}</td>
                       <td>
                         <button className='btn-sm-red' onClick={() => productDeleteHandler(e.id)}>
                           <TrashIcon className='h-4' />

@@ -12,10 +12,11 @@ import {
   GetColors,
   GetSizes,
 } from '../../actions/products.actions';
-import { getSizes } from '../../api/products';
+import { GetCategories } from '../../actions/categories.actions';
 
 const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
+    category_id: null,
     name: '',
     skus_attributes: [{ product_color_id: null, product_size_id: null, price: null, quantity: null }],
   };
@@ -26,19 +27,21 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const [productSku, setProductSku] = useState({ addSize: false, addColor: false });
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
-  const { sizes, colors } = useSelector((state) => ({
+  const { sizes, colors, categories } = useSelector((state) => ({
     sizes: state.products.productSizes,
     colors: state.products.productColors,
+    categories: state.categories,
   }));
 
   useEffect(() => {
     if (productData && productData.id) {
-      const { name, skus } = productData;
+      const { name, skus, category_id } = productData;
       const { id, quantity, price } = skus[0];
       const productColor = skus[0].product_color.id;
       const productSize = skus[0].product_size.id;
       setProductDetails({
         name,
+        category_id,
         skus_attributes: [
           {
             id,
@@ -71,7 +74,8 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   useEffect(() => {
     dispatch(GetColors());
     dispatch(GetSizes());
-  }, []);
+    dispatch(GetCategories());
+  }, [dispatch]);
 
   const handleAddSize = () => {
     const size = sizeRef.current.value;
@@ -128,11 +132,21 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
             </div>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Category</label>
-              <select className='input-select w-full' onChange={handleAddProduct}>
+              <select
+                className='input-select w-full'
+                name='category_id'
+                onChange={handleAddProduct}
+                value={productDetails.category_id}
+              >
                 <option value='' selected disabled>
                   Select Category
                 </option>
-                <option>category 1</option>
+                {categories &&
+                  categories.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.name}
+                    </option>
+                  ))}
               </select>
             </div>
             <div className='flex flex-col my-2'>
@@ -150,7 +164,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
               <input
                 className='input-field'
                 name='price'
-                type='number'
+                type='text'
                 value={productDetails.skus_attributes[0].price}
                 onChange={handleAddProduct}
               />

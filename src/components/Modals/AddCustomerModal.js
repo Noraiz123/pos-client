@@ -1,40 +1,75 @@
 import { Dialog } from '@headlessui/react';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import ModalTemplate from '.';
+import { createCustomerAction } from '../../actions/order.actions';
 
-const AddProducts = ({ isOpen, setIsOpen, productData }) => {
+const CustomerModal = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
     name: '',
     email: '',
     phone_no: '',
   };
-  const [customerDetails, setCustomerDetailsDetails] = useState(initState);
+  const dispatch = useDispatch();
+  const [customerDetails, setCustomerDetails] = useState(initState);
+
+  const handleCustomerFields = (e) => {
+    const { name, value } = e.target;
+    setCustomerDetails((pre) => ({
+      ...pre,
+      [name]: value,
+    }));
+  };
+
+  const handleCreateCustomer = () => {
+    dispatch(createCustomerAction(customerDetails));
+    setIsOpen(false);
+  };
 
   return (
     <div>
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className='inline-block w-96 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl p-6'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
-            Add Product
+            Add Customer
           </Dialog.Title>
           <div className='mt-10'>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Customer Name</label>
-              <input className='input-field' type='text' name='name' value={customerDetails.name} />
+              <input
+                className='input-field'
+                type='text'
+                name='name'
+                onChange={handleCustomerFields}
+                value={customerDetails.name}
+              />
             </div>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Customer Email</label>
-              <input className='input-field' name='email' type='email' />
+              <input
+                className='input-field'
+                name='email'
+                type='email'
+                onChange={handleCustomerFields}
+                value={customerDetails.email}
+              />
             </div>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Customer Phone number</label>
-              <input className='input-field' name='phone_no' type='number' />
+              <input
+                className='input-field'
+                name='phone_no'
+                type='text'
+                onChange={handleCustomerFields}
+                value={customerDetails.phone_no}
+              />
             </div>
           </div>
 
           <div className='mt-4'>
             <button
               type='button'
+              onClick={handleCreateCustomer}
               className='inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500'
             >
               Submit
@@ -53,4 +88,4 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   );
 };
 
-export default AddProducts;
+export default CustomerModal;

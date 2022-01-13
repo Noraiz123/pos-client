@@ -15,6 +15,7 @@ const initialState = {
     order: [],
     onHold: [],
     currentOrder: [],
+    currentCustomerDetails: {},
   },
   categories: [],
 };
