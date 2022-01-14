@@ -8,13 +8,6 @@ export const createOrderAction = (payload) => {
   };
 };
 
-export const createCustomerAction = (payload) => {
-  return {
-    type: actionTypes.addCustomerDetails,
-    payload,
-  };
-};
-
 export const deleteOrderItemAction = (payload) => {
   return {
     type: actionTypes.deleteOrderItem,

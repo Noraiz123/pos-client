@@ -12,9 +12,6 @@ export default (state = initialState.orders, action) => {
     case actionTypes.getOrder: {
       return { ...state, order: action.payload };
     }
-    case actionTypes.addCustomerDetails: {
-      return { ...state, currentCustomerDetails: action.payload };
-    }
     case actionTypes.createOrder: {
       const alreadyExists = state.currentOrder.find((e) => e.skus.id === action.payload.skus.id);
       const createNew = !alreadyExists && state.currentOrder.concat(action.payload);

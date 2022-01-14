@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CheckIcon,
   PlusIcon,
@@ -18,24 +18,30 @@ import {
 } from '../../actions/order.actions';
 import { useDispatch } from 'react-redux';
 import CustomerModal from '../Modals/AddCustomerModal';
+import { GetCustomers, currentCustomerAction } from '../../actions/customers.actions';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
-  const { currentOrder, currentCustomer } = useSelector((state) => ({
+  const { currentOrder, currentCustomer, customers } = useSelector((state) => ({
     currentOrder: state.orders.currentOrder,
-    currentCustomer: state.orders.currentCustomerDetails,
+    currentCustomer: state.customers.currentCustomer,
+    customers: state.customers.allCustomers,
   }));
+
+  useEffect(() => {
+    dispatch(GetCustomers());
+  }, [dispatch]);
 
   const handleOrderConfirmation = () => {
     dispatch(
       ConfirmOrder({
         order: {
           status: 'paid',
+          customer_id: currentCustomer.id.toString(),
           order_line_items_attributes: currentOrder.map((e) => ({
             product_sku_id: e.skus.id,
             quantity: e.quantity,
           })),
-          customer_attributes: currentCustomer,
         },
       })
     );
@@ -47,14 +53,27 @@ const CreateOrder = () => {
     dispatch(createOrderAction({ ...item, quantity: parseInt(value) }));
   };
 
+  const handleCustomerChange = (e) => {
+    const { value } = e.target;
+    const customer = customers.find((e) => e.id === parseInt(value));
+    dispatch(currentCustomerAction(customer));
+  };
+
   const totalPrice = currentOrder && currentOrder.reduce((pre, next) => pre + parseInt(next.skus.price), 0);
   return (
     <div className='w-1/2 bg-white rounded-sm mt-6'>
       <div className='p-10 flex flex-col'>
         <div className='flex mb-5'>
-          <select className='input-select w-9/12'>
-            <option>Walk in customer</option>
-            <option>Option B</option>
+          <select className='input-select w-9/12' value={currentCustomer.id} onChange={handleCustomerChange}>
+            <option value='' selected disabled>
+              Select Customer
+            </option>
+            {customers &&
+              customers.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.name}
+                </option>
+              ))}
           </select>
           <button className='btn-sm-green mx-4' onClick={() => setOpenCustomerModal(true)}>
             <PlusIcon className='h-6' />

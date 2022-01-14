@@ -16,11 +16,13 @@ import AddProducts from '../Modals/AddProductModal';
 import UsersModal from '../Modals/UsersModal';
 import AddUserModal from '../Modals/AddUserModal';
 import AddCategory from '../Modals/AddCategory';
+import CustomersModal from '../Modals/customersModal';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [openAddProduct, setOpenAddProduct] = useState(false);
   const [openAddCategory, setOpenAddCategory] = useState(false);
+  const [openCustomers, setOpenCustomers] = useState(false);
   const [openAddUser, setOpenAddUser] = useState(false);
   const [openUsers, setOpenUsers] = useState(false);
 
@@ -42,17 +44,17 @@ const Header = () => {
               <ViewGridAddIcon className='mr-2 h-6' />
               Categories
             </button>
-            <button className='btn-sm-yellow'>
-              <PlusIcon className='h-6' onClick={() => setOpenAddCategory(true)} />
+            <button className='btn-sm-yellow' onClick={() => setOpenAddCategory(true)}>
+              <PlusIcon className='h-6' />
             </button>
           </div>
           <button className='flex align-middle btn-blue'>
             <ViewBoardsIcon className='mr-2 h-6' />
             Open Tabs
           </button>
-          <button className='flex align-middle btn-blue'>
+          <button className='flex align-middle btn-blue' onClick={() => setOpenCustomers(true)}>
             <UserIcon className='mr-2 h-6' />
-            Customer Orders
+            Customers
           </button>
         </div>
         <div className='flex space-x-2'>
@@ -88,6 +90,7 @@ const Header = () => {
       <AddCategory isOpen={openAddCategory} setIsOpen={setOpenAddCategory} />
       <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} />
       <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} />
+      <CustomersModal isOpen={openCustomers} setIsOpen={setOpenCustomers} />
     </div>
   );
 };

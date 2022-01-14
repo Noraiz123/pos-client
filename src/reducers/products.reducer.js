@@ -1,6 +1,5 @@
 import initialState from './initialState';
 import { actionTypes } from '../constants/actionTypes';
-import { updateProduct } from '../api/products';
 
 const modifyProducts = (items) => {
   let skusArray = [];
@@ -42,7 +41,7 @@ export default (state = initialState.products, action) => {
       return { ...state, productsFilter: action.payload };
     }
     case actionTypes.createProduct: {
-      return { ...state, products: state.products.concat(action.payload) };
+      return { ...state, products: state.products.concat(modifyProducts([action.payload])[0]) };
     }
     case actionTypes.deleteProduct: {
       return { ...state, products: state.products.concat(action.payload) };

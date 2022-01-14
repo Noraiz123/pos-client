@@ -1,10 +1,10 @@
 import { Dialog } from '@headlessui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ModalTemplate from '.';
-import { createCustomerAction } from '../../actions/order.actions';
+import { CreateCustomer, UpdateCustomer } from '../../actions/customers.actions';
 
-const CustomerModal = ({ isOpen, setIsOpen, productData }) => {
+const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
   const initState = {
     name: '',
     email: '',
@@ -21,8 +21,19 @@ const CustomerModal = ({ isOpen, setIsOpen, productData }) => {
     }));
   };
 
+  useEffect(() => {
+    if (customerData) {
+      setCustomerDetails(customerData);
+    }
+  }, [customerData]);
+
   const handleCreateCustomer = () => {
-    dispatch(createCustomerAction(customerDetails));
+    if (customerData) {
+      const { id, name, email, phone_no } = customerDetails;
+      dispatch(UpdateCustomer(id, { name, email, phone_no }));
+    } else {
+      dispatch(CreateCustomer(customerDetails));
+    }
     setIsOpen(false);
   };
 

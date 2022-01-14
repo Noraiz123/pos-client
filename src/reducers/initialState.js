@@ -18,9 +18,12 @@ const initialState = {
     order: [],
     onHold: [],
     currentOrder: [],
-    currentCustomerDetails: {},
   },
   categories: [],
+  customers: {
+    allCustomers: [],
+    currentCustomer: {},
+  },
 };
 
 export default initialState;

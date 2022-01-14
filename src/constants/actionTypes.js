@@ -7,7 +7,9 @@ export const actionTypes = {
   editProduct: 'EDIT_PRODUCTS',
   createSize: 'CREATE_SIZE',
   createCategory: 'CREATE_CATEGORY',
+  createCustomer: 'CREATE_CUSTOMER',
   getCategories: 'GET_CATEGORIES',
+  getCustomers: 'GET_CUSTOMERS',
   getSizes: 'GET_SIZE',
   createColor: 'CREATE_COLOR',
   getColors: 'GET_COLOR',
@@ -20,4 +22,7 @@ export const actionTypes = {
   deleteOrderItem: 'DELETE_ORDER_ITEM',
   deleteAllOrderItems: 'DELETE__ALL_ORDER_ITEM',
   filterProducts: 'FILTER_PRODUCTS',
+  deleteCustomer: 'DELETE_CUSTOMER',
+  updateCustomer: 'UPDATE_CUSTOMER',
+  currentCustomer: 'CURRENT_CUSTOMER',
 };
