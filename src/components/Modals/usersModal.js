@@ -1,33 +1,38 @@
 import { Dialog } from '@headlessui/react';
 import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ModalTemplate from '.';
-import { DeleteCustomer } from '../../actions/customers.actions';
-import CustomerModal from './AddCustomerModal';
+import { DeleteUser, GetUsers } from '../../actions/users.actions';
+import AddUserModal from './AddUser';
 
-const CustomersModal = ({ isOpen, setIsOpen }) => {
+const UsersModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const { customers } = useSelector((state) => ({
-    customers: state.customers.allCustomers,
+  const { users } = useSelector((state) => ({
+    users: state.users,
   }));
   const initState = {
     id: null,
     name: '',
     email: '',
-    phone_no: '',
+    password: '',
   };
-  const [openAddCustomer, setOpenAddCustomer] = useState(false);
-  const [customerData, setCustomerData] = useState(initState);
+
+  useEffect(() => {
+    dispatch(GetUsers());
+  }, [dispatch]);
+
+  const [openAddUser, setOpenAddUser] = useState(false);
+  const [userData, setUserData] = useState(initState);
 
   const handleUserDelete = (id) => {
-    dispatch(DeleteCustomer(id));
+    dispatch(DeleteUser(id));
   };
 
-  const handleCustomerEdit = (data) => {
-    const { id, name, email, phone_no } = data;
-    setCustomerData({ id, name, email, phone_no });
-    setOpenAddCustomer(true);
+  const handleUserEdit = (data) => {
+    const { id, name, email } = data;
+    setUserData({ id, name, email });
+    setOpenAddUser(true);
   };
 
   return (
@@ -35,7 +40,7 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className='inline-block w-auto h-50v p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl overflow-y-auto'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
-            Customers
+            Users
           </Dialog.Title>
           <div className='mt-10'>
             <table className='table-fixed product-table border-2'>
@@ -43,22 +48,22 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
-                  <th>Phone No</th>
+                  <th>Role</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody style={{ height: '200px', width: '200px', overflowY: 'scroll' }}>
-                {customers &&
-                  customers.map((e) => (
+                {users &&
+                  users.map((e) => (
                     <tr key={e.id}>
                       <td>{e.name}</td>
-                      <td>{e.phone_no}</td>
                       <td>{e.email}</td>
+                      <td>{e.role}</td>
                       <td>
                         <button className='btn-sm-red' onClick={() => handleUserDelete(e.id)}>
                           <TrashIcon className='h-4' />
                         </button>
-                        <button className='btn-sm-yellow ml-3' onClick={() => handleCustomerEdit(e)}>
+                        <button className='btn-sm-yellow ml-3' onClick={() => handleUserEdit(e)}>
                           <PencilAltIcon className='h-4' />
                         </button>
                       </td>
@@ -79,9 +84,9 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
           </div>
         </div>
       </ModalTemplate>
-      <CustomerModal isOpen={openAddCustomer} setIsOpen={setOpenAddCustomer} customerData={customerData} />
+      <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} userData={userData} />
     </div>
   );
 };
 
-export default CustomersModal;
+export default UsersModal;

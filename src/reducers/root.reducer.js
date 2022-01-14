@@ -4,6 +4,7 @@ import ProductsReducer from './products.reducer';
 import OrdersReducer from './orders.reducer';
 import categoriesReducer from './categories.reducer';
 import customersReducer from './customers.reducer';
+import usersReducer from './users.reducer';
 
 export default combineReducers({
   auth: AuthReducer,
@@ -11,4 +12,5 @@ export default combineReducers({
   orders: OrdersReducer,
   categories: categoriesReducer,
   customers: customersReducer,
+  users: usersReducer,
 });

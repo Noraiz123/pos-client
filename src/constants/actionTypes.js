@@ -25,4 +25,8 @@ export const actionTypes = {
   deleteCustomer: 'DELETE_CUSTOMER',
   updateCustomer: 'UPDATE_CUSTOMER',
   currentCustomer: 'CURRENT_CUSTOMER',
+  createUser: 'CREATE_USER',
+  getUsers: 'GET_USERS',
+  deleteUser: 'DELETE_USER',
+  updateUser: 'UPDATE_USER',
 };

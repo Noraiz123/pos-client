@@ -13,10 +13,10 @@ import { LogoutIcon } from '@heroicons/react/outline';
 import { Link } from 'react-router-dom';
 import ProductsModal from '../Modals/ProductsModal';
 import AddProducts from '../Modals/AddProductModal';
-import UsersModal from '../Modals/UsersModal';
-import AddUserModal from '../Modals/AddUserModal';
 import AddCategory from '../Modals/AddCategory';
 import CustomersModal from '../Modals/customersModal';
+import AddUserModal from '../Modals/AddUser';
+import UsersModal from '../Modals/usersModal';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
