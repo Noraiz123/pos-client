@@ -15,7 +15,9 @@ axios.interceptors.request.use((req) => {
 });
 
 export function getProducts(data) {
-  return axios.get(BASE_URL + '/api/products', data);
+  return axios.get(
+    BASE_URL + `/api/products?page=${data.page}&&category_id=${data.category_id}&&search_keyword=${data.keyword}&&per_page=${data.per_page}`
+  );
 }
 
 export function getProduct(id) {

@@ -19,4 +19,5 @@ export const actionTypes = {
   createOrder: 'CREATE_ORDER',
   deleteOrderItem: 'DELETE_ORDER_ITEM',
   deleteAllOrderItems: 'DELETE__ALL_ORDER_ITEM',
+  filterProducts: 'FILTER_PRODUCTS',
 };

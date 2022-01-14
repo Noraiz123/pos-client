@@ -10,6 +10,7 @@ import {
   CreateSize,
   EditProduct,
   GetColors,
+  GetProducts,
   GetSizes,
 } from '../../actions/products.actions';
 import { GetCategories } from '../../actions/categories.actions';
@@ -27,10 +28,11 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const [productSku, setProductSku] = useState({ addSize: false, addColor: false });
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
-  const { sizes, colors, categories } = useSelector((state) => ({
+  const { sizes, colors, categories, productsFilter } = useSelector((state) => ({
     sizes: state.products.productSizes,
     colors: state.products.productColors,
     categories: state.categories,
+    productsFilter: state.products.productsFilter,
   }));
 
   useEffect(() => {
@@ -103,6 +105,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     if (productData?.id) {
       dispatch(EditProduct(productData.id, { product: productDetails })).then(() => {
         setIsOpen(false);
+        dispatch(GetProducts(productsFilter));
       });
     } else {
       dispatch(CreateProduct(productDetails)).then(() => {
@@ -164,7 +167,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
               <input
                 className='input-field'
                 name='price'
-                type='text'
+                type='number'
                 value={productDetails.skus_attributes[0].price}
                 onChange={handleAddProduct}
               />

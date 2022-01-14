@@ -74,8 +74,15 @@ const editProductAction = (payload) => {
   };
 };
 
-export const GetProducts = () => async (dispatch) => {
-  const res = await getProducts();
+export const filterProductsAction = (payload) => {
+  return {
+    type: actionTypes.filterProducts,
+    payload,
+  };
+};
+
+export const GetProducts = (data) => async (dispatch) => {
+  const res = await getProducts(data);
   if (res.status === 200) {
     dispatch(getProductsAction(res.data));
   }
@@ -135,9 +142,8 @@ export const DeleteProduct = (id) => async (dispatch) => {
 
 export const EditProduct = (id, data) => async (dispatch) => {
   const res = await updateProduct(id, data);
-  const get = await getProducts();
   if (res.status === 200) {
-    dispatch(editProductAction(get.data));
+    dispatch(editProductAction(res.data));
     return res;
   }
 };

@@ -9,8 +9,9 @@ import AddProducts from './AddProductModal';
 
 const ProductsModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const { product, categories } = useSelector((state) => ({
+  const { product, categories, productsFilter } = useSelector((state) => ({
     product: state.products.product,
+    productsFilter: state.products.productsFilter,
     categories: state.categories,
   }));
 
@@ -19,12 +20,12 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
     products: state.products.products,
   }));
   useEffect(() => {
-    dispatch(GetProducts());
-  }, [dispatch]);
+    dispatch(GetProducts(productsFilter));
+  }, [dispatch, productsFilter]);
 
   const productDeleteHandler = (id) => {
     dispatch(DeleteProduct(id)).then(() => {
-      dispatch(GetProducts());
+      dispatch(GetProducts(productsFilter));
     });
   };
 
