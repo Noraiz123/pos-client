@@ -17,6 +17,8 @@ import AddCategory from '../Modals/AddCategory';
 import CustomersModal from '../Modals/customersModal';
 import AddUserModal from '../Modals/AddUser';
 import UsersModal from '../Modals/usersModal';
+import AddVendorsModal from '../Modals/AddVendorsModal';
+import VendorsModal from '../Modals/VendorsModal';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,6 +27,8 @@ const Header = () => {
   const [openCustomers, setOpenCustomers] = useState(false);
   const [openAddUser, setOpenAddUser] = useState(false);
   const [openUsers, setOpenUsers] = useState(false);
+  const [openVendors, setOpenVendors] = useState(false);
+  const [openAddVendors, setOpenAddVendors] = useState(false);
 
   return (
     <div>
@@ -68,6 +72,15 @@ const Header = () => {
             </button>
           </Link>
           <div className='flex'>
+            <button className='flex align-middle btn-green' onClick={() => setOpenVendors(true)}>
+              <UserIcon className='mr-2 h-6' />
+              Vendors
+            </button>
+            <button className='btn-sm-gray' onClick={() => setOpenAddVendors(true)}>
+              <PlusIcon className='h-6' />
+            </button>
+          </div>
+          <div className='flex'>
             <button className='flex align-middle btn-green' onClick={() => setOpenUsers(true)}>
               <UserIcon className='mr-2 h-6' />
               Users
@@ -91,6 +104,8 @@ const Header = () => {
       <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} />
       <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} />
       <CustomersModal isOpen={openCustomers} setIsOpen={setOpenCustomers} />
+      <AddVendorsModal isOpen={openAddVendors} setIsOpen={setOpenAddVendors} />
+      <VendorsModal isOpen={openVendors} setIsOpen={setOpenVendors} />
     </div>
   );
 };

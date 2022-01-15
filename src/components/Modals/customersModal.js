@@ -33,13 +33,13 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
   return (
     <div>
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
-        <div className='inline-block w-auto h-50v p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl overflow-y-auto'>
+        <div className='inline-block w-auto p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl overflow-y-auto'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
             Customers
           </Dialog.Title>
-          <div className='mt-10'>
+          <div className='mt-10 h-30v overflow-y-auto'>
             <table className='table-fixed product-table border-2'>
-              <thead>
+              <thead className='sticky top-0 z-10 bg-white'>
                 <tr>
                   <th>Name</th>
                   <th>Email</th>
@@ -47,7 +47,7 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
                   <th>Action</th>
                 </tr>
               </thead>
-              <tbody style={{ height: '200px', width: '200px', overflowY: 'scroll' }}>
+              <tbody>
                 {customers &&
                   customers.map((e) => (
                     <tr key={e.id}>

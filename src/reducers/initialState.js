@@ -20,6 +20,7 @@ const initialState = {
     currentOrder: [],
   },
   categories: [],
+  vendors: [],
   users: [],
   customers: {
     allCustomers: [],

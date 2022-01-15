@@ -18,6 +18,7 @@ import { GetCategories } from '../../actions/categories.actions';
 const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
     category_id: null,
+    vendor_id: null,
     name: '',
     skus_attributes: [{ product_color_id: null, product_size_id: null, price: null, quantity: null }],
   };
@@ -28,22 +29,24 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const [productSku, setProductSku] = useState({ addSize: false, addColor: false });
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
-  const { sizes, colors, categories, productsFilter } = useSelector((state) => ({
+  const { sizes, colors, categories, productsFilter, vendors } = useSelector((state) => ({
     sizes: state.products.productSizes,
     colors: state.products.productColors,
     categories: state.categories,
+    vendors: state.vendors,
     productsFilter: state.products.productsFilter,
   }));
 
   useEffect(() => {
     if (productData && productData.id) {
-      const { name, skus, category_id } = productData;
+      const { name, skus, category_id, vendor_id } = productData;
       const { id, quantity, price } = skus[0];
       const productColor = skus[0].product_color.id;
       const productSize = skus[0].product_size.id;
       setProductDetails({
         name,
         category_id,
+        vendor_id,
         skus_attributes: [
           {
             id,
@@ -146,6 +149,25 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                 </option>
                 {categories &&
                   categories.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+            <div className='flex flex-col my-2'>
+              <label className='mb-1 text-gray-500 font-bold'>Vendors</label>
+              <select
+                className='input-select w-full'
+                name='vendor_id'
+                onChange={handleAddProduct}
+                value={productDetails.vendor_id}
+              >
+                <option value='' selected disabled>
+                  Select Vendor
+                </option>
+                {vendors &&
+                  vendors.map((e) => (
                     <option key={e.id} value={e.id}>
                       {e.name}
                     </option>
