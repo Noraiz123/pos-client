@@ -7,3 +7,20 @@
     @apply px-10 text-center py-4 text-gray-500 border-r-2;
   }
 }
+
+.productsAdd::-webkit-scrollbar {
+  display: none;
+}
+
+.productsAdd {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.css-b62m3t-container {
+  width: 700px !important;
+}
+
+.css-6j8wv5-Input {
+  padding: 8px !important;
+}

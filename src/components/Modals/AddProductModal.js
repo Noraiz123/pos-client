@@ -14,6 +14,8 @@ import {
   GetSizes,
 } from '../../actions/products.actions';
 import { GetCategories } from '../../actions/categories.actions';
+import Select from 'react-select';
+import { CreateTag, GetTags } from '../../actions/tags.actions';
 
 const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
@@ -21,25 +23,32 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     vendor_id: null,
     name: '',
     skus_attributes: [{ product_color_id: null, product_size_id: null, price: null, quantity: null }],
+    product_tags_attributes: [
+      {
+        tag_id: null,
+      },
+    ],
   };
   const [productDetails, setProductDetails] = useState(initState);
   const [imageFile, setImageFile] = useState('');
   const sizeRef = useRef();
   const colorRef = useRef();
-  const [productSku, setProductSku] = useState({ addSize: false, addColor: false });
+  const tagsRef = useRef();
+  const [productSku, setProductSku] = useState({ addSize: false, addColor: false, addTags: false });
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
-  const { sizes, colors, categories, productsFilter, vendors } = useSelector((state) => ({
+  const { sizes, colors, categories, productsFilter, vendors, tags } = useSelector((state) => ({
     sizes: state.products.productSizes,
     colors: state.products.productColors,
     categories: state.categories,
+    tags: state.tags,
     vendors: state.vendors,
     productsFilter: state.products.productsFilter,
   }));
 
   useEffect(() => {
     if (productData && productData.id) {
-      const { name, skus, category_id, vendor_id } = productData;
+      const { name, skus, category_id, vendor_id, product_tags } = productData;
       const { id, quantity, price } = skus[0];
       const productColor = skus[0].product_color.id;
       const productSize = skus[0].product_size.id;
@@ -47,6 +56,13 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
         name,
         category_id,
         vendor_id,
+        product_tags_attributes: product_tags
+          ? product_tags.map((e) => ({ tag_id: e.tag_id, id: e.id }))
+          : [
+              {
+                tag_id: null,
+              },
+            ],
         skus_attributes: [
           {
             id,
@@ -59,6 +75,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
       });
     }
   }, [productData]);
+
 
   const handleAddProduct = (e) => {
     const { name, value } = e.target;
@@ -80,6 +97,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     dispatch(GetColors());
     dispatch(GetSizes());
     dispatch(GetCategories());
+    dispatch(GetTags());
   }, [dispatch]);
 
   const handleAddSize = () => {
@@ -90,6 +108,23 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
         skus_attributes: [{ ...preState.skus_attributes[0], product_size_id: res.data.id.toString() }],
       }));
       setProductSku((pre) => ({ ...pre, addSize: false }));
+    });
+  };
+
+  const handleAddTag = () => {
+    const tag = tagsRef.current.value;
+    dispatch(
+      CreateTag({
+        tag: {
+          name: tag,
+        },
+      })
+    ).then((res) => {
+      setProductDetails((preState) => ({
+        ...preState,
+        product_tags_attributes: preState.product_tags_attributes.concat({ tag_id: res.data.id }),
+      }));
+      setProductSku((pre) => ({ ...pre, addTags: false }));
     });
   };
 
@@ -117,14 +152,30 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     }
   };
 
+  const tagsOptions = tags.map((e) => ({ value: e.id, label: e.name }));
+
+  const handleTagsChange = (e) => {
+    setProductDetails((preState) => ({
+      ...preState,
+      product_tags_attributes:
+        productData && productData.product_tags.length
+          ? preState.product_tags_attributes.concat(
+              e.map((t) =>
+                !productData.product_tags.map((p) => p.tag_id).includes(t.value) && { tag_id: t.value }
+              ).filter(Boolean)
+            )
+          : e.map((t) => ({ tag_id: t.value })),
+    }));
+  };
+
   return (
     <div>
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
-        <div className='inline-block w-96 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl p-6'>
+        <div className='inline-block w-96 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl p-6'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
             Add Product
           </Dialog.Title>
-          <div className='mt-10'>
+          <div className='mt-10 h-70v overflow-y-auto productsAdd'>
             <div
               className='w-32 h-32 border-2 rounded-full flex text-center items-center mx-auto cursor-pointer'
               onClick={() => fileInputRef.current.click()}
@@ -203,6 +254,43 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                 value={productDetails.skus_attributes[0].quantity}
                 onChange={handleAddProduct}
               />
+            </div>
+            <div className='flex flex-col my-2'>
+              <label className='mb-1 text-gray-500 font-bold'>Tags</label>
+              <div className='flex'>
+                {productSku.addTags ? (
+                  <>
+                    <input className='input-field' name='tags' ref={tagsRef} />
+                    <button
+                      className='p-3 ml-2 inline-flex justify-center text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500'
+                      onClick={handleAddTag}
+                    >
+                      Add
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Select
+                      options={tagsOptions}
+                      isMulti
+                      value={tags.map(
+                        (e) =>
+                          productDetails.product_tags_attributes.map((t) => t.tag_id).includes(e.id) && {
+                            label: e.name,
+                            value: e.id,
+                          }
+                      )}
+                      onChange={handleTagsChange}
+                    />
+                    <button
+                      className='p-3 ml-2 inline-flex justify-center text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500'
+                      onClick={() => setProductSku((preState) => ({ ...preState, addTags: true }))}
+                    >
+                      +
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Size</label>

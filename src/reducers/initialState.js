@@ -21,6 +21,7 @@ const initialState = {
   },
   categories: [],
   vendors: [],
+  tags: [],
   users: [],
   customers: {
     allCustomers: [],
