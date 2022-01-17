@@ -21,6 +21,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
     category_id: null,
     vendor_id: null,
+    discount: null,
     name: '',
     skus_attributes: [{ product_color_id: null, product_size_id: null, price: null, quantity: null }],
     product_tags_attributes: [
@@ -48,7 +49,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
 
   useEffect(() => {
     if (productData && productData.id) {
-      const { name, skus, category_id, vendor_id, product_tags } = productData;
+      const { name, skus, category_id, vendor_id, product_tags, discount } = productData;
       const { id, quantity, price } = skus[0];
       const productColor = skus[0].product_color.id;
       const productSize = skus[0].product_size.id;
@@ -56,6 +57,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
         name,
         category_id,
         vendor_id,
+        discount,
         product_tags_attributes: product_tags
           ? product_tags.map((e) => ({ tag_id: e.tag_id, id: e.id }))
           : [
@@ -75,7 +77,6 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
       });
     }
   }, [productData]);
-
 
   const handleAddProduct = (e) => {
     const { name, value } = e.target;
@@ -143,7 +144,6 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     if (productData?.id) {
       dispatch(EditProduct(productData.id, { product: productDetails })).then(() => {
         setIsOpen(false);
-        dispatch(GetProducts(productsFilter));
       });
     } else {
       dispatch(CreateProduct(productDetails)).then(() => {
@@ -160,9 +160,9 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
       product_tags_attributes:
         productData && productData.product_tags.length
           ? preState.product_tags_attributes.concat(
-              e.map((t) =>
-                !productData.product_tags.map((p) => p.tag_id).includes(t.value) && { tag_id: t.value }
-              ).filter(Boolean)
+              e
+                .map((t) => !productData.product_tags.map((p) => p.tag_id).includes(t.value) && { tag_id: t.value })
+                .filter(Boolean)
             )
           : e.map((t) => ({ tag_id: t.value })),
     }));
@@ -252,6 +252,16 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                 name='quantity'
                 type='number'
                 value={productDetails.skus_attributes[0].quantity}
+                onChange={handleAddProduct}
+              />
+            </div>
+            <div className='flex flex-col my-2'>
+              <label className='mb-1 text-gray-500 font-bold'>Discount</label>
+              <input
+                className='input-field'
+                name='discount'
+                type='number'
+                value={productDetails.discount}
                 onChange={handleAddProduct}
               />
             </div>
