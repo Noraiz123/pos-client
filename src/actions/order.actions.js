@@ -33,4 +33,5 @@ export const ConfirmOrder = (data) => async (dispatch) => {
   if (res.status === 200) {
     dispatch(confirmOrderAction(res.data));
   }
+  return res
 };

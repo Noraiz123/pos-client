@@ -19,14 +19,17 @@ import {
 import { useDispatch } from 'react-redux';
 import CustomerModal from '../Modals/AddCustomerModal';
 import { GetCustomers, currentCustomerAction } from '../../actions/customers.actions';
+import AddUserModal from '../Modals/AddUser';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
-  const { currentOrder, currentCustomer, customers } = useSelector((state) => ({
+  const { currentOrder, currentCustomer, customers, users } = useSelector((state) => ({
     currentOrder: state.orders.currentOrder,
     currentCustomer: state.customers.currentCustomer,
     customers: state.customers.allCustomers,
+    users: state.users.filter((e) => e.role === 'salesman'),
   }));
+  const [currentSalesman, setCurrentSalesman] = useState("");
 
   useEffect(() => {
     dispatch(GetCustomers());
@@ -37,16 +40,24 @@ const CreateOrder = () => {
       ConfirmOrder({
         order: {
           status: 'paid',
-          customer_id: currentCustomer.id.toString(),
+          customer_id: currentCustomer.id ? currentCustomer.id.toString() : undefined,
+          salesman_id: currentSalesman ? currentSalesman : undefined,
           order_line_items_attributes: currentOrder.map((e) => ({
             product_sku_id: e.skus.id,
             quantity: e.quantity,
           })),
         },
       })
-    );
+    ).then((res) => {
+      if (res.status === 200) {
+        dispatch(deleteAllOrderItemsAction());
+        dispatch(currentCustomerAction({}));
+        setCurrentSalesman("");
+      }
+    });
   };
   const [openCustomerModal, setOpenCustomerModal] = useState(false);
+  const [openUserModal, setOpenUserModal] = useState(false);
 
   const handleQuantityChange = (item, e) => {
     const { value } = e.target;
@@ -63,8 +74,12 @@ const CreateOrder = () => {
   return (
     <div className='w-1/2 bg-white rounded-sm mt-6'>
       <div className='p-10 flex flex-col'>
-        <div className='flex mb-5'>
-          <select className='input-select w-9/12' value={currentCustomer.id} onChange={handleCustomerChange}>
+        <div className='flex mb-2'>
+          <select
+            className='input-select w-9/12'
+            value={currentCustomer.id ? currentCustomer.id : ''}
+            onChange={handleCustomerChange}
+          >
             <option value='' selected disabled>
               Select Customer
             </option>
@@ -76,6 +91,26 @@ const CreateOrder = () => {
               ))}
           </select>
           <button className='btn-sm-green mx-4' onClick={() => setOpenCustomerModal(true)}>
+            <PlusIcon className='h-6' />
+          </button>
+        </div>
+        <div className='flex mb-4'>
+          <select
+            className='input-select w-9/12'
+            value={currentSalesman}
+            onChange={(e) => setCurrentSalesman(e.target.value)}
+          >
+            <option value='' selected disabled>
+              Select Salesman
+            </option>
+            {users &&
+              users.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.name}
+                </option>
+              ))}
+          </select>
+          <button className='btn-sm-green mx-4' onClick={() => setOpenUserModal(true)}>
             <PlusIcon className='h-6' />
           </button>
         </div>
@@ -167,6 +202,7 @@ const CreateOrder = () => {
         </div>
       </div>
       <CustomerModal isOpen={openCustomerModal} setIsOpen={setOpenCustomerModal} />
+      <AddUserModal isOpen={openUserModal} setIsOpen={setOpenUserModal} />
     </div>
   );
 };

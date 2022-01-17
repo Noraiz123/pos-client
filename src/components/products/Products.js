@@ -99,7 +99,7 @@ const Products = () => {
             </div>
           ))}
       </div>
-      {products && (
+      {products.length > 0 && (
         <div className='flex my-3 justify-center'>
           <nav aria-label='Page navigation example'>
             <ul className='pagination'>

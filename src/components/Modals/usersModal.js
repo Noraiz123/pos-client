@@ -30,8 +30,8 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleUserEdit = (data) => {
-    const { id, name, email } = data;
-    setUserData({ id, name, email });
+    const { id, name, role, email } = data;
+    setUserData({ id, name, role, email });
     setOpenAddUser(true);
   };
 

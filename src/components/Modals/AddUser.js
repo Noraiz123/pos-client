@@ -8,6 +8,7 @@ const AddUserModal = ({ isOpen, setIsOpen, userData }) => {
   const initState = {
     name: '',
     email: '',
+    role: '',
     phone_no: '',
   };
   const dispatch = useDispatch();
@@ -29,8 +30,8 @@ const AddUserModal = ({ isOpen, setIsOpen, userData }) => {
 
   const handleCreateUser = () => {
     if (userData) {
-      const { id, name, email, password } = userDetails;
-      dispatch(UpdateUser(id, { name, email, password }));
+      const { id, name, email, role, password } = userDetails;
+      dispatch(UpdateUser(id, { name, email, password, role }));
     } else {
       dispatch(CreateUser({ user: userDetails }));
     }
@@ -77,8 +78,17 @@ const AddUserModal = ({ isOpen, setIsOpen, userData }) => {
                 />
               </div>
             )}
+            <div className='flex flex-col my-2'>
+              <label className='mb-1 text-gray-500 font-bold'>Role</label>
+              <select className='input-select' name='role' onChange={handleUserFields} value={userDetails.role}>
+                <option value='' selected disabled>
+                  Select user role
+                </option>
+                <option value='cashier'>Cashier</option>
+                <option value='salesman'>Sales Man</option>
+              </select>
+            </div>
           </div>
-
           <div className='mt-4'>
             <button
               type='button'
