@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/solid';
 
 import { LogoutIcon } from '@heroicons/react/outline';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import ProductsModal from '../Modals/ProductsModal';
 import AddProducts from '../Modals/AddProductModal';
 import AddCategory from '../Modals/AddCategory';
@@ -29,6 +29,7 @@ const Header = () => {
   const [openUsers, setOpenUsers] = useState(false);
   const [openVendors, setOpenVendors] = useState(false);
   const [openAddVendors, setOpenAddVendors] = useState(false);
+  const location = useLocation();
 
   return (
     <div>
@@ -65,12 +66,22 @@ const Header = () => {
           <button className='flex btn-sm-green'>
             <CogIcon className='h-6' />
           </button>
-          <Link to='/transactions'>
-            <button className='flex align-middle btn-green'>
-              <CreditCardIcon className='mr-2 h-6' />
-              Transactions
-            </button>
-          </Link>
+
+          {!location.pathname.includes('/transactions') ? (
+            <Link to='/transactions'>
+              <button className='flex align-middle btn-green'>
+                <CreditCardIcon className='mr-2 h-6' />
+                Transactions
+              </button>
+            </Link>
+          ) : (
+            <Link to='/'>
+              <button className='flex align-middle btn-green'>
+                <CreditCardIcon className='mr-2 h-6' />
+                Point of Sale
+              </button>
+            </Link>
+          )}
           <div className='flex'>
             <button className='flex align-middle btn-green' onClick={() => setOpenVendors(true)}>
               <UserIcon className='mr-2 h-6' />

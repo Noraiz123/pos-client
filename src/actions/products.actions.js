@@ -6,6 +6,7 @@ import {
   getColors,
   getProduct,
   getProducts,
+  getProductsStats,
   getSizes,
   updateProduct,
 } from '../api/products';
@@ -14,6 +15,13 @@ import { actionTypes } from '../constants/actionTypes';
 const getProductsAction = (payload) => {
   return {
     type: actionTypes.getProducts,
+    payload,
+  };
+};
+
+const getProductsStatsAction = (payload) => {
+  return {
+    type: actionTypes.getProductsStats,
     payload,
   };
 };
@@ -81,10 +89,24 @@ export const filterProductsAction = (payload) => {
   };
 };
 
+export const filterProductsStatsAction = (payload) => {
+  return {
+    type: actionTypes.filterStats,
+    payload,
+  };
+};
+
 export const GetProducts = (data) => async (dispatch) => {
   const res = await getProducts(data);
   if (res.status === 200) {
     dispatch(getProductsAction(res.data));
+  }
+};
+
+export const GetProductsStats = (data) => async (dispatch) => {
+  const res = await getProductsStats(data);
+  if (res.status === 200) {
+    dispatch(getProductsStatsAction(res.data));
   }
 };
 

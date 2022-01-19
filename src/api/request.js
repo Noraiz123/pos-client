@@ -14,6 +14,7 @@ instance.interceptors.request.use((req) => {
   req.headers['access-token'] = token;
   req.headers.client = client;
   req.headers.uid = uuid;
+  req.headers['Content-Type'] = 'application/json';
 
   return req;
 });

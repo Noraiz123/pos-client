@@ -1,7 +1,9 @@
 import instance from './request';
 
-export function getOrders() {
-  return instance.get('/api/orders');
+export function getOrders(data, filter) {
+ return instance.get(`/api/orders?page=${filter.page}&&per_page=${filter.perPage}`, {
+    params: data,
+  });
 }
 
 export function createOrder(data) {

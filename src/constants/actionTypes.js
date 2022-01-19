@@ -24,6 +24,7 @@ export const actionTypes = {
   deleteOrderItem: 'DELETE_ORDER_ITEM',
   deleteAllOrderItems: 'DELETE__ALL_ORDER_ITEM',
   filterProducts: 'FILTER_PRODUCTS',
+  filterStats: 'FILTER_STATS',
   deleteCustomer: 'DELETE_CUSTOMER',
   updateCustomer: 'UPDATE_CUSTOMER',
   currentCustomer: 'CURRENT_CUSTOMER',
@@ -35,4 +36,5 @@ export const actionTypes = {
   updateUser: 'UPDATE_USER',
   deleteVendor: 'DELETE_VENDOR',
   updateVendor: 'UPDATE_VENDOR',
+  getProductsStats: 'GET_PRODUCTS_STATS',
 };

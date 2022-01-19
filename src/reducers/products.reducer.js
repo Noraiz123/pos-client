@@ -37,8 +37,23 @@ export default (state = initialState.products, action) => {
     case actionTypes.getProduct: {
       return { ...state, product: action.payload };
     }
+    case actionTypes.getProductsStats: {
+      const { products, page, total_pages } = action.payload;
+      return {
+        ...state,
+        productsStats: {
+          ...state.productsStats,
+          stats: modifyProducts(products),
+          currentPage: page,
+          totalPages: total_pages,
+        },
+      };
+    }
     case actionTypes.filterProducts: {
       return { ...state, productsFilter: action.payload };
+    }
+    case actionTypes.filterStats: {
+      return { ...state, productsStats: { ...state.productsStats, statsFilter: action.payload } };
     }
     case actionTypes.createProduct: {
       return { ...state, products: state.products.concat(modifyProducts([action.payload])[0]) };

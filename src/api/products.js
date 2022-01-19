@@ -10,6 +10,12 @@ export function getProduct(id) {
   return instance.get(`/api/products/${id}`);
 }
 
+export function getProductsStats(data) {
+  return instance.get(
+    `/api/products/stats?search_keyword=${data.keyword}&&page=${data.page}&&per_page=${data.perPage}`
+  );
+}
+
 export function getColors() {
   return instance.get('/api/product/colors');
 }

@@ -4,7 +4,8 @@ import { actionTypes } from '../constants/actionTypes';
 export default (state = initialState.orders, action) => {
   switch (action.type) {
     case actionTypes.getOrders: {
-      return { ...state, allOrders: action.payload };
+      const { orders, page, total_pages } = action.payload;
+      return { ...state, allOrders: orders, currentPage: page, totalPages: total_pages };
     }
     case actionTypes.confirmOrder: {
       return { ...state, allOrders: state.allOrders.concat(action.payload) };

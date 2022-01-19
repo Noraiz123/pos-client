@@ -1,9 +1,16 @@
 import { actionTypes } from '../constants/actionTypes';
-import { createOrder } from '../api/order';
+import { createOrder, getOrders } from '../api/order';
 
 export const createOrderAction = (payload) => {
   return {
     type: actionTypes.createOrder,
+    payload,
+  };
+};
+
+const getOrdersAction = (payload) => {
+  return {
+    type: actionTypes.getOrders,
     payload,
   };
 };
@@ -33,5 +40,13 @@ export const ConfirmOrder = (data) => async (dispatch) => {
   if (res.status === 200) {
     dispatch(confirmOrderAction(res.data));
   }
-  return res
+  return res;
+};
+
+export const GetOrders = (data, filter) => async (dispatch) => {
+  const res = await getOrders(data, filter);
+  if (res.status === 200) {
+    dispatch(getOrdersAction(res.data));
+  }
+  return res;
 };
