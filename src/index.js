@@ -5,12 +5,14 @@ import './assets/theme/index.scss';
 import DefaultPage from './pages/DefaultPage';
 import { Provider } from 'react-redux';
 import reportWebVitals from './config/reportWebVitals';
-
+import { ToastContainer } from 'react-toastify';
 import store from './config/store';
+import 'react-toastify/dist/ReactToastify.css';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
+      <ToastContainer position='top-right' />
       <DefaultPage />
     </Provider>
   </React.StrictMode>,

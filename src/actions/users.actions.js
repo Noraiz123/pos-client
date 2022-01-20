@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { createUser, deleteUser, getUsers, updateUser } from '../api/user';
 import { actionTypes } from '../constants/actionTypes';
 
@@ -33,6 +34,7 @@ export const CreateUser = (data) => async (dispatch) => {
   const res = await createUser(data);
   if (res.status === 200) {
     dispatch(createUserAction(res.data));
+    toast.success('User Created Successfully');
   }
   return res;
 };
@@ -50,6 +52,7 @@ export const DeleteUser = (id) => async (dispatch) => {
   if (res.status === 204) {
     const customers = await getUsers();
     dispatch(deleteUserAction(customers.data));
+    toast.success('User Deleted Successfully');
   }
 };
 
@@ -57,5 +60,6 @@ export const UpdateUser = (id, data) => async (dispatch) => {
   const res = await updateUser(id, data);
   if (res.status === 200) {
     dispatch(updateUserAction(res.data));
+    toast.success('User Updated Successfully');
   }
 };

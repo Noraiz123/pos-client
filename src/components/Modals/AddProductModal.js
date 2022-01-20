@@ -10,7 +10,6 @@ import {
   CreateSize,
   EditProduct,
   GetColors,
-  GetProducts,
   GetSizes,
 } from '../../actions/products.actions';
 import { GetCategories } from '../../actions/categories.actions';
@@ -141,6 +140,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   };
 
   const createProductHandler = () => {
+    Object.keys(productDetails).forEach((k) => productDetails[k] == null && delete productDetails[k]);
     if (productData?.id) {
       dispatch(EditProduct(productData.id, { product: productDetails })).then(() => {
         setIsOpen(false);

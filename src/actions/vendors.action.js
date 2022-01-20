@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { createVendor, deleteVendor, getVendors, updateVendor } from '../api/vendors';
 import { actionTypes } from '../constants/actionTypes';
 
@@ -33,6 +34,7 @@ export const CreateVendor = (data) => async (dispatch) => {
   const res = await createVendor(data);
   if (res.status === 200) {
     dispatch(createVendorAction(res.data));
+    toast.success('Vendor Created Successfully');
   }
 };
 
@@ -48,6 +50,7 @@ export const DeleteVendor = (id) => async (dispatch) => {
   if (res.status === 204) {
     const vendors = await getVendors();
     dispatch(deleteVendorAction(vendors.data));
+    toast.success('Vendor Deleted Successfully');
   }
 };
 
@@ -55,5 +58,6 @@ export const UpdateVendor = (id, data) => async (dispatch) => {
   const res = await updateVendor(id, data);
   if (res.status === 200) {
     dispatch(updateVendorAction(res.data));
+    toast.success('Vendor Updated Successfully');
   }
 };

@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { createTag, getTags } from '../api/tags';
 import { actionTypes } from '../constants/actionTypes';
 
@@ -19,6 +20,7 @@ export const CreateTag = (data) => async (dispatch) => {
   const res = await createTag(data);
   if (res.status === 200) {
     dispatch(createTagAction(res.data));
+    toast.success('Tag Created Successfully');
   }
   return res;
 };

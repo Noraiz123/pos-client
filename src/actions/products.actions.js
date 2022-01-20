@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import {
   createColor,
   createProduct,
@@ -68,13 +69,6 @@ const createSizeAction = (payload) => {
   };
 };
 
-const deleteProductAction = (payload) => {
-  return {
-    type: actionTypes.deleteProduct,
-    payload,
-  };
-};
-
 const editProductAction = (payload) => {
   return {
     type: actionTypes.editProduct,
@@ -135,37 +129,42 @@ export const CreateProduct = (data) => async (dispatch) => {
   const res = await createProduct(data);
   if (res.status === 200) {
     dispatch(createProductAction(res.data));
+    toast.success('Product Created Successfully');
   }
+  return res;
 };
 
 export const CreateSize = (data) => async (dispatch) => {
   const res = await createSize(data);
   if (res.status === 200) {
     dispatch(createSizeAction(res.data));
-    return res;
+    toast.success('Size Created Successfully');
   }
+  return res;
 };
 
 export const CreateColor = (data) => async (dispatch) => {
   const res = await createColor(data);
   if (res.status === 200) {
     dispatch(createColorAction(res.data));
-    return res;
+    toast.success('Color Created Successfully');
   }
+  return res;
 };
 
 export const DeleteProduct = (id) => async (dispatch) => {
   const res = await deleteProduct(id);
-  if (res.status === 200) {
-    dispatch(deleteProductAction(res.data));
-    return res;
+  if (res.status === 204) {
+    toast.success('Product Deleted Successfully');
   }
+  return res;
 };
 
 export const EditProduct = (id, data) => async (dispatch) => {
   const res = await updateProduct(id, data);
   if (res.status === 200) {
     dispatch(editProductAction(res.data));
-    return res;
+    toast.success('Product Updated Successfully');
   }
+  return res;
 };

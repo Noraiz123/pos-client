@@ -58,9 +58,6 @@ export default (state = initialState.products, action) => {
     case actionTypes.createProduct: {
       return { ...state, products: state.products.concat(modifyProducts([action.payload])[0]) };
     }
-    case actionTypes.deleteProduct: {
-      return { ...state, products: state.products.concat(action.payload) };
-    }
     case actionTypes.editProduct: {
       return {
         ...state,

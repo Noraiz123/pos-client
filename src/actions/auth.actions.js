@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { loginRequest } from '../api/auth';
 import { actionTypes } from '../constants/actionTypes';
 
@@ -20,6 +21,7 @@ export const LoginRequest = (data, navigate) => async (dispatch) => {
     const token = res.headers['access-token'];
     const uid = res.headers.uid;
     const client = res.headers.client;
+    toast.success('LoggedIn Successfully');
     dispatch(loginAction());
     localStorage.setItem('uid', uid);
     localStorage.setItem('client', client);
@@ -27,7 +29,7 @@ export const LoginRequest = (data, navigate) => async (dispatch) => {
   }
 };
 
-export const LogoutRequest = (dispatch) => {
+export const LogoutRequest = () => async (dispatch) => {
   window.location.href = '/login';
   dispatch(logoutAction());
   localStorage.removeItem('uid');

@@ -5,7 +5,6 @@ export const actionTypes = {
   createProduct: 'CREATE_PRODUCTS',
   createTag: 'CREATE_TAG',
   addCustomerDetails: 'ADD_CUSTOMER_DETAILS',
-  deleteProduct: 'DELETE_PRODUCTS',
   editProduct: 'EDIT_PRODUCTS',
   createSize: 'CREATE_SIZE',
   createCategory: 'CREATE_CATEGORY',

@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { createCategory, getCategories } from '../api/category';
 import { actionTypes } from '../constants/actionTypes';
 
@@ -19,6 +20,7 @@ export const CreateCategory = (data) => async (dispatch) => {
   const res = await createCategory(data);
   if (res.status === 200) {
     dispatch(createCategoryAction(res.data));
+    toast.success('Category Created Successfully');
   }
 };
 

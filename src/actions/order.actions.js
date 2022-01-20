@@ -1,5 +1,6 @@
 import { actionTypes } from '../constants/actionTypes';
 import { createOrder, getOrders } from '../api/order';
+import { toast } from 'react-toastify';
 
 export const createOrderAction = (payload) => {
   return {
@@ -39,6 +40,7 @@ export const ConfirmOrder = (data) => async (dispatch) => {
   const res = await createOrder(data);
   if (res.status === 200) {
     dispatch(confirmOrderAction(res.data));
+    toast.success('Order Created Successfully');
   }
   return res;
 };

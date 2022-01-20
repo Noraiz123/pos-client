@@ -2,6 +2,7 @@ import axios from 'axios';
 import { BASE_URL } from '../constants/apiUrl';
 import store from '../config/store';
 import { loginAction, LogoutRequest } from '../actions/auth.actions';
+import { toast } from 'react-toastify';
 
 const instance = axios.create({
   baseURL: BASE_URL,
@@ -33,7 +34,8 @@ instance.interceptors.response.use(
     ) {
       store.dispatch(LogoutRequest());
     }
-    return error.response;
+    toast.error(error.response.data.message);
+    return Promise.reject(error.response.data);
   }
 );
 
