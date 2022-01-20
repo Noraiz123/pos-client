@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { BASE_URL } from '../constants/apiUrl';
+import store from '../config/store';
+import { loginAction, LogoutRequest } from '../actions/auth.actions';
 
 const instance = axios.create({
   baseURL: BASE_URL,
@@ -18,5 +20,21 @@ instance.interceptors.request.use((req) => {
 
   return req;
 });
+
+instance.interceptors.response.use(
+  (res) => {
+    store.dispatch(loginAction());
+    return res;
+  },
+  (error) => {
+    if (
+      !error.request?.responseURL?.includes('sign_in') &&
+      (error.toString().includes(401) || error.toString().includes(404))
+    ) {
+      store.dispatch(LogoutRequest());
+    }
+    return error.response;
+  }
+);
 
 export default instance;

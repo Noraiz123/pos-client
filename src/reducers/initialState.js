@@ -1,8 +1,6 @@
 const initialState = {
   auth: {
     isSignedIn: false,
-    email: '',
-    userId: null,
   },
   products: {
     product: {},

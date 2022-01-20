@@ -16,6 +16,7 @@ export const actionTypes = {
   createColor: 'CREATE_COLOR',
   getColors: 'GET_COLOR',
   login: 'LOGIN_REQUEST',
+  logout: 'LOGOUT_REQUEST',
   getOrders: 'GET_ORDERS',
   getOrder: 'GET_ORDER',
   confirmOrder: 'CONFIRM_ORDER',

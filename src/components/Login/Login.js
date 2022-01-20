@@ -1,19 +1,21 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { LoginRequest } from '../../actions/auth.actions';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    dispatch(LoginRequest({ email: e.target[0].value, password: e.target[1].value }));
+    dispatch(LoginRequest({ email: e.target[0].value, password: e.target[1].value }, navigate));
   };
 
   return (
     <div className='w-screen h-screen bg-gray-100 flex justify-center items-center'>
       <div className='w-full max-w-xs'>
-        <form onSubmit={handleLogin}  className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+        <form onSubmit={handleLogin} className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
           <div className='mb-4'>
             <label className='block text-gray-700 text-sm font-bold mb-2' for='username'>
               Username

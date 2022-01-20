@@ -4,8 +4,10 @@ import initialState from './initialState';
 export default (state = initialState.auth, action) => {
   switch (action.type) {
     case actionTypes.login: {
-      const { email, id } = action.payload;
-      return { ...state, isSignedIn: true, email, userId: id };
+      return { ...state, isSignedIn: true };
+    }
+    case actionTypes.logout: {
+      return { ...state, isSignedIn: false };
     }
     default:
       return state;
