@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import CustomerModal from '../Modals/AddCustomerModal';
 import { GetCustomers, currentCustomerAction } from '../../actions/customers.actions';
 import AddUserModal from '../Modals/AddUser';
+import InvoiceModal from '../Modals/InvoiceModal';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const CreateOrder = () => {
     customers: state.customers.allCustomers,
     users: state.users.filter((e) => e.role === 'salesman'),
   }));
-  const [currentSalesman, setCurrentSalesman] = useState("");
+  const [currentSalesman, setCurrentSalesman] = useState('');
 
   useEffect(() => {
     dispatch(GetCustomers());
@@ -52,12 +53,13 @@ const CreateOrder = () => {
       if (res.status === 200) {
         dispatch(deleteAllOrderItemsAction());
         dispatch(currentCustomerAction({}));
-        setCurrentSalesman("");
+        setCurrentSalesman('');
       }
     });
   };
   const [openCustomerModal, setOpenCustomerModal] = useState(false);
   const [openUserModal, setOpenUserModal] = useState(false);
+  const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
 
   const handleQuantityChange = (item, e) => {
     const { value } = e.target;
@@ -70,7 +72,8 @@ const CreateOrder = () => {
     dispatch(currentCustomerAction(customer));
   };
 
-  const totalPrice = currentOrder && currentOrder.reduce((pre, next) => pre + parseInt(next.skus.price), 0);
+  const totalPrice =
+    currentOrder && currentOrder.reduce((pre, next) => pre + Number(next.skus.price) * Number(next.quantity), 0);
   return (
     <div className='w-1/2 bg-white rounded-sm mt-6'>
       <div className='p-10 flex flex-col'>
@@ -184,7 +187,7 @@ const CreateOrder = () => {
           </div>
         </div>
         <div className='flex space-x-10  my-4'>
-          <button className='btn-blue'>
+          <button className='btn-blue' onClick={() => setOpenInvoiceModal(true)} disabled={currentOrder.length === 0}>
             <PrinterIcon className='h-6' />
           </button>
           <button className='btn-red flex'>
@@ -203,6 +206,11 @@ const CreateOrder = () => {
       </div>
       <CustomerModal isOpen={openCustomerModal} setIsOpen={setOpenCustomerModal} />
       <AddUserModal isOpen={openUserModal} setIsOpen={setOpenUserModal} />
+      <InvoiceModal
+        isOpen={openInvoiceModal}
+        setIsOpen={setOpenInvoiceModal}
+        invoiceData={{ orderItems: currentOrder, customer: currentCustomer, total: totalPrice }}
+      />
     </div>
   );
 };
