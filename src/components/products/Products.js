@@ -37,12 +37,12 @@ const Products = () => {
   };
 
   return (
-    <div className='p-10 bg-white ml-4 mt-6 w-full'>
-      <div className='grid grid-cols-3'>
+    <div className='p-10 bg-white ml-4 mt-6 lg:col-span-2'>
+      <div className='grid xl:grid-cols-3   sm:grid-cols-1'>
         <div className=''>
           <input
             type='text'
-            className='input-field'
+            className='input-field sm:w-full xl:w-auto'
             placeholder='Search Product by name or sku'
             value={productsFilter.keyword}
             onChange={handleKeywordChange}
@@ -69,7 +69,7 @@ const Products = () => {
         </div>
         <div className='space-x-2 flex justify-end'>
           <select
-            className='input-select w-2/4'
+            className='input-select xl:w-2/4 sm:w-full'
             name='per_page'
             onChange={handlePerPageChange}
             value={productsFilter.per_page}
@@ -84,12 +84,20 @@ const Products = () => {
           </select>
         </div>
       </div>
-      <div className='grid grid-cols-5'>
+      <div className='grid xl:grid-cols-5 sm:grid-cols-1'>
         {products &&
           products.map((e) => (
-            <div key={e.skus.id} className='border mt-6 p-4 cursor-pointer' onClick={() => createOrder(e)}>
+            <div
+              key={e.skus.id}
+              className='flex flex-col justify-center border mt-6 p-4 w-full cursor-pointer'
+              onClick={() => createOrder(e)}
+            >
               <div className='space-y-2 border-b p-2'>
-                <img src='https://thumbs.dreamstime.com/b/bottle-water-12522351.jpg' alt='product' className='h-56' />
+                <img
+                  src='https://thumbs.dreamstime.com/b/bottle-water-12522351.jpg'
+                  alt='product'
+                  className='h-56 mx-auto'
+                />
                 <p className='text-center text-gray-400 font-bold'>{e.name}</p>
               </div>
               <div className='text-center mt-3'>

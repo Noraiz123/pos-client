@@ -71,7 +71,7 @@ const Transactions = () => {
 
   return (
     <div className='bg-white mt-4'>
-      <div className='grid grid-cols-6 gap-4 p-5 border-b'>
+      <div className='grid xl:grid-cols-6 sm:grid-cols-2 gap-4 p-5 border-b'>
         <h1 className='text-2xl text-gray-600 flex items-center'>Transactions</h1>
         <div className='flex flex-col'>
           <label className='mb-1 text-gray-500 font-bold'>Salesman</label>
@@ -116,9 +116,9 @@ const Transactions = () => {
           </div>
         </div>
       </div>
-      <div className='my-5 grid grid-cols-3 gap-4'>
+      <div className='my-5 grid xl:grid-cols-3 sm:grid-cols-1 gap-4'>
         <div className='border p-3'>
-          <div className='grid grid-cols-3 mt-3'>
+          <div className='grid xl:grid-cols-3 sm:grid-cols-2 mt-3'>
             <h1 className='text-2xl text-gray-600 flex items-center'>Products</h1>
             <div>
               <label className='mr-1 text-gray-500 font-bold'>Display</label>
@@ -145,7 +145,7 @@ const Transactions = () => {
           </div>
           <div className='h-60v overflow-y-auto my-6'>
             <div className='my-4 h-4/6'>
-              <table className='whitespace-nowrap order-table'>
+              <table className='whitespace-nowrap order-table w-full'>
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -200,7 +200,7 @@ const Transactions = () => {
             </div>
           )}
         </div>
-        <div className='col-span-2'>
+        <div className='xl:col-span-2'>
           <div className='border-b pb-2 flex justify-between p-2'>
             <h1 className='text-2xl text-gray-600 flex items-center'>Total</h1>
             <div>
@@ -217,8 +217,8 @@ const Transactions = () => {
               </select>
             </div>
           </div>
-          <div className='grid grid-cols-4 mt-3'>
-            <div className='space-y-3 my-3'>
+          <div className='grid xl:grid-cols-4 sm:grid-cols-1 mt-3'>
+            <div className='space-y-3 sm:grid sm:grid-cols-2 xl:block my-3'>
               <div className='w-56 h-40 bg-green-500 rounded-md'>
                 <div className='text-2xl text-white flex flex-col h-full items-center justify-center'>
                   <h1>Sales</h1>

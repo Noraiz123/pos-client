@@ -7,7 +7,7 @@ const POS = () => {
   return (
     <div className='p-10'>
       <Header />
-      <div className="flex h-auto">
+      <div className="grid xl:grid-cols-3 sm:grid-cols-1  h-auto">
         <CreateOrder />
         <Products />
       </div>

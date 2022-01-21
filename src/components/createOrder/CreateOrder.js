@@ -75,7 +75,7 @@ const CreateOrder = () => {
   const totalPrice =
     currentOrder && currentOrder.reduce((pre, next) => pre + Number(next.skus.price) * Number(next.quantity), 0);
   return (
-    <div className='w-1/2 bg-white rounded-sm mt-6'>
+    <div className='bg-white rounded-sm mt-6'>
       <div className='p-10 flex flex-col'>
         <div className='flex mb-2'>
           <select

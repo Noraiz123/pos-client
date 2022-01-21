@@ -33,7 +33,7 @@ const Header = () => {
 
   return (
     <div>
-      <div className='flex justify-between'>
+      <div className='grid xl:grid-cols-2 sm:grid-cols-1 space-x-3 sm:space-y-4 xl:space-y-0'>
         <div className='flex space-x-2'>
           <div className='flex'>
             <button className='flex align-middle btn-green' onClick={() => setIsOpen(true)}>
@@ -62,7 +62,7 @@ const Header = () => {
             Customers
           </button>
         </div>
-        <div className='flex space-x-2'>
+        <div className='flex space-x-2 xl:justify-end'>
           <button className='flex btn-sm-green'>
             <CogIcon className='h-6' />
           </button>
@@ -100,10 +100,6 @@ const Header = () => {
               <PlusIcon className='h-6' />
             </button>
           </div>
-          <button className='flex align-middle btn-gray'>
-            <UserIcon className='mr-2 h-6' />
-            Administrator
-          </button>
           <button className='btn-sm-yellow'>
             <LogoutIcon className='h-6' />
           </button>
