@@ -18,7 +18,7 @@ export default (state = initialState.orders, action) => {
       const createNew = !alreadyExists && state.currentOrder.concat(action.payload);
       const updateItem =
         alreadyExists &&
-        state.currentOrder.map((e) => (e.skus.id === action.payload.skus.id ? { ...e, quantity: e.quantity + 1 } : e));
+        state.currentOrder.map((e) => (e.skus.id === action.payload.skus.id ? { ...action.payload } : e));
       return { ...state, currentOrder: alreadyExists ? updateItem : createNew };
     }
     case actionTypes.deleteOrderItem: {
@@ -27,8 +27,11 @@ export default (state = initialState.orders, action) => {
     case actionTypes.deleteAllOrderItems: {
       return { ...state, currentOrder: [] };
     }
-    case actionTypes.editOrder: {
+    case actionTypes.updateOrder: {
       return { ...state, allOrders: state.allOrders.map((e) => (e.id === action.payload.id ? action.payload : e)) };
+    }
+    case actionTypes.updateOrderStatus: {
+      return { ...state, orderStatus: action.payload };
     }
     default:
       return state;

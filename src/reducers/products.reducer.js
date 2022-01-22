@@ -18,9 +18,8 @@ const modifyProducts = (items) => {
 const handleProductUpdate = (state, action) => {
   const { products } = state;
   const updatedProducts = modifyProducts([action.payload]);
-
   for (let i = 0; i <= products.length; i++) {
-    const data = updatedProducts.find((e) => e.skus?.id === products.skus?.id);
+    const data = updatedProducts.find((e) => e.skus?.id === products[i]?.skus.id);
     if (data?.id) {
       products[i] = data;
     }

@@ -15,47 +15,86 @@ import {
   createOrderAction,
   deleteAllOrderItemsAction,
   deleteOrderItemAction,
+  UpdateOrder,
+  updateOrderStatusAction,
 } from '../../actions/order.actions';
 import { useDispatch } from 'react-redux';
 import CustomerModal from '../Modals/AddCustomerModal';
 import { GetCustomers, currentCustomerAction } from '../../actions/customers.actions';
 import AddUserModal from '../Modals/AddUser';
 import InvoiceModal from '../Modals/InvoiceModal';
+import { useLocation } from 'react-router-dom';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
-  const { currentOrder, currentCustomer, customers, users } = useSelector((state) => ({
+  const { currentOrder, currentCustomer, customers, users, order, orderStatus } = useSelector((state) => ({
     currentOrder: state.orders.currentOrder,
+    order: state.orders.order,
+    orderStatus: state.orders.orderStatus,
     currentCustomer: state.customers.currentCustomer,
     customers: state.customers.allCustomers,
     users: state.users.filter((e) => e.role === 'salesman'),
   }));
   const [currentSalesman, setCurrentSalesman] = useState('');
+  const { state } = useLocation();
 
   useEffect(() => {
     dispatch(GetCustomers());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (state?.salesman) {
+      setCurrentSalesman(state.salesman);
+    }
+  }, [state]);
+
   const handleOrderConfirmation = () => {
-    dispatch(
-      ConfirmOrder({
-        order: {
-          status: 'paid',
-          customer_id: currentCustomer.id ? currentCustomer.id.toString() : undefined,
-          salesman_id: currentSalesman ? currentSalesman : undefined,
-          order_line_items_attributes: currentOrder.map((e) => ({
-            product_sku_id: e.skus.id,
-            quantity: e.quantity,
-          })),
-        },
-      })
-    ).then((res) => {
-      if (res.status === 200) {
-        dispatch(deleteAllOrderItemsAction());
-        dispatch(currentCustomerAction({}));
-        setCurrentSalesman('');
-      }
-    });
+    if (orderStatus === 'UPDATE_ORDER') {
+      dispatch(
+        UpdateOrder(
+          {
+            order: {
+              status: 'paid',
+              customer_id: currentCustomer.id ? currentCustomer.id.toString() : undefined,
+              salesman_id: currentSalesman ? currentSalesman : undefined,
+              order_line_items_attributes: currentOrder.map((e) => ({
+                id: e?.orderItemId ? e.orderItemId : undefined,
+                product_sku_id: e?.skus.id ? e.skus.id : undefined,
+                quantity: e.quantity,
+              })),
+            },
+          },
+          order.id
+        )
+      ).then((res) => {
+        if (res.status === 200) {
+          dispatch(updateOrderStatusAction('CREATE_ORDER'));
+          dispatch(deleteAllOrderItemsAction());
+          dispatch(currentCustomerAction({}));
+          setCurrentSalesman('');
+        }
+      });
+    } else {
+      dispatch(
+        ConfirmOrder({
+          order: {
+            status: 'paid',
+            customer_id: currentCustomer.id ? currentCustomer.id.toString() : undefined,
+            salesman_id: currentSalesman ? currentSalesman : undefined,
+            order_line_items_attributes: currentOrder.map((e) => ({
+              product_sku_id: e.skus.id,
+              quantity: e.quantity,
+            })),
+          },
+        })
+      ).then((res) => {
+        if (res.status === 200) {
+          dispatch(deleteAllOrderItemsAction());
+          dispatch(currentCustomerAction({}));
+          setCurrentSalesman('');
+        }
+      });
+    }
   };
   const [openCustomerModal, setOpenCustomerModal] = useState(false);
   const [openUserModal, setOpenUserModal] = useState(false);
@@ -63,7 +102,7 @@ const CreateOrder = () => {
 
   const handleQuantityChange = (item, e) => {
     const { value } = e.target;
-    dispatch(createOrderAction({ ...item, quantity: parseInt(value) }));
+    dispatch(createOrderAction({ ...item, quantity: Number(value) }));
   };
 
   const handleCustomerChange = (e) => {
@@ -153,6 +192,8 @@ const CreateOrder = () => {
                         <input
                           type='number'
                           className='input-field w-20'
+                          min='1'
+                          max={e.skus.quantity}
                           value={e.quantity}
                           onChange={(value) => handleQuantityChange(e, value)}
                         />

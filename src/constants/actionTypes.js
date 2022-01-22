@@ -37,4 +37,5 @@ export const actionTypes = {
   deleteVendor: 'DELETE_VENDOR',
   updateVendor: 'UPDATE_VENDOR',
   getProductsStats: 'GET_PRODUCTS_STATS',
+  updateOrderStatus: 'UPDATE_ORDER_STATUS',
 };

@@ -13,8 +13,9 @@ const initialState = {
     totalPages: null,
   },
   orders: {
+    orderStatus: 'CREATE_ORDER',
     allOrders: [],
-    order: [],
+    order: {},
     onHold: [],
     currentOrder: [],
     currentPage: 1,

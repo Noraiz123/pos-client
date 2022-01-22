@@ -5,16 +5,30 @@ import { filterProductsAction } from '../../actions/products.actions';
 
 const Products = () => {
   const dispatch = useDispatch();
-  const { products, productsFilter, categories, currentPage, totalPages } = useSelector((state) => ({
+  const { products, productsFilter, currentOrder, categories, currentPage, totalPages } = useSelector((state) => ({
     products: state.products.products,
     productsFilter: state.products.productsFilter,
+    currentOrder: state.orders.currentOrder,
     categories: state.categories,
     currentPage: state.products.currentPage,
     totalPages: state.products.totalPages,
   }));
 
   const createOrder = (item) => {
-    dispatch(createOrderAction({ ...item, quantity: 1 }));
+    const alreadyExists = currentOrder.find((e) => e.skus.id === item.skus.id);
+    if (alreadyExists && alreadyExists.id) {
+      dispatch(
+        createOrderAction({
+          ...item,
+          quantity:
+            Number(alreadyExists.quantity) < Number(item.skus.quantity)
+              ? alreadyExists.quantity + 1
+              : alreadyExists.quantity,
+        })
+      );
+    } else {
+      dispatch(createOrderAction({ ...item, quantity: 1 }));
+    }
   };
 
   const handleCategoryChange = (e) => {

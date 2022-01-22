@@ -1,13 +1,16 @@
+import { EyeIcon } from '@heroicons/react/solid';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { GetOrders } from '../../actions/order.actions';
+import { GetOrder, GetOrders } from '../../actions/order.actions';
 import { filterProductsStatsAction, GetProductsStats } from '../../actions/products.actions';
+import ViewOrdersModal from '../Modals/ViewOrderModal';
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  const { orders, users, productsStats, salesman } = useSelector((state) => ({
+  const { orders, users, productsStats, salesman, products } = useSelector((state) => ({
     orders: state.orders,
     users: state.users,
+    products: state.products.products,
     productsStats: state.products.productsStats,
     salesman: state.users.filter((e) => e.role === 'salesman'),
   }));
@@ -19,6 +22,8 @@ const Transactions = () => {
     salesman_id_eq: null,
   };
   const [ordersFilter, setOrdersFilter] = useState(initialFilters);
+  const [isOpen, setIsOpen] = useState(false);
+  const [ordersData, setOrdersData] = useState(null);
   const [ordersPagination, setOrdersPagination] = useState({ perPage: 10, page: 1, keyword: '' });
   useEffect(() => {
     dispatch(GetOrders({ query: ordersFilter }, ordersPagination));
@@ -68,6 +73,33 @@ const Transactions = () => {
 
     return total;
   }, 0);
+
+  const manipulateProducts = (orderItems) => {
+    let productsData = [];
+    for (let values of products) {
+      const order = orderItems.find((o) => o.product_sku_id === values.skus.id);
+      if (order?.id) {
+        productsData.push({
+          ...values,
+          price: order.price,
+          quantity: order.quantity,
+          orderItemId: order.id,
+          salesman_id: order.salesman_id,
+        });
+      }
+    }
+
+    return productsData;
+  };
+
+  const handleOrdersView = (order) => {
+    dispatch(GetOrder(order.id)).then((res) => {
+      if (res && res.status === 200) {
+        setOrdersData(manipulateProducts(res.data.order_line_items));
+        setIsOpen(true);
+      }
+    });
+  };
 
   return (
     <div className='bg-white mt-4'>
@@ -253,6 +285,7 @@ const Transactions = () => {
                         <th>Status</th>
                         <th>Cashier</th>
                         <th>Salesman</th>
+                        <th>View</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -268,6 +301,11 @@ const Transactions = () => {
                             <td>{e.status}</td>
                             <td>{handleUsers(e.cashier_id)}</td>
                             <td>{handleUsers(e.salesman_id)}</td>
+                            <td>
+                              <button className='btn-sm-yellow ml-3' onClick={() => handleOrdersView(e)}>
+                                <EyeIcon className='h-4' />
+                              </button>
+                            </td>
                           </tr>
                         ))}
                     </tbody>
@@ -309,6 +347,7 @@ const Transactions = () => {
           </div>
         </div>
       </div>
+      <ViewOrdersModal isOpen={isOpen} setIsOpen={setIsOpen} orderDetails={ordersData} />
     </div>
   );
 };
