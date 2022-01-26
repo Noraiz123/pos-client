@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ModalTemplate from '.';
 import { DeleteVendor, GetVendors } from '../../actions/vendors.action';
+import { appConstants } from '../../constants/appConstants';
 import AddVendorsModal from './AddVendorsModal';
 
 const VendorsModal = ({ isOpen, setIsOpen }) => {
@@ -25,7 +26,10 @@ const VendorsModal = ({ isOpen, setIsOpen }) => {
   const handleVendorEdit = (data) => {
     const { id, name, description } = data;
     setVendorData({ id, name, description });
-    setOpenAddVendor(true);
+    setIsOpen(false);
+    setTimeout(() => {
+      setOpenAddVendor(true);
+    }, appConstants.TIME_OUT);
   };
 
   return (

@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ModalTemplate from '.';
 import { DeleteCustomer } from '../../actions/customers.actions';
 import CustomerModal from './AddCustomerModal';
+import { appConstants } from '../../constants/appConstants';
 
 const CustomersModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
@@ -27,7 +28,10 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
   const handleCustomerEdit = (data) => {
     const { id, name, email, phone_no } = data;
     setCustomerData({ id, name, email, phone_no });
-    setOpenAddCustomer(true);
+    setIsOpen(false);
+    setTimeout(() => {
+      setOpenAddCustomer(true);
+    }, appConstants.TIME_OUT);
   };
 
   return (

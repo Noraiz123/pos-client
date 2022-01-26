@@ -53,6 +53,7 @@ const ViewOrdersModal = ({ isOpen, setIsOpen, orderDetails }) => {
                   <th>Quantity</th>
                   <th>Category</th>
                   <th>Vendor</th>
+                  <th>Subtotal</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -67,6 +68,7 @@ const ViewOrdersModal = ({ isOpen, setIsOpen, orderDetails }) => {
                       <td>{e.quantity}</td>
                       <td>{getCategory(e.category_id)}</td>
                       <td>{getVendor(e.vendor_id)}</td>
+                      <td>{e.sub_total}</td>
                       <td>
                         <button className='btn-sm-yellow ml-3' onClick={() => OrderUpdateHandler(e)}>
                           <PencilAltIcon className='h-4' />

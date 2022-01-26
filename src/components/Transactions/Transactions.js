@@ -82,6 +82,7 @@ const Transactions = () => {
         productsData.push({
           ...values,
           price: order.price,
+          sub_total: order.sub_total,
           quantity: order.quantity,
           orderItemId: order.id,
           salesman_id: order.salesman_id,

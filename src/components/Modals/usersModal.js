@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ModalTemplate from '.';
 import { DeleteUser, GetUsers } from '../../actions/users.actions';
+import { appConstants } from '../../constants/appConstants';
 import AddUserModal from './AddUser';
 
 const UsersModal = ({ isOpen, setIsOpen }) => {
@@ -32,7 +33,10 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
   const handleUserEdit = (data) => {
     const { id, name, role, email } = data;
     setUserData({ id, name, role, email });
-    setOpenAddUser(true);
+    setIsOpen(false);
+    setTimeout(() => {
+      setOpenAddUser(true);
+    }, appConstants.TIME_OUT);
   };
 
   return (

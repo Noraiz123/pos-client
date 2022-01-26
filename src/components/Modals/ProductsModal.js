@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ModalTemplate from '.';
 import { DeleteProduct, GetProduct, GetProducts } from '../../actions/products.actions';
+import { appConstants } from '../../constants/appConstants';
 import AddProducts from './AddProductModal';
 
 const ProductsModal = ({ isOpen, setIsOpen }) => {
@@ -33,7 +34,9 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
   const productUpdateHandler = (data) => {
     dispatch(GetProduct(data.id)).then(() => {
       setIsOpen(false);
-      setOpenAddProduct(true);
+      setTimeout(() => {
+        setOpenAddProduct(true);
+      }, appConstants.TIME_OUT);
     });
   };
 
@@ -52,7 +55,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
   return (
     <div>
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
-        <div className='inline-block w-auto p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl'>
+        <div className='xl:inline-block w-auto p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
             Products
           </Dialog.Title>
@@ -81,7 +84,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
                       <td>{e.skus?.quantity}</td>
                       <td>{getCategory(e.category_id)}</td>
                       <td>{getVendor(e.vendor_id)}</td>
-                      <td>
+                      <td className='flex justify-center items-center'>
                         <button className='btn-sm-red' onClick={() => productDeleteHandler(e.id)}>
                           <TrashIcon className='h-4' />
                         </button>
