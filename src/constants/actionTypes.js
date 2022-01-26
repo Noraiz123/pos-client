@@ -8,6 +8,8 @@ export const actionTypes = {
   editProduct: 'EDIT_PRODUCTS',
   createSize: 'CREATE_SIZE',
   createCategory: 'CREATE_CATEGORY',
+  updateCategory: 'UPDATE_CATEGORY',
+  deleteCategory: 'DELETE_CATEGORY',
   createCustomer: 'CREATE_CUSTOMER',
   getCategories: 'GET_CATEGORIES',
   getCustomers: 'GET_CUSTOMERS',

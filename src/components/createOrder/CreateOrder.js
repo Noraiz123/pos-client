@@ -234,7 +234,7 @@ const CreateOrder = () => {
             <div className='text-xl font-bold'>R0:00</div>
           </div>
         </div>
-        <div className='flex space-x-10  my-4'>
+        <div className='flex justify-between my-4'>
           <button className='btn-blue' onClick={() => setOpenInvoiceModal(true)} disabled={currentOrder.length === 0}>
             <PrinterIcon className='h-6' />
           </button>

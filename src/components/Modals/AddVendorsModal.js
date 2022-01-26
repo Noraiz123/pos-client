@@ -46,7 +46,7 @@ const AddVendorsModal = ({ isOpen, setIsOpen, vendorData }) => {
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className='inline-block w-96 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl p-6'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
-            Add Vendors
+            {vendorData ? 'Update' : 'Add'} Vendor
           </Dialog.Title>
           <div className='mt-10'>
             <div className='flex flex-col my-2'>

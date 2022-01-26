@@ -1,10 +1,24 @@
 import { toast } from 'react-toastify';
-import { createCategory, getCategories } from '../api/category';
+import { createCategory, deleteCategory, getCategories, updateCategory } from '../api/category';
 import { actionTypes } from '../constants/actionTypes';
 
 const createCategoryAction = (payload) => {
   return {
     type: actionTypes.createCategory,
+    payload,
+  };
+};
+
+const updateCategoryAction = (payload) => {
+  return {
+    type: actionTypes.updateCategory,
+    payload,
+  };
+};
+
+const deleteCategoryAction = (payload) => {
+  return {
+    type: actionTypes.deleteCategory,
     payload,
   };
 };
@@ -28,5 +42,22 @@ export const GetCategories = (data) => async (dispatch) => {
   const res = await getCategories(data);
   if (res.status === 200) {
     dispatch(getCategoriesAction(res.data));
+  }
+};
+
+export const DeleteCategory = (id) => async (dispatch) => {
+  const res = await deleteCategory(id);
+  if (res.status === 204) {
+    const categories = await getCategories();
+    dispatch(deleteCategoryAction(categories.data));
+    toast.success('Category Deleted Successfully');
+  }
+};
+
+export const UpdateCategory = (id, data) => async (dispatch) => {
+  const res = await updateCategory(id, data);
+  if (res.status === 200) {
+    dispatch(updateCategoryAction(res.data));
+    toast.success('Category Updated Successfully');
   }
 };

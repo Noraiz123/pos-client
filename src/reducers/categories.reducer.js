@@ -9,6 +9,12 @@ export default (state = initialState.categories, action) => {
     case actionTypes.createCategory: {
       return (state = state.concat(action.payload));
     }
+    case actionTypes.updateCategory: {
+      return (state = state.map((e) => (e.id === action.payload.id ? action.payload : e)));
+    }
+    case actionTypes.deleteCategory: {
+      return (state = action.payload.categories);
+    }
     default:
       return state;
   }

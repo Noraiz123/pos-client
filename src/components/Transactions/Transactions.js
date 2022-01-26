@@ -151,7 +151,7 @@ const Transactions = () => {
       </div>
       <div className='my-5 grid xl:grid-cols-3 sm:grid-cols-1 gap-4'>
         <div className='border p-3'>
-          <div className='grid xl:grid-cols-3 sm:grid-cols-2 mt-3'>
+          <div className='flex justify-between mt-3'>
             <h1 className='text-2xl text-gray-600 flex items-center'>Products</h1>
             <div>
               <label className='mr-1 text-gray-500 font-bold'>Display</label>

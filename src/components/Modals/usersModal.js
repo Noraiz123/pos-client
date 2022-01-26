@@ -64,9 +64,11 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
                       <td>{e.email}</td>
                       <td>{e.role}</td>
                       <td>
-                        <button className='btn-sm-red' onClick={() => handleUserDelete(e.id)}>
-                          <TrashIcon className='h-4' />
-                        </button>
+                        {e.role !== 'admin' && (
+                          <button className='btn-sm-red' onClick={() => handleUserDelete(e.id)}>
+                            <TrashIcon className='h-4' />
+                          </button>
+                        )}
                         <button className='btn-sm-yellow ml-3' onClick={() => handleUserEdit(e)}>
                           <PencilAltIcon className='h-4' />
                         </button>

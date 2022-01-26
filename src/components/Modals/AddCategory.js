@@ -1,10 +1,10 @@
 import { Dialog } from '@headlessui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ModalTemplate from '.';
-import { CreateCategory } from '../../actions/categories.actions';
+import { CreateCategory, UpdateCategory } from '../../actions/categories.actions';
 
-const AddCategory = ({ isOpen, setIsOpen }) => {
+const AddCategory = ({ isOpen, setIsOpen, categoryData }) => {
   const initState = { name: '', description: '' };
   const [categoryDetails, setCategoryDetails] = useState(initState);
   const dispatch = useDispatch();
@@ -17,13 +17,27 @@ const AddCategory = ({ isOpen, setIsOpen }) => {
     }));
   };
 
+  useEffect(() => {
+    if (categoryData) {
+      setCategoryDetails(categoryData);
+    }
+  }, [categoryData]);
+
   const submitCategory = () => {
-    const { name } = categoryDetails;
+    const { name, description } = categoryDetails;
     if (name.length) {
-      dispatch(CreateCategory({ category: categoryDetails })).then(() => {
-        setIsOpen(false);
-        setCategoryDetails(initState);
-      });
+      if (categoryData) {
+        const { id } = categoryDetails;
+        dispatch(UpdateCategory(id, { name, description })).then(() => {
+          setIsOpen(false);
+          setCategoryDetails(initState);
+        });
+      } else {
+        dispatch(CreateCategory({ category: categoryDetails })).then(() => {
+          setIsOpen(false);
+          setCategoryDetails(initState);
+        });
+      }
     }
   };
   return (
@@ -31,7 +45,7 @@ const AddCategory = ({ isOpen, setIsOpen }) => {
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className='inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900'>
-            Add Category
+            {categoryData ? 'Update' : 'Add'} Category
           </Dialog.Title>
           <div className='mt-10'>
             <div className='flex flex-col my-2'>

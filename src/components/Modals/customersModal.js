@@ -56,8 +56,8 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
                   customers.map((e) => (
                     <tr key={e.id}>
                       <td>{e.name}</td>
-                      <td>{e.phone_no}</td>
                       <td>{e.email}</td>
+                      <td>{e.phone_no}</td>
                       <td>
                         <button className='btn-sm-red' onClick={() => handleUserDelete(e.id)}>
                           <TrashIcon className='h-4' />

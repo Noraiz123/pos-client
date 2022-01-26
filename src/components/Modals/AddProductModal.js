@@ -177,7 +177,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className='inline-block w-96 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl p-6'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
-            Add Product
+            {productData ? 'Update' : 'Add'} Product
           </Dialog.Title>
           <div className='mt-10 h-70v overflow-y-auto productsAdd'>
             <div

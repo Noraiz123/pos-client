@@ -7,3 +7,11 @@ export function createCategory(data) {
 export function getCategories() {
   return instance.get('/api/categories');
 }
+
+export function updateCategory(id, data) {
+  return instance.put(`/api/categories/${id}`, data);
+}
+
+export function deleteCategory(id) {
+  return instance.delete(`/api/categories/${id}`);
+}
