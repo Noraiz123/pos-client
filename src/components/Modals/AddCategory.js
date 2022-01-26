@@ -5,7 +5,8 @@ import ModalTemplate from '.';
 import { CreateCategory } from '../../actions/categories.actions';
 
 const AddCategory = ({ isOpen, setIsOpen }) => {
-  const [categoryDetails, setCategoryDetails] = useState({ name: '', description: '' });
+  const initState = { name: '', description: '' };
+  const [categoryDetails, setCategoryDetails] = useState(initState);
   const dispatch = useDispatch();
 
   const handleCategory = (e) => {
@@ -19,7 +20,10 @@ const AddCategory = ({ isOpen, setIsOpen }) => {
   const submitCategory = () => {
     const { name } = categoryDetails;
     if (name.length) {
-      dispatch(CreateCategory({ category: categoryDetails })).then(() => setIsOpen(false))
+      dispatch(CreateCategory({ category: categoryDetails })).then(() => {
+        setIsOpen(false);
+        setCategoryDetails(initState);
+      });
     }
   };
   return (

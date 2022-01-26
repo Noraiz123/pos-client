@@ -68,7 +68,9 @@ const InvoiceModal = ({ isOpen, setIsOpen, invoiceData }) => {
                                 <div className='text-sm text-gray-500'>{e.quantity}</div>
                               </td>
                               <td className='px-6 py-4 text-sm text-gray-500'>Rs {e.skus.price}</td>
-                              <td className='px-6 py-4'>Rs {e.skus.price * e.quantity}</td>
+                              <td className='px-6 py-4'>
+                                Rs {(e.skus.price - (e.skus.price * e.discount) / 100) * e.quantity}
+                              </td>
                             </tr>
                           ))}
                         <tr className='text-white bg-gray-800'>

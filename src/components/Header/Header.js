@@ -19,6 +19,8 @@ import AddUserModal from '../Modals/AddUser';
 import UsersModal from '../Modals/usersModal';
 import AddVendorsModal from '../Modals/AddVendorsModal';
 import VendorsModal from '../Modals/VendorsModal';
+import { LogoutRequest } from '../../actions/auth.actions';
+import { useDispatch } from 'react-redux';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,6 +32,7 @@ const Header = () => {
   const [openVendors, setOpenVendors] = useState(false);
   const [openAddVendors, setOpenAddVendors] = useState(false);
   const location = useLocation();
+  const dispatch = useDispatch();
 
   return (
     <div>
@@ -100,7 +103,7 @@ const Header = () => {
               <PlusIcon className='h-6' />
             </button>
           </div>
-          <button className='btn-sm-yellow'>
+          <button className='btn-sm-yellow' onClick={() => dispatch(LogoutRequest())} title='Logout'>
             <LogoutIcon className='h-6' />
           </button>
         </div>

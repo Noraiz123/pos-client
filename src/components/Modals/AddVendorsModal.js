@@ -29,9 +29,15 @@ const AddVendorsModal = ({ isOpen, setIsOpen, vendorData }) => {
   const handleCreateCustomer = () => {
     if (vendorData) {
       const { id, name, description } = vendorDetails;
-      dispatch(UpdateVendor(id, { name, description })).then(() => setIsOpen(false));
+      dispatch(UpdateVendor(id, { name, description })).then(() => {
+        setIsOpen(false);
+        setVendorDetails(initState);
+      });
     } else {
-      dispatch(CreateVendor({ vendor: vendorDetails })).then(() => setIsOpen(false));
+      dispatch(CreateVendor({ vendor: vendorDetails })).then(() => {
+        setIsOpen(false);
+        setVendorDetails(initState);
+      });
     }
   };
 

@@ -31,9 +31,15 @@ const AddUserModal = ({ isOpen, setIsOpen, userData }) => {
   const handleCreateUser = () => {
     if (userData) {
       const { id, name, email, role, password } = userDetails;
-      dispatch(UpdateUser(id, { name, email, password, role })).then(() => setIsOpen(false));
+      dispatch(UpdateUser(id, { name, email, password, role })).then(() => {
+        setIsOpen(false);
+        setUserDetails(initState);
+      });
     } else {
-      dispatch(CreateUser({ user: userDetails })).then(() => setIsOpen(false));
+      dispatch(CreateUser({ user: userDetails })).then(() => {
+        setIsOpen(false);
+        setUserDetails(initState);
+      });
     }
   };
 

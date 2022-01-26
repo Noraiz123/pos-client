@@ -30,11 +30,16 @@ const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
   const handleCreateCustomer = () => {
     if (customerData) {
       const { id, name, email, phone_no } = customerDetails;
-      dispatch(UpdateCustomer(id, { name, email, phone_no }));
+      dispatch(UpdateCustomer(id, { name, email, phone_no })).then(() => {
+        setIsOpen(false);
+        setCustomerDetails(initState);
+      });
     } else {
-      dispatch(CreateCustomer(customerDetails));
+      dispatch(CreateCustomer(customerDetails)).then(() => {
+        setIsOpen(false);
+        setCustomerDetails(initState);
+      });
     }
-    setIsOpen(false);
   };
 
   return (

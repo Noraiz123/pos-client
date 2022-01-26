@@ -122,7 +122,9 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     ).then((res) => {
       setProductDetails((preState) => ({
         ...preState,
-        product_tags_attributes: preState.product_tags_attributes.concat({ tag_id: res.data.id }),
+        product_tags_attributes: preState.product_tags_attributes
+          .concat({ tag_id: res.data.id })
+          .filter((e) => e.tag_id),
       }));
       setProductSku((pre) => ({ ...pre, addTags: false }));
     });
@@ -144,10 +146,12 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     if (productData?.id) {
       dispatch(EditProduct(productData.id, { product: productDetails })).then(() => {
         setIsOpen(false);
+        setProductDetails(initState);
       });
     } else {
       dispatch(CreateProduct(productDetails)).then(() => {
         setIsOpen(false);
+        setProductDetails(initState);
       });
     }
   };
@@ -162,7 +166,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
           ? preState.product_tags_attributes.concat(
               e
                 .map((t) => !productData.product_tags.map((p) => p.tag_id).includes(t.value) && { tag_id: t.value })
-                .filter(Boolean)
+                .filter((e) => e.tag_id)
             )
           : e.map((t) => ({ tag_id: t.value })),
     }));
