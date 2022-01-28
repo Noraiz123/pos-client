@@ -18,6 +18,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
   }));
 
   const [openAddProduct, setOpenAddProduct] = useState(false);
+  const [currentProduct, setCurrentProduct] = useState({});
   const { products } = useSelector((state) => ({
     products: state.products.products,
   }));
@@ -32,12 +33,11 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
   };
 
   const productUpdateHandler = (data) => {
-    dispatch(GetProduct(data.id)).then(() => {
-      setIsOpen(false);
-      setTimeout(() => {
-        setOpenAddProduct(true);
-      }, appConstants.TIME_OUT);
-    });
+    setCurrentProduct(data);
+    setIsOpen(false);
+    setTimeout(() => {
+      setOpenAddProduct(true);
+    }, appConstants.TIME_OUT);
   };
 
   const getCategory = (id) => {
@@ -66,8 +66,6 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
                   <th>Barcode</th>
                   <th>Item</th>
                   <th>Name</th>
-                  <th>Price</th>
-                  <th>Stock</th>
                   <th>Category</th>
                   <th>Vendor</th>
                   <th>Action</th>
@@ -76,12 +74,10 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
               <tbody>
                 {products &&
                   products.map((e, index) => (
-                    <tr key={e.skus.id}>
+                    <tr key={e.id}>
                       <td></td>
                       <td>{index + 1}</td>
                       <td>{e.name}</td>
-                      <td>{e.skus?.price}</td>
-                      <td>{e.skus?.quantity}</td>
                       <td>{getCategory(e.category_id)}</td>
                       <td>{getVendor(e.vendor_id)}</td>
                       <td className='flex justify-center items-center'>
@@ -109,7 +105,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
           </div>
         </div>
       </ModalTemplate>
-      <AddProducts isOpen={openAddProduct} setIsOpen={setOpenAddProduct} productData={product} />
+      <AddProducts isOpen={openAddProduct} setIsOpen={setOpenAddProduct} productData={currentProduct} />
     </div>
   );
 };

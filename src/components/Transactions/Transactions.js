@@ -77,7 +77,7 @@ const Transactions = () => {
   const manipulateProducts = (orderItems) => {
     let productsData = [];
     for (let values of products) {
-      const order = orderItems.find((o) => o.product_sku_id === values.skus.id);
+      const order = orderItems.find((o) => values.skus.some((e) => e.id === o.product_sku_id));
       if (order?.id) {
         productsData.push({
           ...values,

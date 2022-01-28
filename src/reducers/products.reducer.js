@@ -31,7 +31,7 @@ export default (state = initialState.products, action) => {
   switch (action.type) {
     case actionTypes.getProducts: {
       const { page, products, total_pages } = action.payload;
-      return { ...state, products: modifyProducts(products), currentPage: page, totalPages: total_pages };
+      return { ...state, products: products, currentPage: page, totalPages: total_pages };
     }
     case actionTypes.getProduct: {
       return { ...state, product: action.payload };
@@ -55,12 +55,12 @@ export default (state = initialState.products, action) => {
       return { ...state, productsStats: { ...state.productsStats, statsFilter: action.payload } };
     }
     case actionTypes.createProduct: {
-      return { ...state, products: state.products.concat(modifyProducts([action.payload])[0]) };
+      return { ...state, products: state.products.concat(action.payload) };
     }
     case actionTypes.editProduct: {
       return {
         ...state,
-        products: handleProductUpdate(state, action),
+        products: state.products.map((e) => (e.id === action.payload.id ? action.payload : e)),
       };
     }
     case actionTypes.createSize: {

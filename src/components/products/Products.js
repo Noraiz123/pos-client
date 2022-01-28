@@ -1,35 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createOrderAction } from '../../actions/order.actions';
 import { filterProductsAction } from '../../actions/products.actions';
+import ViewSkuModal from '../Modals/ViewSkuModal';
 
 const Products = () => {
   const dispatch = useDispatch();
-  const { products, productsFilter, currentOrder, categories, currentPage, totalPages } = useSelector((state) => ({
+  const { products, productsFilter, categories, currentPage, totalPages } = useSelector((state) => ({
     products: state.products.products,
     productsFilter: state.products.productsFilter,
-    currentOrder: state.orders.currentOrder,
     categories: state.categories,
     currentPage: state.products.currentPage,
     totalPages: state.products.totalPages,
   }));
+  const [openSku, setOpenSku] = useState(false);
+  const [skuData, setSkuData] = useState({});
 
-  const createOrder = (item) => {
-    const alreadyExists = currentOrder.find((e) => e.skus.id === item.skus.id);
-    if (alreadyExists && alreadyExists.id) {
-      dispatch(
-        createOrderAction({
-          ...item,
-          quantity:
-            Number(alreadyExists.quantity) < Number(item.skus.quantity)
-              ? alreadyExists.quantity + 1
-              : alreadyExists.quantity,
-        })
-      );
-    } else {
-      dispatch(createOrderAction({ ...item, quantity: 1 }));
-    }
-  };
 
   const handleCategoryChange = (e) => {
     const { value } = e.target;
@@ -48,6 +33,11 @@ const Products = () => {
   const handlePerPageChange = (e) => {
     const { value } = e.target;
     dispatch(filterProductsAction({ ...productsFilter, per_page: value }));
+  };
+
+  const handleSkus = (data) => {
+    setSkuData(data);
+    setOpenSku(true);
   };
 
   return (
@@ -104,7 +94,6 @@ const Products = () => {
             <div
               key={e.skus.id}
               className='flex flex-col justify-center border mt-6 p-4 w-full cursor-pointer'
-              onClick={() => createOrder(e)}
             >
               <div className='space-y-2 border-b p-2'>
                 <img
@@ -114,9 +103,10 @@ const Products = () => {
                 />
                 <p className='text-center text-gray-400 font-bold'>{e.name}</p>
               </div>
-              <div className='text-center mt-3'>
-                <p className='text-gray-400'>STOCK {e.skus?.quantity}</p>
-                <p className='text-green-500 font-extrabold'>Rs {e.skus?.price}</p>
+              <div className='mt-3 mx-auto'>
+                <button className='btn-red' onClick={() => handleSkus(e)}>
+                  Select Sku
+                </button>
               </div>
             </div>
           ))}
@@ -152,6 +142,7 @@ const Products = () => {
           </nav>
         </div>
       )}
+      <ViewSkuModal isOpen={openSku} setIsOpen={setOpenSku} skuData={skuData} />
     </div>
   );
 };
