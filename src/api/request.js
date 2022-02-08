@@ -10,13 +10,9 @@ const instance = axios.create({
 
 instance.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');
-  const client = localStorage.getItem('client');
-  const uuid = localStorage.getItem('uid');
   req.headers.Accept = 'application/json';
   req.headers['api-version'] = 1;
-  req.headers['access-token'] = token;
-  req.headers.client = client;
-  req.headers.uid = uuid;
+  req.headers['authorization'] = token;
   req.headers['Content-Type'] = 'application/json';
 
   return req;
@@ -32,7 +28,7 @@ instance.interceptors.response.use(
       !error.request?.responseURL?.includes('sign_in') &&
       (error.toString().includes(401) || error.toString().includes(404))
     ) {
-      store.dispatch(LogoutRequest());
+      // store.dispatch(LogoutRequest());
     }
     toast.error(error.response.data.message);
     return Promise.reject(error.response.data);

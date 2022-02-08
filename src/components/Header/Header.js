@@ -112,13 +112,13 @@ const Header = () => {
       </div>
       <ProductsModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <AddProducts isOpen={openAddProduct} setIsOpen={setOpenAddProduct} />
-      <AddCategory isOpen={openAddCategory} setIsOpen={setOpenAddCategory} />
-      <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} />
-      <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} />
-      <CustomersModal isOpen={openCustomers} setIsOpen={setOpenCustomers} />
-      <AddVendorsModal isOpen={openAddVendors} setIsOpen={setOpenAddVendors} />
-      <VendorsModal isOpen={openVendors} setIsOpen={setOpenVendors} />
-      <CategoriesModal isOpen={openCategories} setIsOpen={setOpenCategories} />
+      {/* <AddCategory isOpen={openAddCategory} setIsOpen={setOpenAddCategory} /> */}
+      {/* <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} /> */}
+      {/* <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} /> */}
+      {/* <CustomersModal isOpen={openCustomers} setIsOpen={setOpenCustomers} /> */}
+      {/* <AddVendorsModal isOpen={openAddVendors} setIsOpen={setOpenAddVendors} /> */}
+      {/* <VendorsModal isOpen={openVendors} setIsOpen={setOpenVendors} /> */}
+      {/* <CategoriesModal isOpen={openCategories} setIsOpen={setOpenCategories} /> */}
     </div>
   );
 };

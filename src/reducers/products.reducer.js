@@ -30,8 +30,8 @@ const handleProductUpdate = (state, action) => {
 export default (state = initialState.products, action) => {
   switch (action.type) {
     case actionTypes.getProducts: {
-      const { page, products, total_pages } = action.payload;
-      return { ...state, products: products, currentPage: page, totalPages: total_pages };
+      // const { page, products, total_pages } = action.payload;
+      return { ...state, products: action.payload };
     }
     case actionTypes.getProduct: {
       return { ...state, product: action.payload };

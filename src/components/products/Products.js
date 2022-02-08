@@ -15,7 +15,6 @@ const Products = () => {
   const [openSku, setOpenSku] = useState(false);
   const [skuData, setSkuData] = useState({});
 
-
   const handleCategoryChange = (e) => {
     const { value } = e.target;
     dispatch(filterProductsAction({ ...productsFilter, category_id: value }));
@@ -91,22 +90,18 @@ const Products = () => {
       <div className='grid xl:grid-cols-5 sm:grid-cols-1'>
         {products &&
           products.map((e) => (
-            <div
-              key={e.skus.id}
-              className='flex flex-col justify-center border mt-6 p-4 w-full cursor-pointer'
-            >
+            <div key={e._id} className='flex flex-col justify-center border mt-6 p-4 w-full cursor-pointer'>
               <div className='space-y-2 border-b p-2'>
                 <img
-                  src='https://thumbs.dreamstime.com/b/bottle-water-12522351.jpg'
+                  src={e.imgUrl || 'https://mrcodpakistan.com/wp-content/uploads/2018/09/noImg_2.jpg'}
                   alt='product'
-                  className='h-56 mx-auto'
+                  className='h-56 mx-auto object-contain'
                 />
                 <p className='text-center text-gray-400 font-bold'>{e.name}</p>
               </div>
               <div className='mt-3 mx-auto'>
-                <button className='btn-red' onClick={() => handleSkus(e)}>
-                  Select Sku
-                </button>
+                <p className='text-center text-red-400 font-extrabold'>Available: {e.quantity}</p>
+                <p className='text-center text-green-400 font-mono font-extrabold'>Rs {e.price}</p>
               </div>
             </div>
           ))}

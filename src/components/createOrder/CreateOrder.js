@@ -38,9 +38,9 @@ const CreateOrder = () => {
   const [currentSalesman, setCurrentSalesman] = useState('');
   const { state } = useLocation();
 
-  useEffect(() => {
-    dispatch(GetCustomers());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(GetCustomers());
+  // }, [dispatch]);
 
   useEffect(() => {
     if (state?.salesman) {

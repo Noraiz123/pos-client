@@ -2,7 +2,7 @@ import instance from './request';
 
 export function getProducts(data) {
   return instance.get(
-    `/api/products?page=${data.page}&&category_id=${data.category_id}&&search_keyword=${data.keyword}&&per_page=${data.per_page}`
+    `/products?page=${data.page}&&category_id=${data.category_id}&&search_keyword=${data.keyword}&&per_page=${data.per_page}`
   );
 }
 
@@ -25,7 +25,7 @@ export function getSizes() {
 }
 
 export function createProduct(data) {
-  return instance.post('/api/products', data);
+  return instance.post('/products', data);
 }
 
 export function createSize(size) {
