@@ -39,7 +39,7 @@ export const currentCustomerAction = (payload) => {
 
 export const CreateCustomer = (data) => async (dispatch) => {
   const res = await createCustomer(data);
-  if (res.status === 200) {
+  if (res.status === 201) {
     dispatch(createCustomerAction(res.data));
     toast.success('Customer Created Successfully');
   }
@@ -56,7 +56,7 @@ export const GetCustomers = () => async (dispatch) => {
 
 export const DeleteCustomer = (id) => async (dispatch) => {
   const res = await deleteCustomer(id);
-  if (res.status === 204) {
+  if (res.status === 200) {
     const customers = await getCustomers();
     dispatch(deleteCustomerAction(customers.data));
     toast.success('Customer Deleted Successfully');

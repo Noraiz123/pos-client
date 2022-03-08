@@ -1,17 +1,17 @@
 import instance from './request';
 
 export function createCategory(data) {
-  return instance.post('/api/categories', data);
+  return instance.post('/categories', data);
 }
 
 export function getCategories() {
-  return instance.get('/api/categories');
+  return instance.get('/categories');
 }
 
 export function updateCategory(id, data) {
-  return instance.put(`/api/categories/${id}`, data);
+  return instance.patch(`/categories/${id}`, data);
 }
 
 export function deleteCategory(id) {
-  return instance.delete(`/api/categories/${id}`);
+  return instance.delete(`/categories/${id}`);
 }

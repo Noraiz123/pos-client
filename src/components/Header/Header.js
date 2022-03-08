@@ -7,6 +7,7 @@ import {
   CreditCardIcon,
   PlusIcon,
   CogIcon,
+  ShoppingBagIcon,
 } from '@heroicons/react/solid';
 
 import { LogoutIcon } from '@heroicons/react/outline';
@@ -22,6 +23,8 @@ import VendorsModal from '../Modals/VendorsModal';
 import { LogoutRequest } from '../../actions/auth.actions';
 import { useDispatch } from 'react-redux';
 import CategoriesModal from '../Modals/CategoriesModal';
+import StoresModal from '../Modals/StoresModal';
+import AddStore from '../Modals/AddStore';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +35,9 @@ const Header = () => {
   const [openUsers, setOpenUsers] = useState(false);
   const [openVendors, setOpenVendors] = useState(false);
   const [openCategories, setOpenCategories] = useState(false);
+  const [openStores, setOpenStores] = useState(false);
   const [openAddVendors, setOpenAddVendors] = useState(false);
+  const [openAddStores, setOpenAddStores] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
 
@@ -55,6 +60,15 @@ const Header = () => {
               Categories
             </button>
             <button className='btn-sm-yellow' onClick={() => setOpenAddCategory(true)}>
+              <PlusIcon className='h-6' />
+            </button>
+          </div>
+          <div className='flex'>
+            <button className='flex align-middle btn-green' onClick={() => setOpenStores(true)}>
+              <ShoppingBagIcon className='mr-2 h-6' />
+              Store
+            </button>
+            <button className='btn-sm-yellow' onClick={() => setOpenAddStores(true)}>
               <PlusIcon className='h-6' />
             </button>
           </div>
@@ -112,13 +126,15 @@ const Header = () => {
       </div>
       <ProductsModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <AddProducts isOpen={openAddProduct} setIsOpen={setOpenAddProduct} />
-      {/* <AddCategory isOpen={openAddCategory} setIsOpen={setOpenAddCategory} /> */}
-      {/* <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} /> */}
-      {/* <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} /> */}
-      {/* <CustomersModal isOpen={openCustomers} setIsOpen={setOpenCustomers} /> */}
+      <AddCategory isOpen={openAddCategory} setIsOpen={setOpenAddCategory} />
+      <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} />
+      <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} />
+      <CustomersModal isOpen={openCustomers} setIsOpen={setOpenCustomers} />
       {/* <AddVendorsModal isOpen={openAddVendors} setIsOpen={setOpenAddVendors} /> */}
       {/* <VendorsModal isOpen={openVendors} setIsOpen={setOpenVendors} /> */}
-      {/* <CategoriesModal isOpen={openCategories} setIsOpen={setOpenCategories} /> */}
+      <CategoriesModal isOpen={openCategories} setIsOpen={setOpenCategories} />
+      <StoresModal isOpen={openStores} setIsOpen={setOpenStores} />
+      <AddStore isOpen={openAddStores} setIsOpen={setOpenAddStores} />
     </div>
   );
 };

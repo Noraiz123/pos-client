@@ -31,8 +31,8 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleUserEdit = (data) => {
-    const { id, name, role, email } = data;
-    setUserData({ id, name, role, email });
+    const { _id, name, role, email } = data;
+    setUserData({ id: _id, name, role, email });
     setIsOpen(false);
     setTimeout(() => {
       setOpenAddUser(true);
@@ -65,7 +65,7 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
                       <td>{e.role}</td>
                       <td>
                         {e.role !== 'admin' && (
-                          <button className='btn-sm-red' onClick={() => handleUserDelete(e.id)}>
+                          <button className='btn-sm-red' onClick={() => handleUserDelete(e._id)}>
                             <TrashIcon className='h-4' />
                           </button>
                         )}

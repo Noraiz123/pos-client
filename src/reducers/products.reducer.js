@@ -15,23 +15,11 @@ const modifyProducts = (items) => {
   return skusArray;
 };
 
-const handleProductUpdate = (state, action) => {
-  const { products } = state;
-  const updatedProducts = modifyProducts([action.payload]);
-  for (let i = 0; i <= products.length; i++) {
-    const data = updatedProducts.find((e) => e.skus?.id === products[i]?.skus.id);
-    if (data?.id) {
-      products[i] = data;
-    }
-  }
-  return products;
-};
-
 export default (state = initialState.products, action) => {
   switch (action.type) {
     case actionTypes.getProducts: {
-      // const { page, products, total_pages } = action.payload;
-      return { ...state, products: action.payload };
+      const { currentPage, products, totalPages } = action.payload;
+      return { ...state, products: products, currentPage, totalPages };
     }
     case actionTypes.getProduct: {
       return { ...state, product: action.payload };
@@ -60,7 +48,7 @@ export default (state = initialState.products, action) => {
     case actionTypes.editProduct: {
       return {
         ...state,
-        products: state.products.map((e) => (e.id === action.payload.id ? action.payload : e)),
+        products: state.products.map((e) => (e._id === action.payload._id ? action.payload : e)),
       };
     }
     case actionTypes.createSize: {

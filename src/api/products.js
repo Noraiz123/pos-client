@@ -37,9 +37,9 @@ export function createColor(color) {
 }
 
 export function deleteProduct(id) {
-  return instance.delete(`/api/products/${id}`);
+  return instance.delete(`/products/${id}`);
 }
 
 export function updateProduct(id, body) {
-  return instance.put(`/api/products/${id}`, body);
+  return instance.patch(`/products/${id}`, body);
 }

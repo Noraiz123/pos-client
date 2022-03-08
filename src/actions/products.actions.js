@@ -127,7 +127,7 @@ export const GetSizes = () => async (dispatch) => {
 
 export const CreateProduct = (data) => async (dispatch) => {
   const res = await createProduct(data);
-  if (res.status === 200) {
+  if (res.status === 201) {
     dispatch(createProductAction(res.data));
     toast.success('Product Created Successfully');
   }

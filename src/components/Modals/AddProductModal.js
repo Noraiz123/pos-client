@@ -11,6 +11,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
     imgUrl: null,
     category_id: null,
+    store: '',
     vendor_id: null,
     discount: null,
     name: '',
@@ -19,36 +20,32 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     price: '',
   };
   const [productDetails, setProductDetails] = useState(initState);
-  const [skusDetails, setSkusDetails] = useState([]);
 
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
-  const { categories, vendors } = useSelector((state) => ({
+  const { categories, vendors, stores } = useSelector((state) => ({
     categories: state.categories,
     vendors: state.vendors,
+    stores: state.stores,
   }));
 
   useEffect(() => {
-    if (productData && productData.id) {
-      const { name, skus, category_id, vendor_id, product_tags, discount } = productData;
+    if (productData && productData._id) {
+      const { imgUrl, name, category_id, vendor_id, discount, store, size, color, price, quantity } = productData;
 
       setProductDetails({
         ...initState,
+        imgUrl,
         name,
         category_id,
         vendor_id,
+        store: store?._id ? store._id : '',
         discount,
-        product_tags_attributes: product_tags
-          ? product_tags.map((e) => ({ tag_id: e.tag_id, id: e.id }))
-          : [
-              {
-                tag_id: null,
-              },
-            ],
+        size,
+        color,
+        quantity,
+        price,
       });
-      setSkusDetails(
-        skus.map((e) => ({ ...e, product_color_id: e.product_color.id, product_size_id: e.product_size.id }))
-      );
     }
   }, [productData]);
 
@@ -80,27 +77,15 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   }, [dispatch]);
 
   const createProductHandler = () => {
-    Object.keys(productDetails).forEach((k) => productDetails[k] == null && delete productDetails[k]);
-    skusDetails.map((e) => {
-      delete e.sku_id;
-      delete e.product_color;
-      delete e.product_size;
-    });
-    if (productData?.id) {
-      dispatch(
-        EditProduct(productData.id, {
-          product: { ...productDetails, skus_attributes: skusDetails },
-        })
-      ).then(() => {
+    if (productData?._id) {
+      dispatch(EditProduct(productData._id, productDetails)).then(() => {
         setIsOpen(false);
         setProductDetails(initState);
-        setSkusDetails([]);
       });
     } else {
-      dispatch(CreateProduct(productDetails)).then(() => {
+      dispatch(CreateProduct(productDetails)).then((res) => {
         setIsOpen(false);
         setProductDetails(initState);
-        setSkusDetails([]);
       });
     }
   };
@@ -117,6 +102,20 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
             {productData ? 'Update' : 'Add'} Product
           </Dialog.Title>
           <div className='mt-10 h-70v overflow-y-auto productsAdd'>
+            <div className='flex flex-col my-2'>
+              <label className='mb-1 text-gray-500 font-bold'>Stores</label>
+              <select className='input-select' name='store' onChange={handleAddProduct} value={productDetails.store}>
+                <option value='' selected disabled>
+                  Select user store
+                </option>
+                {stores &&
+                  stores.map((e) => (
+                    <option key={e._id} value={e._id}>
+                      {e.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
             <div
               className='w-32 h-32 border-2 rounded-full flex text-center items-center mx-auto cursor-pointer'
               onClick={() => fileInputRef.current.click()}

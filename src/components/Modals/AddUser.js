@@ -1,6 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ModalTemplate from '.';
 import { CreateUser, UpdateUser } from '../../actions/users.actions';
 
@@ -8,11 +8,13 @@ const AddUserModal = ({ isOpen, setIsOpen, userData }) => {
   const initState = {
     name: '',
     email: '',
+    store: null,
     role: '',
     phone_no: '',
   };
   const dispatch = useDispatch();
   const [userDetails, setUserDetails] = useState(initState);
+  const stores = useSelector((state) => state.stores);
 
   const handleUserFields = (e) => {
     const { name, value } = e.target;
@@ -30,13 +32,13 @@ const AddUserModal = ({ isOpen, setIsOpen, userData }) => {
 
   const handleCreateUser = () => {
     if (userData) {
-      const { id, name, email, role, password } = userDetails;
-      dispatch(UpdateUser(id, { name, email, password, role })).then(() => {
+      const { id, name, email, role, password, store } = userDetails;
+      dispatch(UpdateUser(id, { name, email, password, role, store })).then(() => {
         setIsOpen(false);
         setUserDetails(initState);
       });
     } else {
-      dispatch(CreateUser({ user: userDetails })).then(() => {
+      dispatch(CreateUser(userDetails)).then(() => {
         setIsOpen(false);
         setUserDetails(initState);
       });
@@ -51,6 +53,20 @@ const AddUserModal = ({ isOpen, setIsOpen, userData }) => {
             {userData ? 'Update' : 'Add'} User
           </Dialog.Title>
           <div className='mt-10'>
+            <div className='flex flex-col my-2'>
+              <label className='mb-1 text-gray-500 font-bold'>Stores</label>
+              <select className='input-select' name='store' onChange={handleUserFields} value={userDetails.store}>
+                <option value='' selected disabled>
+                  Select user store
+                </option>
+                {stores &&
+                  stores.map((e) => (
+                    <option key={e._id} value={e._id}>
+                      {e.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Name</label>
               <input

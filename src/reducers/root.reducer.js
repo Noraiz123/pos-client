@@ -7,12 +7,16 @@ import customersReducer from './customers.reducer';
 import usersReducer from './users.reducer';
 import vendorsReducer from './vendors.reducer';
 import tagsReducer from './tags.reducer';
+import storeReducer from './storeReducer';
+import loaderReducer from './loader.reducer';
 
 export default combineReducers({
+  isLoading: loaderReducer,
   auth: AuthReducer,
   products: ProductsReducer,
   orders: OrdersReducer,
   categories: categoriesReducer,
+  stores: storeReducer,
   customers: customersReducer,
   users: usersReducer,
   vendors: vendorsReducer,

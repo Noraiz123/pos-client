@@ -16,7 +16,7 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
     id: null,
     name: '',
     email: '',
-    phone_no: '',
+    phoneNo: '',
   };
   const [openAddCustomer, setOpenAddCustomer] = useState(false);
   const [customerData, setCustomerData] = useState(initState);
@@ -26,8 +26,8 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleCustomerEdit = (data) => {
-    const { id, name, email, phone_no } = data;
-    setCustomerData({ id, name, email, phone_no });
+    const { _id, name, email, phoneNo } = data;
+    setCustomerData({ _id, name, email, phoneNo });
     setIsOpen(false);
     setTimeout(() => {
       setOpenAddCustomer(true);
@@ -57,9 +57,9 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
                     <tr key={e.id}>
                       <td>{e.name}</td>
                       <td>{e.email}</td>
-                      <td>{e.phone_no}</td>
+                      <td>{e.phoneNo}</td>
                       <td>
-                        <button className='btn-sm-red' onClick={() => handleUserDelete(e.id)}>
+                        <button className='btn-sm-red' onClick={() => handleUserDelete(e._id)}>
                           <TrashIcon className='h-4' />
                         </button>
                         <button className='btn-sm-yellow ml-3' onClick={() => handleCustomerEdit(e)}>

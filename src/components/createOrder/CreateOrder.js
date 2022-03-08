@@ -38,9 +38,9 @@ const CreateOrder = () => {
   const [currentSalesman, setCurrentSalesman] = useState('');
   const { state } = useLocation();
 
-  // useEffect(() => {
-  //   dispatch(GetCustomers());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(GetCustomers());
+  }, [dispatch]);
 
   useEffect(() => {
     if (state?.salesman) {
@@ -48,23 +48,31 @@ const CreateOrder = () => {
     }
   }, [state]);
 
+  const totalPrice =
+    currentOrder &&
+    currentOrder.reduce(
+      (pre, next) =>
+        pre + (Number(next.price) - (Number(next.price) * Number(next.discount)) / 100) * Number(next.orderQuantity),
+      0
+    );
+
   const handleOrderConfirmation = () => {
     if (orderStatus === 'UPDATE_ORDER') {
       dispatch(
         UpdateOrder(
           {
-            order: {
-              status: 'paid',
-              customer_id: currentCustomer.id ? currentCustomer.id.toString() : undefined,
-              salesman_id: currentSalesman ? currentSalesman : undefined,
-              order_line_items_attributes: currentOrder.map((e) => ({
-                id: e?.orderItemId ? e.orderItemId : undefined,
-                product_sku_id: e?.skus.id ? e.skus.id : undefined,
-                quantity: e.quantity,
-              })),
-            },
+            status: 'paid',
+            salesman: currentSalesman ? currentSalesman : undefined,
+            orderItems: currentOrder.map((e) => ({
+              id: e?.orderItemId ? e.orderItemId : undefined,
+              product: e._id,
+              quantity: e.orderQuantity,
+              paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.quantity),
+              currentPrice: e.price,
+            })),
+            total: totalPrice,
           },
-          order.id
+          order._id
         )
       ).then((res) => {
         if (res.status === 200) {
@@ -77,15 +85,16 @@ const CreateOrder = () => {
     } else {
       dispatch(
         ConfirmOrder({
-          order: {
-            status: 'paid',
-            customer_id: currentCustomer.id ? currentCustomer.id.toString() : undefined,
-            salesman_id: currentSalesman ? currentSalesman : undefined,
-            order_line_items_attributes: currentOrder.map((e) => ({
-              product_sku_id: e.skus.id,
-              quantity: e.quantity,
-            })),
-          },
+          status: 'paid',
+          salesman: currentSalesman ? currentSalesman : undefined,
+          orderItems: currentOrder.map((e) => ({
+            id: e?.orderItemId ? e.orderItemId : undefined,
+            product: e._id,
+            quantity: e.orderQuantity,
+            paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
+            currentPrice: e.price,
+          })),
+          total: totalPrice,
         })
       ).then((res) => {
         if (res.status === 200) {
@@ -102,7 +111,8 @@ const CreateOrder = () => {
 
   const handleQuantityChange = (item, e) => {
     const { value } = e.target;
-    dispatch(createOrderAction({ ...item, quantity: Number(value) }));
+    console.log(value);
+    dispatch(createOrderAction({ ...item, orderQuantity: Number(value) }));
   };
 
   const handleCustomerChange = (e) => {
@@ -111,22 +121,13 @@ const CreateOrder = () => {
     dispatch(currentCustomerAction(customer));
   };
 
-  const totalPrice =
-    currentOrder &&
-    currentOrder.reduce(
-      (pre, next) =>
-        pre +
-        (Number(next.skus.price) - (Number(next.skus.price) * Number(next.discount)) / 100) * Number(next.quantity),
-      0
-    );
-
   return (
     <div className='bg-white rounded-sm mt-6'>
       <div className='p-10 flex flex-col'>
         <div className='flex mb-2'>
           <select
             className='input-select w-9/12'
-            value={currentCustomer.id ? currentCustomer.id : ''}
+            value={currentCustomer?._id ? currentCustomer._id : ''}
             onChange={handleCustomerChange}
           >
             <option value='' selected disabled>
@@ -134,7 +135,7 @@ const CreateOrder = () => {
             </option>
             {customers &&
               customers.map((e) => (
-                <option key={e.id} value={e.id}>
+                <option key={e._id} value={e._id}>
                   {e.name}
                 </option>
               ))}
@@ -154,7 +155,7 @@ const CreateOrder = () => {
             </option>
             {users &&
               users.map((e) => (
-                <option key={e.id} value={e.id}>
+                <option key={e._id} value={e._id}>
                   {e.name}
                 </option>
               ))}
@@ -200,12 +201,12 @@ const CreateOrder = () => {
                           type='number'
                           className='input-field w-20'
                           min='1'
-                          max={e.skus.quantity}
-                          value={e.quantity}
+                          max={e.quantity}
+                          value={e.orderQuantity}
                           onChange={(value) => handleQuantityChange(e, value)}
                         />
                       </td>
-                      <td className=''>{e.skus.price}</td>
+                      <td className=''>{e.price}</td>
                       <td className=''>
                         <button className='btn-sm-red' onClick={() => dispatch(deleteOrderItemAction(e))}>
                           <TrashIcon className='h-4' />
@@ -218,12 +219,16 @@ const CreateOrder = () => {
           </div>
         </div>
 
-        <div className='text-gray-500'>
+        <div className='w-full bg-green-100 p-3 text-center rounded-sm'>
+          <h1 className='text-green-900 font-extrabold'>Grand Total : Rs {Math.round(totalPrice)}</h1>
+        </div>
+
+        {/* <div className='text-gray-500'>
           <div className='grid grid-cols-5 space-x-4'>
             <div>Total Discounts</div>
             <div className='col-span-2'>: 0</div>
             <div>Price</div>
-            <div>RS {totalPrice}</div>
+            <div>RS {Math.round(totalPrice)}</div>
           </div>
           <div className='grid grid-cols-5 space-x-4'>
             <div>Discount</div>
@@ -233,7 +238,7 @@ const CreateOrder = () => {
             <div>Gross Price(inc 15% Tax)</div>
             <div className='text-xl font-bold'>R0:00</div>
           </div>
-        </div>
+        </div> */}
         <div className='flex justify-between my-4'>
           <button className='btn-blue' onClick={() => setOpenInvoiceModal(true)} disabled={currentOrder.length === 0}>
             <PrinterIcon className='h-6' />

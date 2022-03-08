@@ -19,16 +19,17 @@ export const LoginRequest = (data, navigate) => async (dispatch) => {
   if (res.status === 200) {
     navigate('/');
     const token = res.data['token'];
+    const user = res.data['result'];
     toast.success('LoggedIn Successfully');
     dispatch(loginAction());
     localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
   }
 };
 
 export const LogoutRequest = () => async (dispatch) => {
   window.location.href = '/login';
   dispatch(logoutAction());
-  localStorage.removeItem('uid');
-  localStorage.removeItem('client');
   localStorage.removeItem('token');
+  localStorage.removeItem('user');
 };

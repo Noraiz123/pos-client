@@ -1,17 +1,17 @@
 import instance from './request';
 
 export function createUser(data) {
-  return instance.post('/api/users', data);
+  return instance.post('/user/add', data);
 }
 
 export function getUsers() {
-  return instance.get('/api/users');
+  return instance.get('/user');
 }
 
 export function deleteUser(id) {
-  return instance.delete(`/api/users/${id}`);
+  return instance.delete(`/user/delete/${id}`);
 }
 
 export function updateUser(id, data) {
-  return instance.put(`/api/users/${id}`, data);
+  return instance.put(`/user/update/${id}`, data);
 }

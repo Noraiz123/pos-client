@@ -35,6 +35,8 @@ const ViewOrdersModal = ({ isOpen, setIsOpen, orderDetails }) => {
     return vendor ? vendor.name : 'N/A';
   };
 
+  console.log(orderDetails)
+
   return (
     <div>
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -60,15 +62,17 @@ const ViewOrdersModal = ({ isOpen, setIsOpen, orderDetails }) => {
               <tbody>
                 {orderDetails &&
                   orderDetails.map((e, index) => (
-                    <tr key={e.skus.id}>
+                    <tr key={e._id}>
                       <td></td>
                       <td>{index + 1}</td>
-                      <td>{e.name}</td>
-                      <td>{e.price}</td>
+                      <td>{e.product.name}</td>
+                      <td>{e.currentPrice}</td>
                       <td>{e.quantity}</td>
-                      <td>{getCategory(e.category_id)}</td>
-                      <td>{getVendor(e.vendor_id)}</td>
-                      <td>{e.sub_total}</td>
+                      {/* <td>{getCategory(e.category_id)}</td> */}
+                      {/* <td>{getVendor(e.vendor_id)}</td> */}
+                      <td></td>
+                      <td></td>
+                      <td>{e.paidPrice}</td>
                       <td>
                         <button className='btn-sm-yellow ml-3' onClick={() => OrderUpdateHandler(e)}>
                           <PencilAltIcon className='h-4' />

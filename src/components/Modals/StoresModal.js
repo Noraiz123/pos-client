@@ -3,32 +3,32 @@ import { PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ModalTemplate from '.';
-import { DeleteCategory, GetCategories } from '../../actions/categories.actions';
+import { DeleteStore, GetStores } from '../../actions/stores.actions';
 import { appConstants } from '../../constants/appConstants';
-import AddCategory from './AddCategory';
+import AddStore from './AddStore';
 
-const CategoriesModal = ({ isOpen, setIsOpen }) => {
+const StoresModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const { categories } = useSelector((state) => ({
-    categories: state.categories,
+  const { stores } = useSelector((state) => ({
+    stores: state.stores,
   }));
-  const [categoryData, setCategoryData] = useState({ id: null, name: '', description: '' });
-  const [openAddCategory, setOpenAddCategory] = useState(false);
+  const [storeData, setStoreData] = useState({ id: null, name: '', address: '' });
+  const [openAddStore, setOpenAddStore] = useState(false);
 
   useEffect(() => {
-    dispatch(GetCategories());
+    dispatch(GetStores());
   }, [dispatch]);
 
-  const handleVenderDelete = (id) => {
-    dispatch(DeleteCategory(id));
+  const handleStoreDelete = (id) => {
+    dispatch(DeleteStore(id));
   };
 
-  const handleVendorEdit = (data) => {
-const { _id, name, description } = data;
-    setCategoryData({ _id, name, description });
+  const handleStoreEdit = (data) => {
+    const { _id, name, address } = data;
+    setStoreData({ _id, name, address });
     setIsOpen(false);
     setTimeout(() => {
-      setOpenAddCategory(true);
+      setOpenAddStore(true);
     }, appConstants.TIME_OUT);
   };
 
@@ -37,28 +37,28 @@ const { _id, name, description } = data;
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
         <div className='inline-block w-auto p-6 my-8 text-left align-middle transition-all transform bg-white shadow-2xl rounded-2xl overflow-y-auto'>
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
-            Categories
+            Stores
           </Dialog.Title>
-          {categories.length ? (
+          {stores.length ? (
             <div className='mt-10 h-30v overflow-y-auto'>
               <table className='table-fixed product-table border-2'>
                 <thead className='sticky top-0 z-10 bg-white'>
                   <tr>
                     <th>Name</th>
-                    <th>Description</th>
+                    <th>Address</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {categories.map((e) => (
+                  {stores.map((e) => (
                     <tr key={e._id}>
                       <td>{e.name}</td>
-                      <td>{e.description ? e.description : 'N/A'}</td>
+                      <td>{e.address ? e.address : 'N/A'}</td>
                       <td>
-                        <button className='btn-sm-red' onClick={() => handleVenderDelete(e._id)}>
+                        <button className='btn-sm-red' onClick={() => handleStoreDelete(e._id)}>
                           <TrashIcon className='h-4' />
                         </button>
-                        <button className='btn-sm-yellow ml-3' onClick={() => handleVendorEdit(e)}>
+                        <button className='btn-sm-yellow ml-3' onClick={() => handleStoreEdit(e)}>
                           <PencilAltIcon className='h-4' />
                         </button>
                       </td>
@@ -68,7 +68,7 @@ const { _id, name, description } = data;
               </table>
             </div>
           ) : (
-            <h1 className='p-4'>No Vendors available</h1>
+            <h1 className='p-4'>No Stores available</h1>
           )}
           <div className='mt-4'>
             <button
@@ -81,9 +81,9 @@ const { _id, name, description } = data;
           </div>
         </div>
       </ModalTemplate>
-      <AddCategory isOpen={openAddCategory} setIsOpen={setOpenAddCategory} categoryData={categoryData} />
+      <AddStore isOpen={openAddStore} setIsOpen={setOpenAddStore} storeData={storeData} />
     </div>
   );
 };
 
-export default CategoriesModal;
+export default StoresModal;

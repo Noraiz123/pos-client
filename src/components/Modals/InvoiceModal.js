@@ -34,13 +34,13 @@ const InvoiceModal = ({ isOpen, setIsOpen, invoiceData }) => {
                   <div className=''>
                     <address className='text-sm'>
                       <span className='font-bold'>Customer Name : </span>
-                      {invoiceData.customer.name ? invoiceData.customer.name : 'N/A'}
+                      {invoiceData?.customer?.name ? invoiceData.customer.name : 'N/A'}
                     </address>
                   </div>
                   <div className=''>
                     <address className='text-sm'>
                       <span className='font-bold'>Customer Phone : </span>
-                      {invoiceData.customer.phone_no ? invoiceData.customer.phone_no : 'N/A'}
+                      {invoiceData?.customer?.phone_no ? invoiceData.customer.phone_no : 'N/A'}
                     </address>
                   </div>
                 </div>
@@ -67,9 +67,9 @@ const InvoiceModal = ({ isOpen, setIsOpen, invoiceData }) => {
                               <td className='px-6 py-4'>
                                 <div className='text-sm text-gray-500'>{e.quantity}</div>
                               </td>
-                              <td className='px-6 py-4 text-sm text-gray-500'>Rs {e.skus.price}</td>
+                              <td className='px-6 py-4 text-sm text-gray-500'>Rs {e.price}</td>
                               <td className='px-6 py-4'>
-                                Rs {(e.skus.price - (e.skus.price * e.discount) / 100) * e.quantity}
+                                Rs {Math.round((e.price - (e.price * e.discount) / 100) * e.quantity)}
                               </td>
                             </tr>
                           ))}
@@ -79,7 +79,7 @@ const InvoiceModal = ({ isOpen, setIsOpen, invoiceData }) => {
                             <b>Total</b>
                           </td>
                           <td className='text-sm font-bold'>
-                            <b>Rs {invoiceData.total}</b>
+                            <b>Rs {Math.round(invoiceData.total)}</b>
                           </td>
                         </tr>
                       </tbody>

@@ -23,7 +23,7 @@ const getOrdersAction = (payload) => {
   };
 };
 
-const getOrderAction = (payload) => {
+export const getOrderAction = (payload) => {
   return {
     type: actionTypes.getOrder,
     payload,

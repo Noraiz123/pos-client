@@ -49,9 +49,9 @@ export const GetUsers = () => async (dispatch) => {
 
 export const DeleteUser = (id) => async (dispatch) => {
   const res = await deleteUser(id);
-  if (res.status === 204) {
-    const customers = await getUsers();
-    dispatch(deleteUserAction(customers.data));
+  if (res.status === 200) {
+    const users = await getUsers();
+    dispatch(deleteUserAction(users.data));
     toast.success('User Deleted Successfully');
   }
 };

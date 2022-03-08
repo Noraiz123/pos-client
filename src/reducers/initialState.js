@@ -2,6 +2,7 @@ const initialState = {
   auth: {
     isSignedIn: false,
   },
+  isLoading: false,
   products: {
     product: {},
     products: [],
@@ -22,6 +23,7 @@ const initialState = {
     totalPages: null,
   },
   categories: [],
+  stores: [],
   vendors: [],
   tags: [],
   users: [],

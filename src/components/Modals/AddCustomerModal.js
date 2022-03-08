@@ -8,7 +8,7 @@ const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
   const initState = {
     name: '',
     email: '',
-    phone_no: '',
+    phoneNo: '',
   };
   const dispatch = useDispatch();
   const [customerDetails, setCustomerDetails] = useState(initState);
@@ -29,8 +29,8 @@ const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
 
   const handleCreateCustomer = () => {
     if (customerData) {
-      const { id, name, email, phone_no } = customerDetails;
-      dispatch(UpdateCustomer(id, { name, email, phone_no })).then(() => {
+      const { _id, name, email, phoneNo } = customerDetails;
+      dispatch(UpdateCustomer(_id, { name, email, phoneNo })).then(() => {
         setIsOpen(false);
         setCustomerDetails(initState);
       });
@@ -77,7 +77,7 @@ const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
                 name='phone_no'
                 type='text'
                 onChange={handleCustomerFields}
-                value={customerDetails.phone_no}
+                value={customerDetails.phoneNo}
               />
             </div>
           </div>

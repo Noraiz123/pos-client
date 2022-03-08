@@ -47,7 +47,7 @@ export const GetCategories = (data) => async (dispatch) => {
 
 export const DeleteCategory = (id) => async (dispatch) => {
   const res = await deleteCategory(id);
-  if (res.status === 204) {
+  if (res.status === 200) {
     const categories = await getCategories();
     dispatch(deleteCategoryAction(categories.data));
     toast.success('Category Deleted Successfully');

@@ -1,18 +1,27 @@
-import { EyeIcon } from '@heroicons/react/solid';
+import { EyeIcon, PencilAltIcon } from '@heroicons/react/solid';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { GetOrder, GetOrders } from '../../actions/order.actions';
+import { useNavigate } from 'react-router-dom';
+import { currentCustomerAction } from '../../actions/customers.actions';
+import {
+  createOrderAction,
+  GetOrder,
+  getOrderAction,
+  GetOrders,
+  updateOrderStatusAction,
+} from '../../actions/order.actions';
 import { filterProductsStatsAction, GetProductsStats } from '../../actions/products.actions';
 import ViewOrdersModal from '../Modals/ViewOrderModal';
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  const { orders, users, productsStats, salesman, products } = useSelector((state) => ({
+  const { orders, users, order, productsStats, salesman, products } = useSelector((state) => ({
     orders: state.orders,
     users: state.users,
     products: state.products.products,
     productsStats: state.products.productsStats,
     salesman: state.users.filter((e) => e.role === 'salesman'),
+    order: state.orders.order,
   }));
   const initialFilters = {
     created_at_gteq: '',
@@ -21,6 +30,7 @@ const Transactions = () => {
     cashier_id_eq: null,
     salesman_id_eq: null,
   };
+  const navigate = useNavigate();
   const [ordersFilter, setOrdersFilter] = useState(initialFilters);
   const [isOpen, setIsOpen] = useState(false);
   const [ordersData, setOrdersData] = useState(null);
@@ -69,37 +79,52 @@ const Transactions = () => {
   };
 
   const totalSales = orders.allOrders.reduce((a, b) => {
-    const total = a + Number(b.total_price);
+    const total = a + Number(b);
 
     return total;
   }, 0);
 
-  const manipulateProducts = (orderItems) => {
-    let productsData = [];
-    for (let values of products) {
-      const order = orderItems.find((o) => values.skus.some((e) => e.id === o.product_sku_id));
-      if (order?.id) {
-        productsData.push({
-          ...values,
-          price: order.price,
-          sub_total: order.sub_total,
-          quantity: order.quantity,
-          orderItemId: order.id,
-          salesman_id: order.salesman_id,
-        });
-      }
-    }
+  // const manipulateProducts = (orderItems) => {
+  //   let productsData = [];
+  //   for (let values of products) {
+  //     const order = orderItems.find((o) => values.skus.some((e) => e.id === o.product_sku_id));
+  //     if (order?.id) {
+  //       productsData.push({
+  //         ...values,
+  //         price: order.price,
+  //         sub_total: order.sub_total,
+  //         quantity: order.quantity,
+  //         orderItemId: order.id,
+  //         salesman_id: order.salesman_id,
+  //       });
+  //     }
+  //   }
 
-    return productsData;
-  };
+  //   return productsData;
+  // };
 
   const handleOrdersView = (order) => {
-    dispatch(GetOrder(order.id)).then((res) => {
-      if (res && res.status === 200) {
-        setOrdersData(manipulateProducts(res.data.order_line_items));
-        setIsOpen(true);
-      }
-    });
+    // dispatch(GetOrder(order.id)).then((res) => {
+    //   if (res && res.status === 200) {
+    //     setOrdersData(manipulateProducts(res.data.order_line_items));
+    //     setIsOpen(true);
+    //   }
+    // });
+    setOrdersData(order.orderItems);
+    setIsOpen(true);
+  };
+
+  const manipulateProducts = (data) => {
+    const result = data.map((e) => ({ ...e.product, orderQuantity: e.quantity }));
+    return result;
+  };
+
+  const OrderUpdateHandler = (data) => {
+    dispatch(getOrderAction(data));
+    dispatch(createOrderAction(manipulateProducts(data.orderItems)));
+    dispatch(currentCustomerAction(data?.customer));
+    dispatch(updateOrderStatusAction('UPDATE_ORDER'));
+    navigate('/', { state: { salesman: data?.salesman } });
   };
 
   return (
@@ -294,9 +319,9 @@ const Transactions = () => {
                         orders.allOrders.map((e) => (
                           <tr key={e.id}>
                             <td className=''></td>
-                            <td className=''>{new Date(e.created_at).toDateString()}</td>
-                            <td className=''>Rs: {e.total_price}</td>
-                            <td className=''>Rs: {e.total_price}</td>
+                            <td className=''>{new Date(e.createdAt).toDateString()}</td>
+                            <td className=''>Rs: {e.total}</td>
+                            <td className=''>Rs: {e.total}</td>
                             <td>Rs: 0</td>
                             <td>Cash</td>
                             <td>{e.status}</td>
@@ -305,6 +330,9 @@ const Transactions = () => {
                             <td>
                               <button className='btn-sm-yellow ml-3' onClick={() => handleOrdersView(e)}>
                                 <EyeIcon className='h-4' />
+                              </button>
+                              <button className='btn-sm-green ml-3' onClick={() => OrderUpdateHandler(e)}>
+                                <PencilAltIcon className='h-4' />
                               </button>
                             </td>
                           </tr>
