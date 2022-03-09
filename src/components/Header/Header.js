@@ -40,6 +40,7 @@ const Header = () => {
   const [openAddStores, setOpenAddStores] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
+  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div>
@@ -50,28 +51,34 @@ const Header = () => {
               <FolderAddIcon className='mr-2 h-6' />
               Products
             </button>
-            <button className='btn-sm-yellow' onClick={() => setOpenAddProduct(true)}>
-              <PlusIcon className='h-6' />
-            </button>
+            {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+              <button className='btn-sm-yellow' onClick={() => setOpenAddProduct(true)}>
+                <PlusIcon className='h-6' />
+              </button>
+            )}
           </div>
           <div className='flex'>
             <button className='flex align-middle btn-green' onClick={() => setOpenCategories(true)}>
               <ViewGridAddIcon className='mr-2 h-6' />
               Categories
             </button>
-            <button className='btn-sm-yellow' onClick={() => setOpenAddCategory(true)}>
-              <PlusIcon className='h-6' />
-            </button>
+            {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+              <button className='btn-sm-yellow' onClick={() => setOpenAddCategory(true)}>
+                <PlusIcon className='h-6' />
+              </button>
+            )}
           </div>
-          <div className='flex'>
-            <button className='flex align-middle btn-green' onClick={() => setOpenStores(true)}>
-              <ShoppingBagIcon className='mr-2 h-6' />
-              Store
-            </button>
-            <button className='btn-sm-yellow' onClick={() => setOpenAddStores(true)}>
-              <PlusIcon className='h-6' />
-            </button>
-          </div>
+          {user?.role === 'superAdmin' && (
+            <div className='flex'>
+              <button className='flex align-middle btn-green' onClick={() => setOpenStores(true)}>
+                <ShoppingBagIcon className='mr-2 h-6' />
+                Store
+              </button>
+              <button className='btn-sm-yellow' onClick={() => setOpenAddStores(true)}>
+                <PlusIcon className='h-6' />
+              </button>
+            </div>
+          )}
           {/* <button className='flex align-middle btn-blue'>
             <ViewBoardsIcon className='mr-2 h-6' />
             Open Tabs
@@ -85,40 +92,47 @@ const Header = () => {
           <button className='flex btn-sm-green'>
             <CogIcon className='h-6' />
           </button>
-
-          {!location.pathname.includes('/transactions') ? (
-            <Link to='/transactions'>
-              <button className='flex align-middle btn-green'>
-                <CreditCardIcon className='mr-2 h-6' />
-                Transactions
-              </button>
-            </Link>
-          ) : (
-            <Link to='/'>
-              <button className='flex align-middle btn-green'>
-                <CreditCardIcon className='mr-2 h-6' />
-                Point of Sale
-              </button>
-            </Link>
-          )}
+          {user?.role === 'admin' &&
+            (!location.pathname.includes('/transactions') ? (
+              <Link to='/transactions'>
+                <button className='flex align-middle btn-green'>
+                  <CreditCardIcon className='mr-2 h-6' />
+                  Transactions
+                </button>
+              </Link>
+            ) : (
+              <Link to='/'>
+                <button className='flex align-middle btn-green'>
+                  <CreditCardIcon className='mr-2 h-6' />
+                  Point of Sale
+                </button>
+              </Link>
+            ))}
           <div className='flex'>
             <button className='flex align-middle btn-green' onClick={() => setOpenVendors(true)}>
               <UserIcon className='mr-2 h-6' />
               Vendors
             </button>
-            <button className='btn-sm-gray' onClick={() => setOpenAddVendors(true)}>
-              <PlusIcon className='h-6' />
-            </button>
+            {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+              <button className='btn-sm-gray' onClick={() => setOpenAddVendors(true)}>
+                <PlusIcon className='h-6' />
+              </button>
+            )}
           </div>
-          <div className='flex'>
-            <button className='flex align-middle btn-green' onClick={() => setOpenUsers(true)}>
-              <UserIcon className='mr-2 h-6' />
-              Users
-            </button>
-            <button className='btn-sm-gray' onClick={() => setOpenAddUser(true)}>
-              <PlusIcon className='h-6' />
-            </button>
-          </div>
+          {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+            <>
+              <div className='flex'>
+                <button className='flex align-middle btn-green' onClick={() => setOpenUsers(true)}>
+                  <UserIcon className='mr-2 h-6' />
+                  Users
+                </button>
+                <button className='btn-sm-gray' onClick={() => setOpenAddUser(true)}>
+                  <PlusIcon className='h-6' />
+                </button>
+              </div>
+            </>
+          )}
+
           <button className='btn-sm-yellow' onClick={() => dispatch(LogoutRequest())} title='Logout'>
             <LogoutIcon className='h-6' />
           </button>

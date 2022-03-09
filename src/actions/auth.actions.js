@@ -17,7 +17,7 @@ const logoutAction = () => {
 export const LoginRequest = (data, navigate) => async (dispatch) => {
   const res = await loginRequest(data);
   if (res.status === 200) {
-    navigate('/');
+    window.location.href = '/';
     const token = res.data['token'];
     const user = res.data['result'];
     toast.success('LoggedIn Successfully');

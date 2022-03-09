@@ -25,14 +25,14 @@ export default (state = initialState.products, action) => {
       return { ...state, product: action.payload };
     }
     case actionTypes.getProductsStats: {
-      const { products, page, total_pages } = action.payload;
+      const { stats, currentPage, totalPages } = action.payload;
       return {
         ...state,
         productsStats: {
           ...state.productsStats,
-          stats: modifyProducts(products),
-          currentPage: page,
-          totalPages: total_pages,
+          stats: stats,
+          currentPage: currentPage,
+          totalPages: totalPages,
         },
       };
     }

@@ -137,7 +137,7 @@ const Products = () => {
         <div className='flex my-3 justify-center'>
           <nav aria-label='Page navigation example'>
             <ul className='pagination'>
-              <li className='page-item' onClick={() => handlePageChange(productsFilter.page - 1)}>
+              <li className='page-item' onClick={() => currentPage !== 1 && handlePageChange(productsFilter.page - 1)}>
                 <button className='page-link'>
                   <span aria-hidden='true'>&laquo;</span>
                 </button>
@@ -155,7 +155,10 @@ const Products = () => {
                     </button>
                   </li>
                 ))}
-              <li className='page-item' onClick={() => handlePageChange(productsFilter.page + 1)}>
+              <li
+                className='page-item'
+                onClick={() => currentPage < totalPages && handlePageChange(productsFilter.page + 1)}
+              >
                 <button className='page-link'>
                   <span aria-hidden='true'>&raquo;</span>
                 </button>

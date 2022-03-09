@@ -24,13 +24,14 @@ const CategoriesModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleVendorEdit = (data) => {
-const { _id, name, description } = data;
+    const { _id, name, description } = data;
     setCategoryData({ _id, name, description });
     setIsOpen(false);
     setTimeout(() => {
       setOpenAddCategory(true);
     }, appConstants.TIME_OUT);
   };
+  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div>
@@ -55,12 +56,16 @@ const { _id, name, description } = data;
                       <td>{e.name}</td>
                       <td>{e.description ? e.description : 'N/A'}</td>
                       <td>
-                        <button className='btn-sm-red' onClick={() => handleVenderDelete(e._id)}>
-                          <TrashIcon className='h-4' />
-                        </button>
-                        <button className='btn-sm-yellow ml-3' onClick={() => handleVendorEdit(e)}>
-                          <PencilAltIcon className='h-4' />
-                        </button>
+                        {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+                          <>
+                            <button className='btn-sm-red' onClick={() => handleVenderDelete(e._id)}>
+                              <TrashIcon className='h-4' />
+                            </button>
+                            <button className='btn-sm-yellow ml-3' onClick={() => handleVendorEdit(e)}>
+                              <PencilAltIcon className='h-4' />
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}

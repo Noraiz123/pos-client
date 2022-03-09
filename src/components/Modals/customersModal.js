@@ -33,6 +33,7 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
       setOpenAddCustomer(true);
     }, appConstants.TIME_OUT);
   };
+  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div>
@@ -59,12 +60,16 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
                       <td>{e.email}</td>
                       <td>{e.phoneNo}</td>
                       <td>
-                        <button className='btn-sm-red' onClick={() => handleUserDelete(e._id)}>
-                          <TrashIcon className='h-4' />
-                        </button>
-                        <button className='btn-sm-yellow ml-3' onClick={() => handleCustomerEdit(e)}>
-                          <PencilAltIcon className='h-4' />
-                        </button>
+                        {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+                          <>
+                            <button className='btn-sm-red' onClick={() => handleUserDelete(e._id)}>
+                              <TrashIcon className='h-4' />
+                            </button>
+                            <button className='btn-sm-yellow ml-3' onClick={() => handleCustomerEdit(e)}>
+                              <PencilAltIcon className='h-4' />
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}

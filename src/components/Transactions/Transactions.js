@@ -26,10 +26,11 @@ const Transactions = () => {
   const initialFilters = {
     created_at_gteq: '',
     created_at_lteq: '',
-    status_in: [0, 1, 2],
-    cashier_id_eq: null,
-    salesman_id_eq: null,
+    status_in: '',
+    cashier_id_eq: '',
+    salesman_id_eq: '',
   };
+
   const navigate = useNavigate();
   const [ordersFilter, setOrdersFilter] = useState(initialFilters);
   const [isOpen, setIsOpen] = useState(false);
@@ -47,7 +48,7 @@ const Transactions = () => {
     const { name, value } = e.target;
     setOrdersFilter((pre) => ({
       ...pre,
-      [name]: name === 'status_in' ? [value] : value,
+      [name]: value,
     }));
   };
 
@@ -60,11 +61,23 @@ const Transactions = () => {
     setOrdersPagination({ ...ordersPagination, page });
   };
 
+  function debounce(func, timeout = 2000) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        func.apply(this, args);
+      }, timeout);
+    };
+  }
+
   const handleProductsSearch = (e) => {
     const { statsFilter } = productsStats;
     const { value } = e.target;
     dispatch(filterProductsStatsAction({ ...statsFilter, keyword: value }));
   };
+
+  const optimizedSearch = debounce(handleProductsSearch);
 
   const handleProductsPerPageChange = (e) => {
     const { statsFilter } = productsStats;
@@ -79,7 +92,7 @@ const Transactions = () => {
   };
 
   const totalSales = orders.allOrders.reduce((a, b) => {
-    const total = a + Number(b);
+    const total = a + Number(b.total);
 
     return total;
   }, 0);
@@ -115,7 +128,12 @@ const Transactions = () => {
   };
 
   const manipulateProducts = (data) => {
-    const result = data.map((e) => ({ ...e.product, orderQuantity: e.quantity }));
+    const result = data.map((e) => ({
+      ...e.product,
+      orderQuantity: e.quantity,
+      previousQuantity: e.quantity,
+      previousPaid: e.paidPrice,
+    }));
     return result;
   };
 
@@ -137,7 +155,7 @@ const Transactions = () => {
             <option value=''>All</option>
             {salesman &&
               salesman.map((e) => (
-                <option key={e.id} value={e.id}>
+                <option key={e._id} value={e._id}>
                   {e.name}
                 </option>
               ))}
@@ -151,7 +169,7 @@ const Transactions = () => {
             </option>
             {users &&
               users.map((e) => (
-                <option key={e.id} value={e.id}>
+                <option key={e._id} value={e._id}>
                   {e.name}
                 </option>
               ))}
@@ -160,9 +178,11 @@ const Transactions = () => {
         <div className='flex flex-col'>
           <label className='mb-1 text-gray-500 font-bold'>Status</label>
           <select className='input-select' name='status_in' onChange={handleOrdersFilterChange}>
-            <option value='2'>Paid</option>
-            <option value='1'>In Progress</option>
-            <option value='0'>Draft</option>
+            <option value='' selected>
+              All
+            </option>
+            <option value='paid'>Paid</option>
+            <option value='draft'>Draft</option>
           </select>
         </div>
         <div className='flex flex-col col-span-2'>
@@ -196,8 +216,7 @@ const Transactions = () => {
                 type='text'
                 className='input-field w-40'
                 placeholder='Search Products...'
-                value={productsStats.statsFilter.keyword}
-                onChange={handleProductsSearch}
+                onChange={optimizedSearch}
               />
             </div>
           </div>
@@ -216,10 +235,10 @@ const Transactions = () => {
                   {productsStats.stats &&
                     productsStats.stats.map((e) => (
                       <tr key={e.id}>
-                        <td className=''>{e.name}</td>
-                        <td className=''>{e.skus.sold}</td>
-                        <td className=''>{e.skus.quantity}</td>
-                        <td className=''>Rs {e.skus.sale_amount}</td>
+                        <td className=''>{e.product.name}</td>
+                        <td className=''>{e.sold}</td>
+                        <td className=''>{e.available}</td>
+                        <td className=''>Rs {e.sales}</td>
                       </tr>
                     ))}
                 </tbody>
@@ -230,12 +249,15 @@ const Transactions = () => {
             <div className='flex my-3 justify-center'>
               <nav aria-label='Page navigation example'>
                 <ul className='pagination'>
-                  <li className='page-item' onClick={() => handlePageChange(productsStats.currentPage - 1)}>
+                  <li
+                    className='page-item'
+                    onClick={() => productsStats.currentPage !== 1 && handlePageChange(productsStats.currentPage - 1)}
+                  >
                     <button className='page-link'>
                       <span aria-hidden='true'>&laquo;</span>
                     </button>
                   </li>
-                  {Array(productsStats.currentPage)
+                  {Array(productsStats.totalPages)
                     .fill()
                     .map((e, i) => (
                       <li
@@ -248,7 +270,13 @@ const Transactions = () => {
                         </button>
                       </li>
                     ))}
-                  <li className='page-item' onClick={() => handlePageChange(productsStats.currentPage + 1)}>
+                  <li
+                    className='page-item'
+                    onClick={() =>
+                      productsStats.currentPage < productsStats.totalPages &&
+                      handlePageChange(productsStats.currentPage + 1)
+                    }
+                  >
                     <button className='page-link'>
                       <span aria-hidden='true'>&raquo;</span>
                     </button>
@@ -268,6 +296,7 @@ const Transactions = () => {
                 value={ordersPagination.perPage}
                 onChange={(e) => setOrdersPagination({ ...ordersPagination, perPage: e.target.value })}
               >
+                <option>5</option>
                 <option>10</option>
                 <option>20</option>
                 <option>50</option>
@@ -276,21 +305,21 @@ const Transactions = () => {
             </div>
           </div>
           <div className='grid xl:grid-cols-4 sm:grid-cols-1 mt-3'>
-            <div className='space-y-3 sm:grid sm:grid-cols-2 xl:block my-3'>
-              <div className='w-56 h-40 bg-green-500 rounded-md'>
-                <div className='text-2xl text-white flex flex-col h-full items-center justify-center'>
+            <div className='space-y-3 text-sm font-medium sm:grid sm:grid-cols-2 xl:block my-3'>
+              <div className='w-56 h-40 bg-green-100 rounded-md'>
+                <div className='text-2xl text-green-900 flex flex-col h-full items-center justify-center'>
                   <h1>Sales</h1>
                   <h1>Rs {Math.round(totalSales)}</h1>
                 </div>
               </div>
-              <div className='w-56 h-40 bg-yellow-500 rounded-md'>
-                <div className='text-2xl text-white flex flex-col h-full items-center justify-center'>
+              <div className='w-56 h-40 bg-yellow-100 rounded-md'>
+                <div className='text-2xl text-yellow-900 flex flex-col h-full items-center justify-center'>
                   <h1>Transactions</h1>
                   <h1>{orders.allOrders.length}</h1>
                 </div>
               </div>
-              <div className='w-56 h-40 bg-blue-300 rounded-md'>
-                <div className='text-2xl text-white flex flex-col h-full items-center justify-center'>
+              <div className='w-56 h-40 bg-blue-100 rounded-md'>
+                <div className='text-2xl text-blue-900 flex flex-col h-full items-center justify-center'>
                   <h1>Products</h1>
                   <h1>{productsStats.stats.length}</h1>
                 </div>
@@ -320,8 +349,8 @@ const Transactions = () => {
                           <tr key={e.id}>
                             <td className=''></td>
                             <td className=''>{new Date(e.createdAt).toDateString()}</td>
-                            <td className=''>Rs: {e.total}</td>
-                            <td className=''>Rs: {e.total}</td>
+                            <td className=''>Rs: {Math.round(e.total)}</td>
+                            <td className=''>Rs: {Math.round(e.total)}</td>
                             <td>Rs: 0</td>
                             <td>Cash</td>
                             <td>{e.status}</td>
@@ -345,12 +374,15 @@ const Transactions = () => {
                 <div className='flex my-3 justify-center'>
                   <nav aria-label='Page navigation example'>
                     <ul className='pagination'>
-                      <li className='page-item' onClick={() => handleOrdersPageChange(orders.currentPage - 1)}>
+                      <li
+                        className='page-item'
+                        onClick={() => orders.currentPage !== 1 && handleOrdersPageChange(orders.currentPage - 1)}
+                      >
                         <button className='page-link'>
                           <span aria-hidden='true'>&laquo;</span>
                         </button>
                       </li>
-                      {Array(orders.currentPage)
+                      {Array(orders.totalPages)
                         .fill()
                         .map((e, i) => (
                           <li
@@ -363,7 +395,12 @@ const Transactions = () => {
                             </button>
                           </li>
                         ))}
-                      <li className='page-item' onClick={() => handleOrdersPageChange(orders.currentPage + 1)}>
+                      <li
+                        className='page-item'
+                        onClick={() =>
+                          orders.currentPage < orders.totalPages && handleOrdersPageChange(orders.currentPage + 1)
+                        }
+                      >
                         <button className='page-link'>
                           <span aria-hidden='true'>&raquo;</span>
                         </button>

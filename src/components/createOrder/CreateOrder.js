@@ -67,6 +67,8 @@ const CreateOrder = () => {
               id: e?.orderItemId ? e.orderItemId : undefined,
               product: e._id,
               quantity: e.orderQuantity,
+              previousQuantity: e.previousQuantity,
+              previousPaid: e.previousPaid,
               paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.quantity),
               currentPrice: e.price,
             })),
@@ -111,7 +113,6 @@ const CreateOrder = () => {
 
   const handleQuantityChange = (item, e) => {
     const { value } = e.target;
-    console.log(value);
     dispatch(createOrderAction({ ...item, orderQuantity: Number(value) }));
   };
 
@@ -120,6 +121,7 @@ const CreateOrder = () => {
     const customer = customers.find((e) => e.id === parseInt(value));
     dispatch(currentCustomerAction(customer));
   };
+  const user = JSON.parse(localStorage.getItem('user'));
 
   return (
     <div className='bg-white rounded-sm mt-6'>
@@ -160,9 +162,11 @@ const CreateOrder = () => {
                 </option>
               ))}
           </select>
-          <button className='btn-sm-green mx-4' onClick={() => setOpenUserModal(true)}>
-            <PlusIcon className='h-6' />
-          </button>
+          {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+            <button className='btn-sm-green mx-4' onClick={() => setOpenUserModal(true)}>
+              <PlusIcon className='h-6' />
+            </button>
+          )}
         </div>
         <div className='flex align-middle'>
           <input
@@ -247,11 +251,11 @@ const CreateOrder = () => {
             <BanIcon className='h-6 mr-2' />
             Cancel
           </button>
-          <button className='btn-green flex'>
+          <button className='btn-parrot flex'>
             <HandIcon className='h-6 mr-2' />
             Hold
           </button>
-          <button className='btn-parrot flex' onClick={handleOrderConfirmation}>
+          <button className='btn-green flex' onClick={handleOrderConfirmation}>
             <CashIcon className='h-6 mr-2' />
             Pay
           </button>

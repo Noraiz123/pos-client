@@ -12,7 +12,7 @@ export function getProduct(id) {
 
 export function getProductsStats(data) {
   return instance.get(
-    `/api/products/stats?search_keyword=${data.keyword}&&page=${data.page}&&per_page=${data.perPage}`
+    `/productsStats?search_keyword=${data.keyword}&&page=${data.page}&&per_page=${data.perPage}`
   );
 }
 

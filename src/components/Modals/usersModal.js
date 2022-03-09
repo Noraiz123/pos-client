@@ -31,13 +31,15 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleUserEdit = (data) => {
-    const { _id, name, role, email } = data;
-    setUserData({ id: _id, name, role, email });
+    const { _id, name, role, email, store } = data;
+    setUserData({ id: _id, name, role, email, store });
     setIsOpen(false);
     setTimeout(() => {
       setOpenAddUser(true);
     }, appConstants.TIME_OUT);
   };
+  const user = JSON.parse(localStorage.getItem('user'));
+
 
   return (
     <div>

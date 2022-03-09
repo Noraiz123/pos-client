@@ -21,6 +21,8 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   };
   const [productDetails, setProductDetails] = useState(initState);
 
+  const user = JSON.parse(localStorage.getItem('user'));
+
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const { categories, vendors, stores } = useSelector((state) => ({
@@ -102,20 +104,22 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
             {productData ? 'Update' : 'Add'} Product
           </Dialog.Title>
           <div className='mt-10 h-70v overflow-y-auto productsAdd'>
-            <div className='flex flex-col my-2'>
-              <label className='mb-1 text-gray-500 font-bold'>Stores</label>
-              <select className='input-select' name='store' onChange={handleAddProduct} value={productDetails.store}>
-                <option value='' selected disabled>
-                  Select user store
-                </option>
-                {stores &&
-                  stores.map((e) => (
-                    <option key={e._id} value={e._id}>
-                      {e.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
+            {user?.role === 'superAdmin' && (
+              <div className='flex flex-col my-2'>
+                <label className='mb-1 text-gray-500 font-bold'>Stores</label>
+                <select className='input-select' name='store' onChange={handleAddProduct} value={productDetails.store}>
+                  <option value='' selected disabled>
+                    Select user store
+                  </option>
+                  {stores &&
+                    stores.map((e) => (
+                      <option key={e._id} value={e._id}>
+                        {e.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
             <div
               className='w-32 h-32 border-2 rounded-full flex text-center items-center mx-auto cursor-pointer'
               onClick={() => fileInputRef.current.click()}

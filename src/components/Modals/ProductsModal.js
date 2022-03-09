@@ -16,6 +16,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
     categories: state.categories,
     vendors: state.vendors,
   }));
+  const user = JSON.parse(localStorage.getItem('user'));
 
   const [openAddProduct, setOpenAddProduct] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
@@ -81,12 +82,16 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
                       <td>{getCategory(e.category_id)}</td>
                       <td>{getVendor(e.vendor_id)}</td>
                       <td className='flex justify-center items-center'>
-                        <button className='btn-sm-red' onClick={() => productDeleteHandler(e.id)}>
-                          <TrashIcon className='h-4' />
-                        </button>
-                        <button className='btn-sm-yellow ml-3' onClick={() => productUpdateHandler(e)}>
-                          <PencilAltIcon className='h-4' />
-                        </button>
+                        {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+                          <>
+                            <button className='btn-sm-red' onClick={() => productDeleteHandler(e.id)}>
+                              <TrashIcon className='h-4' />
+                            </button>
+                            <button className='btn-sm-yellow ml-3' onClick={() => productUpdateHandler(e)}>
+                              <PencilAltIcon className='h-4' />
+                            </button>
+                          </>
+                        )}
                       </td>
                     </tr>
                   ))}
