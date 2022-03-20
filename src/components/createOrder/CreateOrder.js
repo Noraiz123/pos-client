@@ -8,12 +8,16 @@ import {
   CashIcon,
   PrinterIcon,
   TrashIcon,
+  ViewBoardsIcon,
+  ArrowSmLeftIcon,
+  ArrowSmRightIcon,
 } from '@heroicons/react/solid';
 import { useSelector } from 'react-redux';
 import {
   ConfirmOrder,
   createOrderAction,
   deleteAllOrderItemsAction,
+  deleteCurrentOrderItemAction,
   deleteOrderItemAction,
   UpdateOrder,
   updateOrderStatusAction,
@@ -24,6 +28,8 @@ import { GetCustomers, currentCustomerAction } from '../../actions/customers.act
 import AddUserModal from '../Modals/AddUser';
 import InvoiceModal from '../Modals/InvoiceModal';
 import { useLocation } from 'react-router-dom';
+import OnHoldOrdersModal from '../Modals/OnholdModal';
+import PaymentModal from '../Modals/PaymentModal';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
@@ -36,6 +42,8 @@ const CreateOrder = () => {
     users: state.users.filter((e) => e.role === 'salesman'),
   }));
   const [currentSalesman, setCurrentSalesman] = useState('');
+  const [openOnHold, setOpenOnHold] = useState(false);
+  const [openPaymentModal, setOpenPaymentModal] = useState(false);
   const { state } = useLocation();
 
   useEffect(() => {
@@ -50,27 +58,31 @@ const CreateOrder = () => {
 
   const totalPrice =
     currentOrder &&
-    currentOrder.reduce(
-      (pre, next) =>
-        pre + (Number(next.price) - (Number(next.price) * Number(next.discount)) / 100) * Number(next.orderQuantity),
-      0
-    );
+    currentOrder
+      .filter((e) => !e.delete)
+      .reduce(
+        (pre, next) =>
+          pre + (Number(next.price) - (Number(next.price) * Number(next.discount)) / 100) * Number(next.orderQuantity),
+        0
+      );
 
-  const handleOrderConfirmation = () => {
+  const handleOrderCreate = (status, change) => {
     if (orderStatus === 'UPDATE_ORDER') {
       dispatch(
         UpdateOrder(
           {
-            status: 'paid',
+            status: status,
             salesman: currentSalesman ? currentSalesman : undefined,
+            change: change ? change : undefined,
             orderItems: currentOrder.map((e) => ({
               id: e?.orderItemId ? e.orderItemId : undefined,
               product: e._id,
               quantity: e.orderQuantity,
               previousQuantity: e.previousQuantity,
               previousPaid: e.previousPaid,
-              paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.quantity),
+              paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
               currentPrice: e.price,
+              delete: e?.delete ? true : undefined,
             })),
             total: totalPrice,
           },
@@ -87,8 +99,9 @@ const CreateOrder = () => {
     } else {
       dispatch(
         ConfirmOrder({
-          status: 'paid',
+          status: status,
           salesman: currentSalesman ? currentSalesman : undefined,
+          change: change ? change : undefined,
           orderItems: currentOrder.map((e) => ({
             id: e?.orderItemId ? e.orderItemId : undefined,
             product: e._id,
@@ -107,6 +120,10 @@ const CreateOrder = () => {
       });
     }
   };
+
+  const handleOrderConfirmation = (change) => {
+    handleOrderCreate('paid', change);
+  };
   const [openCustomerModal, setOpenCustomerModal] = useState(false);
   const [openUserModal, setOpenUserModal] = useState(false);
   const [openInvoiceModal, setOpenInvoiceModal] = useState(false);
@@ -118,14 +135,40 @@ const CreateOrder = () => {
 
   const handleCustomerChange = (e) => {
     const { value } = e.target;
-    const customer = customers.find((e) => e.id === parseInt(value));
+    const customer = customers.find((e) => e._id === parseInt(value));
     dispatch(currentCustomerAction(customer));
   };
   const user = JSON.parse(localStorage.getItem('user'));
 
+  const handleOnHoldOrders = () => {
+    handleOrderCreate('onHold');
+  };
+
   return (
     <div className='bg-white rounded-sm mt-6'>
       <div className='p-10 flex flex-col'>
+        <div className='flex mb-2 space-x-2'>
+          <button
+            className='flex align-middle btn-sm-blue'
+            // disabled={!onHold?.length}
+            // onClick={preHold}
+            // ref={leftBtnRef}
+          >
+            <ArrowSmLeftIcon className='mr-2 h-6' />
+          </button>
+          <button className='flex align-middle btn-blue' onClick={() => setOpenOnHold(true)}>
+            <ViewBoardsIcon className='mr-2 h-6' />
+            OnHold Orders
+          </button>
+          <button
+            className='flex align-middle btn-sm-blue'
+            // disabled={!onHold?.length}
+            // onClick={nextHold}
+            // ref={rightBtnRef}
+          >
+            <ArrowSmRightIcon className='mr-2 h-6' />
+          </button>
+        </div>
         <div className='flex mb-2'>
           <select
             className='input-select w-9/12'
@@ -196,28 +239,37 @@ const CreateOrder = () => {
               </thead>
               <tbody>
                 {currentOrder &&
-                  currentOrder.map((e, index) => (
-                    <tr key={e.id}>
-                      <td className=''>{index + 1}</td>
-                      <td className=''>{e.name}</td>
-                      <td className=''>
-                        <input
-                          type='number'
-                          className='input-field w-20'
-                          min='1'
-                          max={e.quantity}
-                          value={e.orderQuantity}
-                          onChange={(value) => handleQuantityChange(e, value)}
-                        />
-                      </td>
-                      <td className=''>{e.price}</td>
-                      <td className=''>
-                        <button className='btn-sm-red' onClick={() => dispatch(deleteOrderItemAction(e))}>
-                          <TrashIcon className='h-4' />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  currentOrder
+                    .filter((e) => !e.delete)
+                    .map((e, index) => (
+                      <tr key={e.id}>
+                        <td className=''>{index + 1}</td>
+                        <td className=''>{e.name}</td>
+                        <td className=''>
+                          <input
+                            type='number'
+                            className='input-field w-20'
+                            min='1'
+                            max={e.quantity}
+                            value={e.orderQuantity}
+                            onChange={(value) => handleQuantityChange(e, value)}
+                          />
+                        </td>
+                        <td className=''>{e.price}</td>
+                        <td className=''>
+                          <button
+                            className='btn-sm-red'
+                            onClick={() =>
+                              orderStatus === 'UPDATE_ORDER'
+                                ? dispatch(deleteOrderItemAction(e))
+                                : dispatch(deleteCurrentOrderItemAction(e))
+                            }
+                          >
+                            <TrashIcon className='h-4' />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -251,11 +303,15 @@ const CreateOrder = () => {
             <BanIcon className='h-6 mr-2' />
             Cancel
           </button>
-          <button className='btn-parrot flex'>
+          <button className='btn-parrot flex' onClick={handleOnHoldOrders}>
             <HandIcon className='h-6 mr-2' />
             Hold
           </button>
-          <button className='btn-green flex' onClick={handleOrderConfirmation}>
+          <button
+            className='btn-green flex'
+            disabled={currentOrder.length === 0}
+            onClick={() => setOpenPaymentModal(true)}
+          >
             <CashIcon className='h-6 mr-2' />
             Pay
           </button>
@@ -263,10 +319,17 @@ const CreateOrder = () => {
       </div>
       <CustomerModal isOpen={openCustomerModal} setIsOpen={setOpenCustomerModal} />
       <AddUserModal isOpen={openUserModal} setIsOpen={setOpenUserModal} />
+      <OnHoldOrdersModal isOpen={openOnHold} setIsOpen={setOpenOnHold} />
       <InvoiceModal
         isOpen={openInvoiceModal}
         setIsOpen={setOpenInvoiceModal}
         invoiceData={{ orderItems: currentOrder, customer: currentCustomer, total: totalPrice }}
+      />
+      <PaymentModal
+        isOpen={openPaymentModal}
+        setIsOpen={setOpenPaymentModal}
+        confirmOrder={handleOrderConfirmation}
+        totalPrice={totalPrice}
       />
     </div>
   );

@@ -10,6 +10,10 @@ export function getOrder(id) {
   return instance.get(`/order/${id}`);
 }
 
+export function getOnHoldOrders() {
+  return instance.get(`/order/onHold`);
+}
+
 export function createOrder(data) {
   return instance.post('/order', data);
 }

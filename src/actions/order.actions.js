@@ -1,5 +1,5 @@
 import { actionTypes } from '../constants/actionTypes';
-import { createOrder, getOrder, getOrders, updateOrder } from '../api/order';
+import { createOrder, getOnHoldOrders, getOrder, getOrders, updateOrder } from '../api/order';
 import { toast } from 'react-toastify';
 
 export const createOrderAction = (payload) => {
@@ -37,6 +37,13 @@ export const deleteOrderItemAction = (payload) => {
   };
 };
 
+export const deleteCurrentOrderItemAction = (payload) => {
+  return {
+    type: actionTypes.deleteCurrentOrderItem,
+    payload,
+  };
+};
+
 export const deleteAllOrderItemsAction = () => {
   return {
     type: actionTypes.deleteAllOrderItems,
@@ -57,11 +64,33 @@ const confirmOrderAction = (payload) => {
   };
 };
 
+const getOnHoldOrdersAction = (payload) => {
+  return {
+    type: actionTypes.getOnHold,
+    payload,
+  };
+};
+
+export const editOnHoldAction = (payload) => {
+  return {
+    type: actionTypes.editOnHold,
+    payload,
+  };
+};
+
 export const ConfirmOrder = (data) => async (dispatch) => {
   const res = await createOrder(data);
-  if (res.status === 200) {
+  if (res.status === 201) {
     dispatch(confirmOrderAction(res.data));
     toast.success('Order Created Successfully');
+  }
+  return res;
+};
+
+export const GetOnHold = (data) => async (dispatch) => {
+  const res = await getOnHoldOrders(data);
+  if (res.status === 200) {
+    dispatch(getOnHoldOrdersAction(res.data));
   }
   return res;
 };

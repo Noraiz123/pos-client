@@ -42,8 +42,11 @@ export const actionTypes = {
   updateUser: 'UPDATE_USER',
   deleteVendor: 'DELETE_VENDOR',
   updateVendor: 'UPDATE_VENDOR',
+  getOnHold: 'ON_HOLD_ORDERS',
+  editOnHold: 'EDIT_ON_HOLD',
   getProductsStats: 'GET_PRODUCTS_STATS',
   updateOrderStatus: 'UPDATE_ORDER_STATUS',
   startLoading: 'START_LOADING',
   stopLoading: 'STOP_LOADING',
+  deleteCurrentOrderItem: 'DELETE_CURRENT_ORDER_ITEM',
 };

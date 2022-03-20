@@ -14,6 +14,12 @@ export default (state = initialState.orders, action) => {
     case actionTypes.getOrder: {
       return { ...state, order: action.payload };
     }
+    case actionTypes.getOnHold: {
+      return { ...state, onHold: action.payload };
+    }
+    case actionTypes.editOnHold: {
+      return { ...state, currentOrder: action.payload };
+    }
     case actionTypes.createOrder: {
       const alreadyExists = state.currentOrder.find((e) => e._id === action.payload._id);
       const createNew = !alreadyExists && state.currentOrder.concat(action.payload);
@@ -22,7 +28,16 @@ export default (state = initialState.orders, action) => {
       return { ...state, currentOrder: alreadyExists ? updateItem : createNew };
     }
     case actionTypes.deleteOrderItem: {
-      return { ...state, currentOrder: state.currentOrder.filter((e) => e._id !== action.payload._id) };
+      return {
+        ...state,
+        currentOrder: state.currentOrder.map((e) => (e._id === action.payload._id ? { ...e, delete: true } : e)),
+      };
+    }
+    case actionTypes.deleteCurrentOrderItem: {
+      return {
+        ...state,
+        currentOrder: state.currentOrder.filter((e) => e._id !== action.payload._id),
+      };
     }
     case actionTypes.deleteAllOrderItems: {
       return { ...state, currentOrder: [] };

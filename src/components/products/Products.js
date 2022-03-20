@@ -115,7 +115,7 @@ const Products = () => {
           products.map((e) => (
             <div
               key={e._id}
-              className='flex flex-col justify-center border mt-6 p-4 w-full cursor-pointer'
+              className='flex flex-col justify-center border mt-6 p-4 w-full cursor-pointer shadow-md rounded-sm'
               onClick={() => handleCreateOrder(e)}
             >
               <div className='space-y-2 border-b p-2'>

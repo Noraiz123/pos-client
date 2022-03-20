@@ -353,7 +353,15 @@ const Transactions = () => {
                             <td className=''>Rs: {Math.round(e.total)}</td>
                             <td>Rs: 0</td>
                             <td>Cash</td>
-                            <td>{e.status}</td>
+                            <td>
+                              <p
+                                className={`rounded-full text-sm font-medium px-3 py-2 ${
+                                  e.status === 'paid' ? 'bg-green-100 text-green-900' : 'bg-yellow-100 text-yellow-900'
+                                }`}
+                              >
+                                {e.status.toUpperCase()}
+                              </p>
+                            </td>
                             <td>{handleUsers(e.cashier_id)}</td>
                             <td>{handleUsers(e.salesman_id)}</td>
                             <td>
