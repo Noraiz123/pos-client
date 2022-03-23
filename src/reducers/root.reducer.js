@@ -6,7 +6,6 @@ import categoriesReducer from './categories.reducer';
 import customersReducer from './customers.reducer';
 import usersReducer from './users.reducer';
 import vendorsReducer from './vendors.reducer';
-import tagsReducer from './tags.reducer';
 import storeReducer from './storeReducer';
 import loaderReducer from './loader.reducer';
 
@@ -20,5 +19,4 @@ export default combineReducers({
   customers: customersReducer,
   users: usersReducer,
   vendors: vendorsReducer,
-  tags: tagsReducer,
 });

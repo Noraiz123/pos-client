@@ -59,7 +59,7 @@ const InvoiceModal = ({ isOpen, setIsOpen, invoiceData }) => {
                       <tbody className='bg-white'>
                         {invoiceData.orderItems &&
                           invoiceData.orderItems.map((e, i) => (
-                            <tr key={e.id} className='whitespace-nowrap'>
+                            <tr key={e._id} className='whitespace-nowrap'>
                               <td className='px-6 py-4 text-sm text-gray-500'>{i + 1}</td>
                               <td className='px-6 py-4'>
                                 <div className='text-sm text-gray-900'>{e.name}</div>

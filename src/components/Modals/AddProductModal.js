@@ -18,6 +18,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
     size: '',
     color: '',
     price: '',
+    retailPrice: '',
   };
   const [productDetails, setProductDetails] = useState(initState);
 
@@ -33,7 +34,8 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
 
   useEffect(() => {
     if (productData && productData._id) {
-      const { imgUrl, name, category_id, vendor_id, discount, store, size, color, price, quantity } = productData;
+      const { imgUrl, name, category_id, vendor_id, discount, store, size, color, price, quantity, retailPrice } =
+        productData;
 
       setProductDetails({
         ...initState,
@@ -46,6 +48,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
         size,
         color,
         quantity,
+        retailPrice,
         price,
       });
     }
@@ -143,7 +146,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                   <option value='' selected disabled>
                     Select Category
                   </option>
-                  {categories && categories.map((e) => <option key={e.id}>{e.name}</option>)}
+                  {categories && categories.map((e) => <option key={e._id}>{e.name}</option>)}
                 </select>
               </div>
               <div className='flex flex-col my-2'>
@@ -159,7 +162,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                   </option>
                   {vendors &&
                     vendors.map((e) => (
-                      <option key={e.id} data-value={e.id}>
+                      <option key={e._id} data-value={e._id}>
                         {e.name}
                       </option>
                     ))}
@@ -195,6 +198,16 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                 name='price'
                 type='number'
                 value={productDetails.price}
+                onChange={handleAddProduct}
+              />
+            </div>
+            <div className='flex flex-col my-2'>
+              <label className='mb-1 text-gray-500 font-bold'>Retail Price</label>
+              <input
+                className='input-field'
+                name='retailPrice'
+                type='number'
+                value={productDetails.retailPrice}
                 onChange={handleAddProduct}
               />
             </div>

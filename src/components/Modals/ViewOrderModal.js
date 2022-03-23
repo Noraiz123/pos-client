@@ -24,18 +24,17 @@ const ViewOrdersModal = ({ isOpen, setIsOpen, orderDetails }) => {
   };
 
   const getCategory = (id) => {
-    const category = categories && categories.find((e) => e.id === id);
+    const category = categories && categories.find((e) => e._id === id);
 
     return category ? category.name : 'N/A';
   };
 
   const getVendor = (id) => {
-    const vendor = vendors && vendors.find((e) => e.id === id);
+    const vendor = vendors && vendors.find((e) => e._id === id);
 
     return vendor ? vendor.name : 'N/A';
   };
 
-  console.log(orderDetails)
 
   return (
     <div>
@@ -68,10 +67,8 @@ const ViewOrdersModal = ({ isOpen, setIsOpen, orderDetails }) => {
                       <td>{e.product.name}</td>
                       <td>{e.currentPrice}</td>
                       <td>{e.quantity}</td>
-                      {/* <td>{getCategory(e.category_id)}</td> */}
-                      {/* <td>{getVendor(e.vendor_id)}</td> */}
-                      <td></td>
-                      <td></td>
+                      <td>{getCategory(e.category)}</td>
+                      <td>{getVendor(e.vendor)}</td>
                       <td>{e.paidPrice}</td>
                       <td>
                         <button className='btn-sm-yellow ml-3' onClick={() => OrderUpdateHandler(e)}>

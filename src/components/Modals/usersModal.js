@@ -61,7 +61,7 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
               <tbody>
                 {users &&
                   users.map((e) => (
-                    <tr key={e.id}>
+                    <tr key={e._id}>
                       <td>{e.name}</td>
                       <td>{e.email}</td>
                       <td>{e.role}</td>

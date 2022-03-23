@@ -55,7 +55,7 @@ const CustomersModal = ({ isOpen, setIsOpen }) => {
               <tbody>
                 {customers &&
                   customers.map((e) => (
-                    <tr key={e.id}>
+                    <tr key={e._id}>
                       <td>{e.name}</td>
                       <td>{e.email}</td>
                       <td>{e.phoneNo}</td>

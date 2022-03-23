@@ -38,8 +38,8 @@ export const CreateVendor = (data) => async (dispatch) => {
   }
 };
 
-export const GetVendors = (data) => async (dispatch) => {
-  const res = await getVendors(data);
+export const GetVendors = () => async (dispatch) => {
+  const res = await getVendors();
   if (res.status === 200) {
     dispatch(getVendorsAction(res.data));
   }
@@ -47,7 +47,7 @@ export const GetVendors = (data) => async (dispatch) => {
 
 export const DeleteVendor = (id) => async (dispatch) => {
   const res = await deleteVendor(id);
-  if (res.status === 204) {
+  if (res.status === 200) {
     const vendors = await getVendors();
     dispatch(deleteVendorAction(vendors.data));
     toast.success('Vendor Deleted Successfully');

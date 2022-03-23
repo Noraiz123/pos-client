@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   CheckIcon,
   PlusIcon,
@@ -19,6 +19,7 @@ import {
   deleteAllOrderItemsAction,
   deleteCurrentOrderItemAction,
   deleteOrderItemAction,
+  getOrderAction,
   UpdateOrder,
   updateOrderStatusAction,
 } from '../../actions/order.actions';
@@ -27,24 +28,34 @@ import CustomerModal from '../Modals/AddCustomerModal';
 import { GetCustomers, currentCustomerAction } from '../../actions/customers.actions';
 import AddUserModal from '../Modals/AddUser';
 import InvoiceModal from '../Modals/InvoiceModal';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import OnHoldOrdersModal from '../Modals/OnholdModal';
 import PaymentModal from '../Modals/PaymentModal';
+import Select from 'react-select';
+import { GetProducts } from '../../actions/products.actions';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
-  const { currentOrder, currentCustomer, customers, users, order, orderStatus } = useSelector((state) => ({
-    currentOrder: state.orders.currentOrder,
-    order: state.orders.order,
-    orderStatus: state.orders.orderStatus,
-    currentCustomer: state.customers.currentCustomer,
-    customers: state.customers.allCustomers,
-    users: state.users.filter((e) => e.role === 'salesman'),
-  }));
+  const { currentOrder, currentCustomer, customers, users, order, orderStatus, productsFilter, onHold } = useSelector(
+    (state) => ({
+      currentOrder: state.orders.currentOrder,
+      order: state.orders.order,
+      orderStatus: state.orders.orderStatus,
+      currentCustomer: state.customers.currentCustomer,
+      customers: state.customers.allCustomers,
+      users: state.users.filter((e) => e.role === 'salesman'),
+      productsFilter: state.products.productsFilter,
+      onHold: state.orders.onHold,
+    })
+  );
   const [currentSalesman, setCurrentSalesman] = useState('');
   const [openOnHold, setOpenOnHold] = useState(false);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
+  const [holdIndex, setHoldIndex] = useState(null);
   const { state } = useLocation();
+  const leftBtnRef = useRef();
+  const rightBtnRef = useRef();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(GetCustomers());
@@ -60,11 +71,41 @@ const CreateOrder = () => {
     currentOrder &&
     currentOrder
       .filter((e) => !e.delete)
-      .reduce(
-        (pre, next) =>
-          pre + (Number(next.price) - (Number(next.price) * Number(next.discount)) / 100) * Number(next.orderQuantity),
-        0
-      );
+      .reduce((pre, next) => {
+        const previousDiscountedPrice = (Number(next.currentPrice) * Number(next.currentDiscount)) / 100;
+        const currentDiscountedPrice = (Number(next.price) * Number(next.discount)) / 100;
+        if (next.currentPrice && next.currentDiscount && previousDiscountedPrice !== currentDiscountedPrice) {
+          return (
+            pre +
+            (Number(next.currentPrice) - (Number(next.currentPrice) * Number(next.currentDiscount)) / 100) *
+              Number(next.orderQuantity)
+          );
+        }
+        return (
+          pre + (Number(next.price) - (Number(next.price) * Number(next.discount)) / 100) * Number(next.orderQuantity)
+        );
+      }, 0);
+  const totalRetailPrice =
+    currentOrder &&
+    currentOrder
+      .filter((e) => !e.delete)
+      .reduce((pre, next) => {
+        return pre + Number(next.retailPrice) * Number(next.orderQuantity);
+      }, 0);
+
+  const handleAfterOrder = () => {
+    if (orderStatus === 'UPDATE_ORDER') {
+      dispatch(updateOrderStatusAction('CREATE_ORDER'));
+    }
+    dispatch(deleteAllOrderItemsAction());
+    dispatch(GetProducts(productsFilter));
+    dispatch(currentCustomerAction({}));
+    setOpenPaymentModal(false);
+    setCurrentSalesman('');
+    if (state && state?.salesman) {
+      navigate('/');
+    }
+  };
 
   const handleOrderCreate = (status, change) => {
     if (orderStatus === 'UPDATE_ORDER') {
@@ -72,50 +113,62 @@ const CreateOrder = () => {
         UpdateOrder(
           {
             status: status,
-            salesman: currentSalesman ? currentSalesman : undefined,
+            salesman: currentSalesman || undefined,
+            customer: currentCustomer?._id || undefined,
             change: change ? change : undefined,
-            orderItems: currentOrder.map((e) => ({
-              id: e?.orderItemId ? e.orderItemId : undefined,
-              product: e._id,
-              quantity: e.orderQuantity,
-              previousQuantity: e.previousQuantity,
-              previousPaid: e.previousPaid,
-              paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
-              currentPrice: e.price,
-              delete: e?.delete ? true : undefined,
-            })),
+            orderItems: currentOrder.map((e) => {
+              const previousDiscountedPrice = (Number(e.currentPrice) * Number(e.currentDiscount)) / 100;
+              const currentDiscountedPrice = (Number(e.price) * Number(e.discount)) / 100;
+
+              return {
+                id: e?.orderItemId ? e.orderItemId : undefined,
+                product: e._id,
+                quantity: e.orderQuantity,
+                previousQuantity: e.previousQuantity,
+                previousPaid: e.previousPaid,
+                paidPrice:
+                  e.currentPrice && e.currentDiscount && previousDiscountedPrice !== currentDiscountedPrice
+                    ? Math.round(
+                        (Number(e.currentPrice) - (Number(e.currentPrice) * Number(e.currentDiscount)) / 100) *
+                          Number(e.orderQuantity)
+                      )
+                    : Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
+                currentPrice: e?.currentPrice ? e.currentPrice : e.price,
+                currentDiscount: e.currentDiscount ? e.currentDiscount : e.discount,
+                delete: e?.delete ? true : undefined,
+              };
+            }),
             total: totalPrice,
+            totalRetailPrice,
           },
           order._id
         )
       ).then((res) => {
         if (res.status === 200) {
-          dispatch(updateOrderStatusAction('CREATE_ORDER'));
-          dispatch(deleteAllOrderItemsAction());
-          dispatch(currentCustomerAction({}));
-          setCurrentSalesman('');
+          handleAfterOrder();
         }
       });
     } else {
       dispatch(
         ConfirmOrder({
           status: status,
-          salesman: currentSalesman ? currentSalesman : undefined,
+          salesman: currentSalesman || undefined,
+          customer: currentCustomer?._id || undefined,
           change: change ? change : undefined,
           orderItems: currentOrder.map((e) => ({
             id: e?.orderItemId ? e.orderItemId : undefined,
             product: e._id,
             quantity: e.orderQuantity,
+            currentDiscount: e.discount,
             paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
             currentPrice: e.price,
           })),
           total: totalPrice,
+          totalRetailPrice,
         })
       ).then((res) => {
-        if (res.status === 200) {
-          dispatch(deleteAllOrderItemsAction());
-          dispatch(currentCustomerAction({}));
-          setCurrentSalesman('');
+        if (res.status === 201) {
+          handleAfterOrder();
         }
       });
     }
@@ -130,18 +183,78 @@ const CreateOrder = () => {
 
   const handleQuantityChange = (item, e) => {
     const { value } = e.target;
-    dispatch(createOrderAction({ ...item, orderQuantity: Number(value) }));
+    dispatch(createOrderAction(orderStatus, { ...item, orderQuantity: Number(value) }));
   };
 
   const handleCustomerChange = (e) => {
-    const { value } = e.target;
-    const customer = customers.find((e) => e._id === parseInt(value));
-    dispatch(currentCustomerAction(customer));
+    if (e?.value) {
+      const { value } = e;
+      const customer = customers.find((e) => e._id === value);
+      dispatch(currentCustomerAction(customer));
+    } else {
+      dispatch(currentCustomerAction({}));
+    }
   };
   const user = JSON.parse(localStorage.getItem('user'));
 
   const handleOnHoldOrders = () => {
     handleOrderCreate('onHold');
+  };
+
+  const customerOptions = customers.map((e) => ({ label: e.name, value: e._id }));
+  const salesmanOptions = users.map((e) => ({ label: e.name, value: e._id }));
+
+  const manipulateProducts = (data) => {
+    const result = data.map((e) => ({
+      ...e.product,
+      uuid: Math.random(),
+      currentDiscount: e.currentDiscount,
+      currentPrice: e.currentPrice,
+      orderQuantity: e.quantity,
+      previousQuantity: e.quantity,
+      previousPaid: e.paidPrice,
+    }));
+    return result;
+  };
+
+  const OrderUpdateHandler = (data) => {
+    // dispatch(GetOrder(data.id)).then((res) => {
+    //   if (res && res.status === 200) {
+    //     const orders = manipulateProducts(res.data.order_line_items);
+    //     dispatch(editOnHoldAction(orders));
+    //     dispatch(currentCustomerAction(data?.customer));
+    //     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
+    //     navigate('/', { state: { salesman: data.salesman_id } });
+    //   }
+    // });
+    dispatch(getOrderAction(data));
+    dispatch(createOrderAction(orderStatus, manipulateProducts(data.orderItems)));
+    dispatch(currentCustomerAction(data?.customer));
+    dispatch(updateOrderStatusAction('UPDATE_ORDER'));
+    navigate('/', { state: { salesman: data?.salesman._id } });
+  };
+
+  const preHold = () => {
+    if (onHold.length !== 0 && holdIndex !== 0 && holdIndex !== null) {
+      const index = (holdIndex - 1) % onHold.length;
+      setHoldIndex(index);
+      OrderUpdateHandler(onHold[index]);
+    } else {
+      const index = onHold.length - 1;
+      setHoldIndex(onHold.length - 1);
+      OrderUpdateHandler(onHold[index]);
+    }
+  };
+
+  const nextHold = () => {
+    if (onHold.length !== 0 && holdIndex !== null) {
+      const index = (holdIndex + 1) % onHold.length;
+      setHoldIndex(index);
+      OrderUpdateHandler(onHold[index]);
+    } else {
+      setHoldIndex(0);
+      OrderUpdateHandler(onHold[0]);
+    }
   };
 
   return (
@@ -150,9 +263,9 @@ const CreateOrder = () => {
         <div className='flex mb-2 space-x-2'>
           <button
             className='flex align-middle btn-sm-blue'
-            // disabled={!onHold?.length}
-            // onClick={preHold}
-            // ref={leftBtnRef}
+            disabled={!onHold?.length}
+            onClick={preHold}
+            ref={leftBtnRef}
           >
             <ArrowSmLeftIcon className='mr-2 h-6' />
           </button>
@@ -162,49 +275,33 @@ const CreateOrder = () => {
           </button>
           <button
             className='flex align-middle btn-sm-blue'
-            // disabled={!onHold?.length}
-            // onClick={nextHold}
-            // ref={rightBtnRef}
+            disabled={!onHold?.length}
+            onClick={nextHold}
+            ref={rightBtnRef}
           >
             <ArrowSmRightIcon className='mr-2 h-6' />
           </button>
         </div>
         <div className='flex mb-2'>
-          <select
-            className='input-select w-9/12'
-            value={currentCustomer?._id ? currentCustomer._id : ''}
+          <Select
+            options={customerOptions}
+            placeholder='Select Customer...'
+            value={currentCustomer?._id ? customerOptions.find((e) => e.value === currentCustomer._id) : null}
+            isClearable
             onChange={handleCustomerChange}
-          >
-            <option value='' selected disabled>
-              Select Customer
-            </option>
-            {customers &&
-              customers.map((e) => (
-                <option key={e._id} value={e._id}>
-                  {e.name}
-                </option>
-              ))}
-          </select>
+          />
           <button className='btn-sm-green mx-4' onClick={() => setOpenCustomerModal(true)}>
             <PlusIcon className='h-6' />
           </button>
         </div>
         <div className='flex mb-4'>
-          <select
-            className='input-select w-9/12'
-            value={currentSalesman}
-            onChange={(e) => setCurrentSalesman(e.target.value)}
-          >
-            <option value='' selected disabled>
-              Select Salesman
-            </option>
-            {users &&
-              users.map((e) => (
-                <option key={e._id} value={e._id}>
-                  {e.name}
-                </option>
-              ))}
-          </select>
+          <Select
+            options={salesmanOptions}
+            placeholder='Select Salesman...'
+            isClearable
+            value={currentSalesman !== '' ? salesmanOptions.find((e) => e.value === currentSalesman) : null}
+            onChange={(e) => (e?.value ? setCurrentSalesman(e.value) : setCurrentSalesman(''))}
+          />
           {(user?.role === 'superAdmin' || user?.role === 'admin') && (
             <button className='btn-sm-green mx-4' onClick={() => setOpenUserModal(true)}>
               <PlusIcon className='h-6' />
@@ -255,12 +352,12 @@ const CreateOrder = () => {
                             onChange={(value) => handleQuantityChange(e, value)}
                           />
                         </td>
-                        <td className=''>{e.price}</td>
+                        <td className=''>{e?.currentPrice || e.price}</td>
                         <td className=''>
                           <button
                             className='btn-sm-red'
                             onClick={() =>
-                              orderStatus === 'UPDATE_ORDER'
+                              orderStatus === 'UPDATE_ORDER' && e.currentPrice
                                 ? dispatch(deleteOrderItemAction(e))
                                 : dispatch(deleteCurrentOrderItemAction(e))
                             }
@@ -299,7 +396,7 @@ const CreateOrder = () => {
           <button className='btn-blue' onClick={() => setOpenInvoiceModal(true)} disabled={currentOrder.length === 0}>
             <PrinterIcon className='h-6' />
           </button>
-          <button className='btn-red flex'>
+          <button className='btn-red flex' onClick={handleAfterOrder}>
             <BanIcon className='h-6 mr-2' />
             Cancel
           </button>

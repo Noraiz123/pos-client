@@ -24,8 +24,8 @@ const VendorsModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleVendorEdit = (data) => {
-    const { id, name, description } = data;
-    setVendorData({ id, name, description });
+    const { _id, name, description } = data;
+    setVendorData({ id: _id, name, description });
     setIsOpen(false);
     setTimeout(() => {
       setOpenAddVendor(true);
@@ -53,13 +53,13 @@ const VendorsModal = ({ isOpen, setIsOpen }) => {
                 </thead>
                 <tbody>
                   {vendors.map((e) => (
-                    <tr key={e.id}>
+                    <tr key={e._id}>
                       <td>{e.name}</td>
                       <td>{e.description ? e.description : 'N/A'}</td>
                       <td>
                         {(user?.role === 'superAdmin' || user?.role === 'admin') && (
                           <>
-                            <button className='btn-sm-red' onClick={() => handleVenderDelete(e.id)}>
+                            <button className='btn-sm-red' onClick={() => handleVenderDelete(e._id)}>
                               <TrashIcon className='h-4' />
                             </button>
                             <button className='btn-sm-yellow ml-3' onClick={() => handleVendorEdit(e)}>

@@ -5,40 +5,47 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ModalTemplate from '.';
 import { currentCustomerAction } from '../../actions/customers.actions';
-import { createOrderAction, editOnHoldAction, GetOnHold, GetOrder, getOrderAction, updateOrderStatusAction } from '../../actions/order.actions';
+import {
+  createOrderAction,
+  editOnHoldAction,
+  GetOnHold,
+  GetOrder,
+  getOrderAction,
+  updateOrderStatusAction,
+} from '../../actions/order.actions';
 
 const OnHoldOrdersModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const {  orders,  } = useSelector((state) => ({
+  const { orders, orderStatus } = useSelector((state) => ({
     vendors: state.vendors,
     orders: state.orders.onHold,
+    orderStatus: state.orders.orderStatus,
   }));
   const navigate = useNavigate();
-
 
   const manipulateProducts = (data) => {
     const result = data.map((e) => ({
       ...e.product,
+      uuid: Math.random(),
+      currentDiscount: e.currentDiscount,
+      currentPrice: e.currentPrice,
       orderQuantity: e.quantity,
       previousQuantity: e.quantity,
       previousPaid: e.paidPrice,
     }));
     return result;
   };
-
   const OrderUpdateHandler = (data) => {
     dispatch(getOrderAction(data));
-    dispatch(createOrderAction(manipulateProducts(data.orderItems)));
+    dispatch(createOrderAction(orderStatus, manipulateProducts(data.orderItems)));
     dispatch(currentCustomerAction(data?.customer));
     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
-    navigate('/', { state: { salesman: data?.salesman } });
+    navigate('/', { state: { salesman: data?.salesman._id } });
   };
-
 
   useEffect(() => {
     dispatch(GetOnHold());
   }, [dispatch]);
-
 
   // const orderDeleteHandler = (id) => {
   //   dispatch(DeleteOrder(id)).then(() => {
@@ -70,13 +77,14 @@ const OnHoldOrdersModal = ({ isOpen, setIsOpen }) => {
                   orders.map((e, index) => (
                     <tr key={e._id}>
                       <td>{index + 1}</td>
-                      <td>{e?.customer?.name}</td>
+                      <td>{e?.customer?.name || 'N/A'}</td>
                       <td>{e.total}</td>
-                      <td>{e.cashier?.name ? e.cashier?.name : "N/A"}</td>
-                      <td>{e.salesman?.name ? e.salesman.name : "N/A" }</td>
+                      <td>{e.cashier?.name ? e.cashier?.name : 'N/A'}</td>
+                      <td>{e.salesman?.name ? e.salesman.name : 'N/A'}</td>
                       <td className='flex justify-center items-center'>
-                        <button className='btn-sm-red'
-                        // onClick={() => orderDeleteHandler(e.id)}
+                        <button
+                          className='btn-sm-red'
+                          // onClick={() => orderDeleteHandler(e.id)}
                         >
                           <TrashIcon className='h-4' />
                         </button>

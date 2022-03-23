@@ -3,25 +3,36 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { currentCustomerAction } from '../../actions/customers.actions';
-import {
-  createOrderAction,
-  GetOrder,
-  getOrderAction,
-  GetOrders,
-  updateOrderStatusAction,
-} from '../../actions/order.actions';
+import { createOrderAction, getOrderAction, GetOrders, updateOrderStatusAction } from '../../actions/order.actions';
 import { filterProductsStatsAction, GetProductsStats } from '../../actions/products.actions';
 import ViewOrdersModal from '../Modals/ViewOrderModal';
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 const Transactions = () => {
   const dispatch = useDispatch();
-  const { orders, users, order, productsStats, salesman, products } = useSelector((state) => ({
+  const {
+    orders,
+    users,
+    productsStats,
+    salesman,
+    orderStatus,
+    totalTransactions,
+    totalProfit,
+    totalSales,
+    chartStats,
+  } = useSelector((state) => ({
     orders: state.orders,
     users: state.users,
-    products: state.products.products,
     productsStats: state.products.productsStats,
     salesman: state.users.filter((e) => e.role === 'salesman'),
-    order: state.orders.order,
+    orderStatus: state.orders.orderStatus,
+    totalTransactions: state.orders.totalTransactions,
+    totalSales: state.orders.totalSales,
+    totalProfit: state.orders.totalProfit,
+    chartStats: state.orders.chartStats,
   }));
   const initialFilters = {
     created_at_gteq: '',
@@ -85,44 +96,7 @@ const Transactions = () => {
     dispatch(filterProductsStatsAction({ ...statsFilter, perPage: value }));
   };
 
-  const handleUsers = (id) => {
-    const user = users.find((e) => e.id === id);
-
-    return user ? user.name : '';
-  };
-
-  const totalSales = orders.allOrders.reduce((a, b) => {
-    const total = a + Number(b.total);
-
-    return total;
-  }, 0);
-
-  // const manipulateProducts = (orderItems) => {
-  //   let productsData = [];
-  //   for (let values of products) {
-  //     const order = orderItems.find((o) => values.skus.some((e) => e.id === o.product_sku_id));
-  //     if (order?.id) {
-  //       productsData.push({
-  //         ...values,
-  //         price: order.price,
-  //         sub_total: order.sub_total,
-  //         quantity: order.quantity,
-  //         orderItemId: order.id,
-  //         salesman_id: order.salesman_id,
-  //       });
-  //     }
-  //   }
-
-  //   return productsData;
-  // };
-
   const handleOrdersView = (order) => {
-    // dispatch(GetOrder(order.id)).then((res) => {
-    //   if (res && res.status === 200) {
-    //     setOrdersData(manipulateProducts(res.data.order_line_items));
-    //     setIsOpen(true);
-    //   }
-    // });
     setOrdersData(order.orderItems);
     setIsOpen(true);
   };
@@ -130,6 +104,9 @@ const Transactions = () => {
   const manipulateProducts = (data) => {
     const result = data.map((e) => ({
       ...e.product,
+      uuid: Math.random(),
+      currentDiscount: e.currentDiscount,
+      currentPrice: e.currentPrice,
       orderQuantity: e.quantity,
       previousQuantity: e.quantity,
       previousPaid: e.paidPrice,
@@ -139,10 +116,41 @@ const Transactions = () => {
 
   const OrderUpdateHandler = (data) => {
     dispatch(getOrderAction(data));
-    dispatch(createOrderAction(manipulateProducts(data.orderItems)));
+    dispatch(createOrderAction(orderStatus, manipulateProducts(data.orderItems)));
     dispatch(currentCustomerAction(data?.customer));
     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
     navigate('/', { state: { salesman: data?.salesman } });
+  };
+
+  const labels = chartStats.length > 0 && chartStats.map((e) => new Date(e._id).toDateString());
+  const chartData = chartStats.length > 0 && chartStats.map((e) => e.totalSaleAmount);
+
+  const state = {
+    labels: labels,
+    datasets: [
+      {
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)',
+          'rgba(255, 159, 64, 0.2)',
+          'rgba(255, 205, 86, 0.2)',
+          'rgba(75, 192, 192, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(153, 102, 255, 0.2)',
+          'rgba(201, 203, 207, 0.2)',
+        ],
+        borderColor: [
+          'rgb(255, 99, 132)',
+          'rgb(255, 159, 64)',
+          'rgb(255, 205, 86)',
+          'rgb(75, 192, 192)',
+          'rgb(54, 162, 235)',
+          'rgb(153, 102, 255)',
+          'rgb(201, 203, 207)',
+        ],
+        borderWidth: 1,
+        data: chartData,
+      },
+    ],
   };
 
   return (
@@ -194,6 +202,7 @@ const Transactions = () => {
           </div>
         </div>
       </div>
+
       <div className='my-5 grid xl:grid-cols-3 sm:grid-cols-1 gap-4'>
         <div className='border p-3'>
           <div className='flex justify-between mt-3'>
@@ -234,7 +243,7 @@ const Transactions = () => {
                 <tbody>
                   {productsStats.stats &&
                     productsStats.stats.map((e) => (
-                      <tr key={e.id}>
+                      <tr key={e._id}>
                         <td className=''>{e.product.name}</td>
                         <td className=''>{e.sold}</td>
                         <td className=''>{e.available}</td>
@@ -315,13 +324,13 @@ const Transactions = () => {
               <div className='w-56 h-40 bg-yellow-100 rounded-md'>
                 <div className='text-2xl text-yellow-900 flex flex-col h-full items-center justify-center'>
                   <h1>Transactions</h1>
-                  <h1>{orders.allOrders.length}</h1>
+                  <h1>{totalTransactions}</h1>
                 </div>
               </div>
               <div className='w-56 h-40 bg-blue-100 rounded-md'>
                 <div className='text-2xl text-blue-900 flex flex-col h-full items-center justify-center'>
-                  <h1>Products</h1>
-                  <h1>{productsStats.stats.length}</h1>
+                  <h1>Profit</h1>
+                  <h1>Rs {totalProfit}</h1>
                 </div>
               </div>
             </div>
@@ -332,6 +341,7 @@ const Transactions = () => {
                     <thead>
                       <tr>
                         <th>Invoice</th>
+                        <th>Customer</th>
                         <th>Date</th>
                         <th>Total</th>
                         <th>Paid</th>
@@ -346,12 +356,13 @@ const Transactions = () => {
                     <tbody>
                       {orders.allOrders &&
                         orders.allOrders.map((e) => (
-                          <tr key={e.id}>
+                          <tr key={e._id}>
                             <td className=''></td>
+                            <td>{e?.customer?.name || 'N/A'}</td>
                             <td className=''>{new Date(e.createdAt).toDateString()}</td>
                             <td className=''>Rs: {Math.round(e.total)}</td>
                             <td className=''>Rs: {Math.round(e.total)}</td>
-                            <td>Rs: 0</td>
+                            <td>Rs: {e?.change ? e.change : 0}</td>
                             <td>Cash</td>
                             <td>
                               <p
@@ -362,8 +373,8 @@ const Transactions = () => {
                                 {e.status.toUpperCase()}
                               </p>
                             </td>
-                            <td>{handleUsers(e.cashier_id)}</td>
-                            <td>{handleUsers(e.salesman_id)}</td>
+                            <td>{e.cashier?.name}</td>
+                            <td>{e?.salesman?.name || 'N/A'}</td>
                             <td>
                               <button className='btn-sm-yellow ml-3' onClick={() => handleOrdersView(e)}>
                                 <EyeIcon className='h-4' />
@@ -417,6 +428,43 @@ const Transactions = () => {
                   </nav>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      </div>
+      <h1 className='text-center text-4xl font-extrabold text-gray-600'>Total Sales Chart</h1>
+      <div className='my-5 grid xl:grid-cols-2 sm:grid-cols-1 gap-2'>
+        <div className='h-3/5 w-3/5'>
+          <Doughnut
+            data={state}
+            options={{
+              responsive: true,
+              maintainAspectRatio: true,
+            }}
+          />
+        </div>
+        <div className='border p-3'>
+          <div className='h-60v overflow-y-auto my-6'>
+            <div className='my-4 h-4/6'>
+              <table className='whitespace-nowrap order-table w-full'>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Total Sale</th>
+                    <th>Total Transactions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chartStats &&
+                    chartStats.map((e) => (
+                      <tr key={e._id}>
+                        <td className=''>{new Date(e._id).toDateString()}</td>
+                        <td className=''>RS {e.totalSaleAmount}</td>
+                        <td className=''>{e.count}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

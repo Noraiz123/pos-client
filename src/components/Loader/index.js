@@ -16,11 +16,11 @@ const Loader = () => {
             cx='50'
             cy='50'
             r='32'
-            stroke-width='8'
+            strokeWidth='8'
             stroke='#0d933b'
-            stroke-dasharray='50.26548245743669 50.26548245743669'
+            strokeDasharray='50.26548245743669 50.26548245743669'
             fill='none'
-            stroke-linecap='round'
+            strokeLinecap='round'
           >
             <animateTransform
               attributeName='transform'

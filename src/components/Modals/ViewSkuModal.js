@@ -49,7 +49,7 @@ const ViewSkuModal = ({ isOpen, setIsOpen, skuData }) => {
               <tbody>
                 {skuData &&
                   skuData.skus?.map((e) => (
-                    <tr key={e.id}>
+                    <tr key={e._id}>
                       <td>{e.product_color.name}</td>
                       <td>{e.product_size.name}</td>
                       <td>{e.price}</td>

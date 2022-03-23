@@ -5,15 +5,17 @@ import { filterProductsAction } from '../../actions/products.actions';
 
 const Products = () => {
   const dispatch = useDispatch();
-  const { products, productsFilter, categories, currentPage, totalPages, currentOrder } = useSelector((state) => ({
-    products: state.products.products,
-    productsFilter: state.products.productsFilter,
-    categories: state.categories,
-    currentPage: state.products.currentPage,
-    totalPages: state.products.totalPages,
-    currentOrder: state.orders.currentOrder,
-  }));
-  const [openSku, setOpenSku] = useState(false);
+  const { products, productsFilter, categories, currentPage, totalPages, currentOrder, orderStatus } = useSelector(
+    (state) => ({
+      products: state.products.products,
+      productsFilter: state.products.productsFilter,
+      categories: state.categories,
+      currentPage: state.products.currentPage,
+      totalPages: state.products.totalPages,
+      currentOrder: state.orders.currentOrder,
+      orderStatus: state.orders.orderStatus,
+    })
+  );
 
   const handleCategoryChange = (e) => {
     const { value } = e.target;
@@ -47,19 +49,19 @@ const Products = () => {
   };
 
   const handleCreateOrder = (item) => {
-    const alreadyExists = currentOrder.find((e) => e._id === item._id);
-    if (alreadyExists && alreadyExists._id) {
+    const alreadyExists = currentOrder.filter((e) => e._id === item._id);
+    if (alreadyExists.length > 0) {
       dispatch(
-        createOrderAction({
+        createOrderAction(orderStatus, {
           ...item,
           orderQuantity:
-            Number(alreadyExists.orderQuantity) < Number(item.quantity)
-              ? alreadyExists.orderQuantity + 1
-              : alreadyExists.orderQuantity,
+            Number(alreadyExists[alreadyExists.length - 1].orderQuantity) < Number(item.quantity)
+              ? alreadyExists[alreadyExists.length - 1].orderQuantity + 1
+              : alreadyExists[alreadyExists.length - 1].orderQuantity,
         })
       );
     } else {
-      dispatch(createOrderAction({ ...item, orderQuantity: 1 }));
+      dispatch(createOrderAction(orderStatus, { ...item, orderQuantity: 1 }));
     }
   };
 
@@ -87,7 +89,7 @@ const Products = () => {
             <option value=''>All</option>
             {categories &&
               categories.map((e) => (
-                <option key={e.id} value={e._id}>
+                <option key={e._id} value={e._id}>
                   {e.name}
                 </option>
               ))}

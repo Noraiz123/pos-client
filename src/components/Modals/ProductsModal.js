@@ -75,7 +75,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
               <tbody>
                 {products &&
                   products.map((e, index) => (
-                    <tr key={e.id}>
+                    <tr key={e._id}>
                       <td></td>
                       <td>{index + 1}</td>
                       <td>{e.name}</td>
@@ -84,7 +84,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
                       <td className='flex justify-center items-center'>
                         {(user?.role === 'superAdmin' || user?.role === 'admin') && (
                           <>
-                            <button className='btn-sm-red' onClick={() => productDeleteHandler(e.id)}>
+                            <button className='btn-sm-red' onClick={() => productDeleteHandler(e._id)}>
                               <TrashIcon className='h-4' />
                             </button>
                             <button className='btn-sm-yellow ml-3' onClick={() => productUpdateHandler(e)}>

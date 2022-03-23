@@ -2,10 +2,11 @@ import { actionTypes } from '../constants/actionTypes';
 import { createOrder, getOnHoldOrders, getOrder, getOrders, updateOrder } from '../api/order';
 import { toast } from 'react-toastify';
 
-export const createOrderAction = (payload) => {
+export const createOrderAction = (status, payload) => {
   return {
     type: actionTypes.createOrder,
     payload,
+    status
   };
 };
 

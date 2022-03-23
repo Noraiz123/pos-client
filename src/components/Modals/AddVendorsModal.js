@@ -34,7 +34,8 @@ const AddVendorsModal = ({ isOpen, setIsOpen, vendorData }) => {
         setVendorDetails(initState);
       });
     } else {
-      dispatch(CreateVendor({ vendor: vendorDetails })).then(() => {
+      const { name, description } = vendorDetails;
+      dispatch(CreateVendor({ name, description })).then(() => {
         setIsOpen(false);
         setVendorDetails(initState);
       });

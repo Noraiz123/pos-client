@@ -1,20 +1,6 @@
 import initialState from './initialState';
 import { actionTypes } from '../constants/actionTypes';
 
-const modifyProducts = (items) => {
-  let skusArray = [];
-  for (let values of items) {
-    if (values.skus.length) {
-      for (let skus of values.skus) {
-        skusArray.push({ ...values, skus });
-      }
-    } else {
-      skusArray.push({ ...values, skus: {} });
-    }
-  }
-  return skusArray;
-};
-
 export default (state = initialState.products, action) => {
   switch (action.type) {
     case actionTypes.getProducts: {

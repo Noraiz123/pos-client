@@ -3,7 +3,6 @@ import {
   ViewGridAddIcon,
   FolderAddIcon,
   UserIcon,
-  ViewBoardsIcon,
   CreditCardIcon,
   PlusIcon,
   CogIcon,
@@ -89,7 +88,7 @@ const Header = () => {
           </button>
         </div>
         <div className='flex space-x-2 xl:justify-end'>
-          <button className='flex btn-sm-green'>
+          <button className='flex btn-green'>
             <CogIcon className='h-6' />
           </button>
           {user?.role === 'admin' &&
@@ -144,8 +143,8 @@ const Header = () => {
       <UsersModal isOpen={openUsers} setIsOpen={setOpenUsers} />
       <AddUserModal isOpen={openAddUser} setIsOpen={setOpenAddUser} />
       <CustomersModal isOpen={openCustomers} setIsOpen={setOpenCustomers} />
-      {/* <AddVendorsModal isOpen={openAddVendors} setIsOpen={setOpenAddVendors} /> */}
-      {/* <VendorsModal isOpen={openVendors} setIsOpen={setOpenVendors} /> */}
+      <AddVendorsModal isOpen={openAddVendors} setIsOpen={setOpenAddVendors} />
+      <VendorsModal isOpen={openVendors} setIsOpen={setOpenVendors} />
       <CategoriesModal isOpen={openCategories} setIsOpen={setOpenCategories} />
       <StoresModal isOpen={openStores} setIsOpen={setOpenStores} />
       <AddStore isOpen={openAddStores} setIsOpen={setOpenAddStores} />

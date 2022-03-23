@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import routes from '../config/routes';
-import React from 'react';
+import React, { useEffect } from 'react';
 import LoginPage from './LoginPage';
 import { useSelector } from 'react-redux';
 import Loader from '../components/Loader';
@@ -8,7 +8,11 @@ import Loader from '../components/Loader';
 function App() {
   const isLoading = useSelector((state) => state.isLoading);
 
-  console.log(isLoading)
+  useEffect(() => {
+    window.process = {
+      ...window.process,
+    };
+  }, []);
 
   return (
     <Router>
