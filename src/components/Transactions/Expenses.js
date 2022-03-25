@@ -1,9 +1,9 @@
-import { EyeIcon, PencilAltIcon } from '@heroicons/react/solid';
+import { EyeIcon, PencilAltIcon, TrashIcon } from '@heroicons/react/solid';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ViewOrdersModal from '../Modals/ViewOrderModal';
-import { GetExpenses } from '../../actions/expenses.actions';
-
+import { DeleteExpenses, GetExpenses } from '../../actions/expenses.actions';
+import AddExpenseModal from '../Modals/AddExpenseModal';
+import ViewExpenseModal from '../Modals/viewExpense';
 
 const Expenses = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,8 @@ const Expenses = () => {
 
   const [expensesFilter, setExpensesFilter] = useState(initialFilters);
   const [isOpen, setIsOpen] = useState(false);
-  const [ordersData, setOrdersData] = useState(null);
+  const [viewExpense, setViewExpense] = useState(false);
+  const [expenseData, setExpenseData] = useState(null);
   const [expensePagination, setExpensePagination] = useState({ perPage: 10, page: 1 });
   useEffect(() => {
     dispatch(GetExpenses({ query: expensesFilter }, expensePagination));
@@ -46,17 +47,26 @@ const Expenses = () => {
     setExpensePagination({ ...expensePagination, page });
   };
 
-  const handleOrdersView = (order) => {
-    setOrdersData(order.orderItems);
+  const handleOrdersView = (data) => {
+    setExpenseData(data);
+    setViewExpense(true);
+  };
+
+  const ExpenseUpdateHandler = (data) => {
+    setExpenseData(data);
     setIsOpen(true);
+  };
+
+  const ExpenseDeleteHandler = (id) => {
+    dispatch(DeleteExpenses(id, { query: expensesFilter }, expensePagination));
   };
 
   return (
     <div>
-      <div className={`grid xl:grid-cols-${user.role === 'superAdmin' ? 3 : 2} sm:grid-cols-2 gap-4 p-5 border-b`}>
+      <div className='p-5 border-b flex justify-between flex-wrap'>
         <h1 className='text-2xl text-gray-600 flex items-center'>Expenses</h1>
         {user.role === 'superAdmin' && (
-          <div className='flex flex-col w-3/5'>
+          <div className='flex flex-col'>
             <label className='mb-1 text-gray-500 font-bold'>Store</label>
             <select className='input-select' name='store' onChange={handleExpenseFilterChange}>
               <option value='' selected>
@@ -71,9 +81,9 @@ const Expenses = () => {
             </select>
           </div>
         )}
-        <div className={`flex flex-col w-${user.role === 'superAdmin' ? 'auto' : '3/5'}`}>
+        <div className={`flex flex-col`}>
           <label className='mb-1 text-gray-500 font-bold'>Date</label>
-          <div className='flex border bg-white rounded-lg p-2 space-x-3 w-9/12'>
+          <div className='flex border bg-white rounded-lg p-2 space-x-3'>
             <input type='date' className='' name='created_at_gteq' onChange={handleExpenseFilterChange} />
             <span className='text-gray-500 font-bold'>To</span>
             <input type='date' className='' name='created_at_lteq' onChange={handleExpenseFilterChange} />
@@ -163,12 +173,16 @@ const Expenses = () => {
                               <button className='btn-sm-yellow ml-3' onClick={() => handleOrdersView(e)}>
                                 <EyeIcon className='h-4' />
                               </button>
-                              <button
-                                className='btn-sm-green ml-3'
-                                // onClick={() => OrderUpdateHandler(e)}
-                              >
-                                <PencilAltIcon className='h-4' />
-                              </button>
+                              {user?.role !== 'superAdmin' && (
+                                <>
+                                  <button className='btn-sm-green ml-3' onClick={() => ExpenseUpdateHandler(e)}>
+                                    <PencilAltIcon className='h-4' />
+                                  </button>
+                                  <button className='btn-sm-red ml-3' onClick={() => ExpenseDeleteHandler(e._id)}>
+                                    <TrashIcon className='h-4' />
+                                  </button>
+                                </>
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -217,7 +231,8 @@ const Expenses = () => {
           </div>
         </div>
       </div>
-      <ViewOrdersModal isOpen={isOpen} setIsOpen={setIsOpen} orderDetails={ordersData} />
+      <AddExpenseModal isOpen={isOpen} setIsOpen={setIsOpen} expenseData={expenseData} />
+      <ViewExpenseModal isOpen={viewExpense} setIsOpen={setViewExpense} expenseDetails={expenseData} />
     </div>
   );
 };

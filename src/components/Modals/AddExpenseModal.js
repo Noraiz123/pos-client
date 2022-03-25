@@ -25,19 +25,17 @@ const AddExpenseModal = ({ isOpen, setIsOpen, expenseData }) => {
 
   const submitExpense = () => {
     const { name, amount, details } = expenseDetails;
-    if (name.length && amount.length) {
-      if (expenseData) {
-        const { _id } = expenseDetails;
-        dispatch(UpdateExpense(_id, { name, amount, details })).then(() => {
-          setIsOpen(false);
-          setExpenseDetails(initState);
-        });
-      } else {
-        dispatch(CreateExpense(expenseDetails)).then(() => {
-          setIsOpen(false);
-          setExpenseDetails(initState);
-        });
-      }
+    if (expenseData?._id) {
+      const { _id } = expenseDetails;
+      dispatch(UpdateExpense(_id, { name, amount, details })).then(() => {
+        setIsOpen(false);
+        setExpenseDetails(initState);
+      });
+    } else {
+      dispatch(CreateExpense(expenseDetails)).then(() => {
+        setIsOpen(false);
+        setExpenseDetails(initState);
+      });
     }
   };
   return (

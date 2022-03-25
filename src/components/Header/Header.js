@@ -85,10 +85,12 @@ const Header = () => {
             <UserIcon className='mr-2 h-6' />
             Customers
           </button>
-          <button className='flex align-middle btn-blue' onClick={() => setOpenAddExpense(true)}>
-            <DocumentTextIcon className='mr-2 h-6' />
-            Add Expense
-          </button>
+          {user?.role !== 'superAdmin' && (
+            <button className='flex align-middle btn-blue' onClick={() => setOpenAddExpense(true)}>
+              <DocumentTextIcon className='mr-2 h-6' />
+              Add Expense
+            </button>
+          )}
         </div>
         <div className='flex space-x-2 xl:justify-end'>
           {user?.role === 'admin' &&
