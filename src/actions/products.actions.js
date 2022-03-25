@@ -1,14 +1,10 @@
 import { toast } from 'react-toastify';
 import {
-  createColor,
   createProduct,
-  createSize,
   deleteProduct,
-  getColors,
   getProduct,
   getProducts,
   getProductsStats,
-  getSizes,
   updateProduct,
 } from '../api/products';
 import { actionTypes } from '../constants/actionTypes';
@@ -34,37 +30,9 @@ const getProductAction = (payload) => {
   };
 };
 
-const getColorsAction = (payload) => {
-  return {
-    type: actionTypes.getColors,
-    payload,
-  };
-};
-
-const getSizesAction = (payload) => {
-  return {
-    type: actionTypes.getSizes,
-    payload,
-  };
-};
-
 const createProductAction = (payload) => {
   return {
     type: actionTypes.createProduct,
-    payload,
-  };
-};
-
-const createColorAction = (payload) => {
-  return {
-    type: actionTypes.createColor,
-    payload,
-  };
-};
-
-const createSizeAction = (payload) => {
-  return {
-    type: actionTypes.createSize,
     payload,
   };
 };
@@ -111,43 +79,12 @@ export const GetProduct = (id) => async (dispatch) => {
   }
 };
 
-export const GetColors = () => async (dispatch) => {
-  const res = await getColors();
-  if (res.status === 200) {
-    dispatch(getColorsAction(res.data));
-  }
-};
-
-export const GetSizes = () => async (dispatch) => {
-  const res = await getSizes();
-  if (res.status === 200) {
-    dispatch(getSizesAction(res.data));
-  }
-};
 
 export const CreateProduct = (data) => async (dispatch) => {
   const res = await createProduct(data);
   if (res.status === 201) {
     dispatch(createProductAction(res.data));
     toast.success('Product Created Successfully');
-  }
-  return res;
-};
-
-export const CreateSize = (data) => async (dispatch) => {
-  const res = await createSize(data);
-  if (res.status === 200) {
-    dispatch(createSizeAction(res.data));
-    toast.success('Size Created Successfully');
-  }
-  return res;
-};
-
-export const CreateColor = (data) => async (dispatch) => {
-  const res = await createColor(data);
-  if (res.status === 200) {
-    dispatch(createColorAction(res.data));
-    toast.success('Color Created Successfully');
   }
   return res;
 };

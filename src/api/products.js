@@ -12,28 +12,12 @@ export function getProduct(id) {
 
 export function getProductsStats(data) {
   return instance.get(
-    `/productsStats?search_keyword=${data.keyword}&&page=${data.page}&&per_page=${data.perPage}`
+    `/productsStats?search_keyword=${data.keyword}&&page=${data.page}&&per_page=${data.perPage}&&store=${data.store}`
   );
-}
-
-export function getColors() {
-  return instance.get('/api/product/colors');
-}
-
-export function getSizes() {
-  return instance.get('/api/product/sizes');
 }
 
 export function createProduct(data) {
   return instance.post('/products', data);
-}
-
-export function createSize(size) {
-  return instance.post(`/api/product/sizes?product_size[name]=${size}`);
-}
-
-export function createColor(color) {
-  return instance.post(`/api/product/colors?product_color[name]=${color}`);
 }
 
 export function deleteProduct(id) {

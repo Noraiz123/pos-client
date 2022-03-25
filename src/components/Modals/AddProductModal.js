@@ -11,6 +11,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
     imgUrl: null,
     category_id: null,
+    barcode: '',
     store: '',
     vendor_id: null,
     discount: null,
@@ -34,8 +35,20 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
 
   useEffect(() => {
     if (productData && productData._id) {
-      const { imgUrl, name, category_id, vendor_id, discount, store, size, color, price, quantity, retailPrice } =
-        productData;
+      const {
+        imgUrl,
+        name,
+        category_id,
+        vendor_id,
+        discount,
+        store,
+        size,
+        color,
+        price,
+        quantity,
+        retailPrice,
+        barcode,
+      } = productData;
 
       setProductDetails({
         ...initState,
@@ -49,6 +62,7 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
         color,
         quantity,
         retailPrice,
+        barcode,
         price,
       });
     }
@@ -178,7 +192,16 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                   onChange={handleAddProduct}
                 />
               </div>
-
+              <div className='flex flex-col my-2'>
+                <label className='mb-1 text-gray-500 font-bold'>Barcode</label>
+                <input
+                  className='input-field'
+                  type='text'
+                  name='barcode'
+                  value={productDetails.barcode}
+                  onChange={handleAddProduct}
+                />
+              </div>
               <div className='flex flex-col my-2'>
                 <label className='mb-1 text-gray-500 font-bold'>Discount</label>
                 <input

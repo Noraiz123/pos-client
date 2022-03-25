@@ -62,13 +62,16 @@ code {
   @apply p-2 border border-gray-300 bg-white rounded-sm focus:outline-none text-gray-500;
 }
 
-.order-table th,
-td {
-  @apply px-5 text-center py-4 text-gray-500;
+.order-table {
+  th,
+  td {
+    @apply px-5 text-center py-4 text-gray-500;
+  }
 }
-
-.order-table tr {
-  @apply border-b-2;
+.order-table {
+  tr {
+    @apply border-b-2;
+  }
 }
 
 .btn-outline {

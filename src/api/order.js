@@ -21,3 +21,8 @@ export function createOrder(data) {
 export function updateOrder(data, id) {
   return instance.patch(`/order/${id}`, data);
 }
+
+export function deleteOrder(id) {
+  return instance.delete(`/order/${id}`);
+}
+

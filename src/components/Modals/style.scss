@@ -24,3 +24,18 @@
 .css-6j8wv5-Input {
   padding: 8px !important;
 }
+
+.invoice-table {
+  th,
+  .invoice-total,
+  table {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-collapse: collapse;
+  }
+}
+
+.ticket {
+  width: 80mm;
+  max-width: auto;
+}

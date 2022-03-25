@@ -6,20 +6,18 @@ import { useNavigate } from 'react-router-dom';
 import ModalTemplate from '.';
 import { currentCustomerAction } from '../../actions/customers.actions';
 import {
-  createOrderAction,
+  DeleteOrder,
   editOnHoldAction,
   GetOnHold,
-  GetOrder,
   getOrderAction,
   updateOrderStatusAction,
 } from '../../actions/order.actions';
 
 const OnHoldOrdersModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const { orders, orderStatus } = useSelector((state) => ({
+  const { orders } = useSelector((state) => ({
     vendors: state.vendors,
     orders: state.orders.onHold,
-    orderStatus: state.orders.orderStatus,
   }));
   const navigate = useNavigate();
 
@@ -37,7 +35,7 @@ const OnHoldOrdersModal = ({ isOpen, setIsOpen }) => {
   };
   const OrderUpdateHandler = (data) => {
     dispatch(getOrderAction(data));
-    dispatch(createOrderAction(orderStatus, manipulateProducts(data.orderItems)));
+    dispatch(editOnHoldAction(manipulateProducts(data.orderItems)));
     dispatch(currentCustomerAction(data?.customer));
     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
     navigate('/', { state: { salesman: data?.salesman._id } });
@@ -47,11 +45,11 @@ const OnHoldOrdersModal = ({ isOpen, setIsOpen }) => {
     dispatch(GetOnHold());
   }, [dispatch]);
 
-  // const orderDeleteHandler = (id) => {
-  //   dispatch(DeleteOrder(id)).then(() => {
-  //     dispatch(GetOnHold());
-  //   });
-  // };
+  const orderDeleteHandler = (id) => {
+    dispatch(DeleteOrder(id)).then(() => {
+      dispatch(GetOnHold());
+    });
+  };
 
   return (
     <div>
@@ -82,10 +80,7 @@ const OnHoldOrdersModal = ({ isOpen, setIsOpen }) => {
                       <td>{e.cashier?.name ? e.cashier?.name : 'N/A'}</td>
                       <td>{e.salesman?.name ? e.salesman.name : 'N/A'}</td>
                       <td className='flex justify-center items-center'>
-                        <button
-                          className='btn-sm-red'
-                          // onClick={() => orderDeleteHandler(e.id)}
-                        >
+                        <button className='btn-sm-red' onClick={() => orderDeleteHandler(e._id)}>
                           <TrashIcon className='h-4' />
                         </button>
                         <button className='btn-sm-yellow ml-3' onClick={() => OrderUpdateHandler(e)}>

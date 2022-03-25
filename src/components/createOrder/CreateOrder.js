@@ -19,6 +19,7 @@ import {
   deleteAllOrderItemsAction,
   deleteCurrentOrderItemAction,
   deleteOrderItemAction,
+  editOnHoldAction,
   getOrderAction,
   UpdateOrder,
   updateOrderStatusAction,
@@ -33,11 +34,13 @@ import OnHoldOrdersModal from '../Modals/OnholdModal';
 import PaymentModal from '../Modals/PaymentModal';
 import Select from 'react-select';
 import { GetProducts } from '../../actions/products.actions';
+import { useReactToPrint } from 'react-to-print';
+import OrderInvoice from './Invoice';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
-  const { currentOrder, currentCustomer, customers, users, order, orderStatus, productsFilter, onHold } = useSelector(
-    (state) => ({
+  const { currentOrder, currentCustomer, customers, users, order, orderStatus, productsFilter, onHold, products } =
+    useSelector((state) => ({
       currentOrder: state.orders.currentOrder,
       order: state.orders.order,
       orderStatus: state.orders.orderStatus,
@@ -45,12 +48,13 @@ const CreateOrder = () => {
       customers: state.customers.allCustomers,
       users: state.users.filter((e) => e.role === 'salesman'),
       productsFilter: state.products.productsFilter,
+      products: state.products.products,
       onHold: state.orders.onHold,
-    })
-  );
+    }));
   const [currentSalesman, setCurrentSalesman] = useState('');
   const [openOnHold, setOpenOnHold] = useState(false);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
+  const [invoiceNo, setInvoiceNo] = useState(null);
   const [holdIndex, setHoldIndex] = useState(null);
   const { state } = useLocation();
   const leftBtnRef = useRef();
@@ -107,7 +111,16 @@ const CreateOrder = () => {
     }
   };
 
+  const invoiceRef = useRef();
+
+  const printOrder = useReactToPrint({
+    content: () => invoiceRef.current,
+    copyStyles: true,
+  });
+
   const handleOrderCreate = (status, change) => {
+    const invoice = Math.random();
+    setInvoiceNo(invoice);
     if (orderStatus === 'UPDATE_ORDER') {
       dispatch(
         UpdateOrder(
@@ -145,6 +158,8 @@ const CreateOrder = () => {
         )
       ).then((res) => {
         if (res.status === 200) {
+          setInvoiceNo(res.data.invoiceNo);
+          printOrder();
           handleAfterOrder();
         }
       });
@@ -168,6 +183,8 @@ const CreateOrder = () => {
         })
       ).then((res) => {
         if (res.status === 201) {
+          setInvoiceNo(res.data.invoiceNo);
+          printOrder();
           handleAfterOrder();
         }
       });
@@ -218,21 +235,29 @@ const CreateOrder = () => {
   };
 
   const OrderUpdateHandler = (data) => {
-    // dispatch(GetOrder(data.id)).then((res) => {
-    //   if (res && res.status === 200) {
-    //     const orders = manipulateProducts(res.data.order_line_items);
-    //     dispatch(editOnHoldAction(orders));
-    //     dispatch(currentCustomerAction(data?.customer));
-    //     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
-    //     navigate('/', { state: { salesman: data.salesman_id } });
-    //   }
-    // });
     dispatch(getOrderAction(data));
-    dispatch(createOrderAction(orderStatus, manipulateProducts(data.orderItems)));
+    dispatch(editOnHoldAction(manipulateProducts(data.orderItems)));
     dispatch(currentCustomerAction(data?.customer));
     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
     navigate('/', { state: { salesman: data?.salesman._id } });
   };
+
+  const handleKeyBindings = (event) => {
+    const key = event.key;
+    if (event.ctrlKey && key === 'ArrowRight') {
+      rightBtnRef.current.click();
+    } else if (event.ctrlKey && key === 'ArrowLeft') {
+      leftBtnRef.current.click();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', (e) => handleKeyBindings(e));
+
+    return () => {
+      window.removeEventListener('keydown', (e) => handleKeyBindings(e));
+    };
+  }, []);
 
   const preHold = () => {
     if (onHold.length !== 0 && holdIndex !== 0 && holdIndex !== null) {
@@ -254,6 +279,30 @@ const CreateOrder = () => {
     } else {
       setHoldIndex(0);
       OrderUpdateHandler(onHold[0]);
+    }
+  };
+
+  const handleProductsSearch = (e) => {
+    const { value } = e.target;
+
+    const product = products.find((s) => s.barcode === value);
+
+    if (product?._id) {
+      const alreadyExists = currentOrder.filter((e) => e._id === product._id);
+      if (alreadyExists.length > 0) {
+        dispatch(
+          createOrderAction(orderStatus, {
+            ...product,
+            orderQuantity:
+              Number(alreadyExists[alreadyExists.length - 1].orderQuantity) < Number(product.quantity)
+                ? alreadyExists[alreadyExists.length - 1].orderQuantity + 1
+                : alreadyExists[alreadyExists.length - 1].orderQuantity,
+          })
+        );
+      } else {
+        dispatch(createOrderAction(orderStatus, { ...product, orderQuantity: 1 }));
+      }
+      setTimeout(() => (e.target.value = ''), 1000);
     }
   };
 
@@ -313,6 +362,7 @@ const CreateOrder = () => {
             type='search'
             placeholder='Scan barcode or type the number then hit enter'
             className='input-field w-11/12'
+            onChange={handleProductsSearch}
           />
           <button className='btn-sm-gray'>
             <CheckIcon className='h-6' />
@@ -375,23 +425,6 @@ const CreateOrder = () => {
         <div className='w-full bg-green-100 p-3 text-center rounded-sm'>
           <h1 className='text-green-900 font-extrabold'>Grand Total : Rs {Math.round(totalPrice)}</h1>
         </div>
-
-        {/* <div className='text-gray-500'>
-          <div className='grid grid-cols-5 space-x-4'>
-            <div>Total Discounts</div>
-            <div className='col-span-2'>: 0</div>
-            <div>Price</div>
-            <div>RS {Math.round(totalPrice)}</div>
-          </div>
-          <div className='grid grid-cols-5 space-x-4'>
-            <div>Discount</div>
-            <div className='col-span-2'>
-              <input type='text' className='input-field w-11/12' />
-            </div>
-            <div>Gross Price(inc 15% Tax)</div>
-            <div className='text-xl font-bold'>R0:00</div>
-          </div>
-        </div> */}
         <div className='flex justify-between my-4'>
           <button className='btn-blue' onClick={() => setOpenInvoiceModal(true)} disabled={currentOrder.length === 0}>
             <PrinterIcon className='h-6' />
@@ -414,13 +447,19 @@ const CreateOrder = () => {
           </button>
         </div>
       </div>
+      <div className='hidden'>
+        <OrderInvoice
+          ref={invoiceRef}
+          invoiceData={{ orderItems: currentOrder.filter(e => !e.delete), customer: currentCustomer, total: totalPrice, invoiceNo: invoiceNo }}
+        />
+      </div>
       <CustomerModal isOpen={openCustomerModal} setIsOpen={setOpenCustomerModal} />
       <AddUserModal isOpen={openUserModal} setIsOpen={setOpenUserModal} />
       <OnHoldOrdersModal isOpen={openOnHold} setIsOpen={setOpenOnHold} />
       <InvoiceModal
         isOpen={openInvoiceModal}
         setIsOpen={setOpenInvoiceModal}
-        invoiceData={{ orderItems: currentOrder, customer: currentCustomer, total: totalPrice }}
+        invoiceData={{ orderItems: currentOrder.filter(e => !e.delete), customer: currentCustomer, total: totalPrice, invoiceNo: invoiceNo }}
       />
       <PaymentModal
         isOpen={openPaymentModal}

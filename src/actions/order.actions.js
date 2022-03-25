@@ -1,12 +1,12 @@
 import { actionTypes } from '../constants/actionTypes';
-import { createOrder, getOnHoldOrders, getOrder, getOrders, updateOrder } from '../api/order';
+import { createOrder, deleteOrder, getOnHoldOrders, getOrder, getOrders, updateOrder } from '../api/order';
 import { toast } from 'react-toastify';
 
 export const createOrderAction = (status, payload) => {
   return {
     type: actionTypes.createOrder,
     payload,
-    status
+    status,
   };
 };
 
@@ -117,6 +117,14 @@ export const GetOrder = (id) => async (dispatch) => {
   const res = await getOrder(id);
   if (res.status === 200) {
     dispatch(getOrderAction(res.data));
+  }
+  return res;
+};
+
+export const DeleteOrder = (id) => async (dispatch) => {
+  const res = await deleteOrder(id);
+  if (res.status === 204) {
+    toast.success('Order Deleted Successfully');
   }
   return res;
 };

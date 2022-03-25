@@ -7,6 +7,7 @@ import ModalTemplate from '.';
 import { DeleteProduct, GetProduct, GetProducts } from '../../actions/products.actions';
 import { appConstants } from '../../constants/appConstants';
 import AddProducts from './AddProductModal';
+import Barcode from 'react-barcode';
 
 const ProductsModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
@@ -69,30 +70,28 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
                   <th>Name</th>
                   <th>Category</th>
                   <th>Vendor</th>
-                  <th>Action</th>
+                  {(user?.role === 'superAdmin' || user?.role === 'admin') && <th className='h-full'>Action</th>}
                 </tr>
               </thead>
               <tbody>
                 {products &&
                   products.map((e, index) => (
                     <tr key={e._id}>
-                      <td></td>
+                      <td className=''>{e.barcode && <Barcode value={e.barcode} />}</td>
                       <td>{index + 1}</td>
                       <td>{e.name}</td>
                       <td>{getCategory(e.category_id)}</td>
                       <td>{getVendor(e.vendor_id)}</td>
-                      <td className='flex justify-center items-center'>
-                        {(user?.role === 'superAdmin' || user?.role === 'admin') && (
-                          <>
-                            <button className='btn-sm-red' onClick={() => productDeleteHandler(e._id)}>
-                              <TrashIcon className='h-4' />
-                            </button>
-                            <button className='btn-sm-yellow ml-3' onClick={() => productUpdateHandler(e)}>
-                              <PencilAltIcon className='h-4' />
-                            </button>
-                          </>
-                        )}
-                      </td>
+                      {(user?.role === 'superAdmin' || user?.role === 'admin') && (
+                        <td>
+                          <button className='btn-sm-red h-full' onClick={() => productDeleteHandler(e._id)}>
+                            <TrashIcon className='h-4' />
+                          </button>
+                          <button className='btn-sm-yellow ml-3 h-full' onClick={() => productUpdateHandler(e)}>
+                            <PencilAltIcon className='h-4' />
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))}
               </tbody>

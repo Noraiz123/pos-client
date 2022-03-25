@@ -6,7 +6,7 @@ import { currentCustomerAction } from '../../actions/customers.actions';
 import { createOrderAction, getOrderAction, GetOrders, updateOrderStatusAction } from '../../actions/order.actions';
 import { filterProductsStatsAction, GetProductsStats } from '../../actions/products.actions';
 import ViewOrdersModal from '../Modals/ViewOrderModal';
-import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -23,6 +23,7 @@ const Transactions = () => {
     totalProfit,
     totalSales,
     chartStats,
+    stores,
   } = useSelector((state) => ({
     orders: state.orders,
     users: state.users,
@@ -33,6 +34,7 @@ const Transactions = () => {
     totalSales: state.orders.totalSales,
     totalProfit: state.orders.totalProfit,
     chartStats: state.orders.chartStats,
+    stores: state.stores,
   }));
   const initialFilters = {
     created_at_gteq: '',
@@ -40,7 +42,11 @@ const Transactions = () => {
     status_in: '',
     cashier_id_eq: '',
     salesman_id_eq: '',
+    store: '',
+    invoiceNo: '',
   };
+
+  const user = JSON.parse(localStorage.getItem('user'));
 
   const navigate = useNavigate();
   const [ordersFilter, setOrdersFilter] = useState(initialFilters);
@@ -61,6 +67,10 @@ const Transactions = () => {
       ...pre,
       [name]: value,
     }));
+    if (name === 'store') {
+      const { statsFilter } = productsStats;
+      dispatch(filterProductsStatsAction({ ...statsFilter, store: value }));
+    }
   };
 
   const handlePageChange = (page) => {
@@ -88,7 +98,13 @@ const Transactions = () => {
     dispatch(filterProductsStatsAction({ ...statsFilter, keyword: value }));
   };
 
+  const handleOrdersSearch = (e) => {
+    const { value } = e.target;
+    setOrdersFilter({ ...ordersFilter, invoiceNo: value });
+  };
+
   const optimizedSearch = debounce(handleProductsSearch);
+  const optimizedInvoiceSearch = debounce(handleOrdersSearch);
 
   const handleProductsPerPageChange = (e) => {
     const { statsFilter } = productsStats;
@@ -154,9 +170,25 @@ const Transactions = () => {
   };
 
   return (
-    <div className='bg-white mt-4'>
-      <div className='grid xl:grid-cols-6 sm:grid-cols-2 gap-4 p-5 border-b'>
+    <div>
+      <div className={`grid xl:grid-cols-${user.role === 'superAdmin' ? 7 : 6} sm:grid-cols-2 gap-4 p-5 border-b`}>
         <h1 className='text-2xl text-gray-600 flex items-center'>Transactions</h1>
+        {user.role === 'superAdmin' && (
+          <div className='flex flex-col'>
+            <label className='mb-1 text-gray-500 font-bold'>Store</label>
+            <select className='input-select' name='store' onChange={handleOrdersFilterChange}>
+              <option value='' selected>
+                All
+              </option>
+              {stores &&
+                stores.map((e) => (
+                  <option key={e._id} value={e._id}>
+                    {e.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        )}
         <div className='flex flex-col'>
           <label className='mb-1 text-gray-500 font-bold'>Salesman</label>
           <select className='input-select' name='salesman_id_eq' onChange={handleOrdersFilterChange}>
@@ -183,6 +215,7 @@ const Transactions = () => {
               ))}
           </select>
         </div>
+
         <div className='flex flex-col'>
           <label className='mb-1 text-gray-500 font-bold'>Status</label>
           <select className='input-select' name='status_in' onChange={handleOrdersFilterChange}>
@@ -190,7 +223,7 @@ const Transactions = () => {
               All
             </option>
             <option value='paid'>Paid</option>
-            <option value='draft'>Draft</option>
+            <option value='onHold'>OnHold</option>
           </select>
         </div>
         <div className='flex flex-col col-span-2'>
@@ -299,6 +332,14 @@ const Transactions = () => {
           <div className='border-b pb-2 flex justify-between p-2'>
             <h1 className='text-2xl text-gray-600 flex items-center'>Total</h1>
             <div>
+              <input
+                type='text'
+                className='input-field'
+                placeholder='Search with invoice#...'
+                onChange={optimizedInvoiceSearch}
+              />
+            </div>
+            <div>
               <label className='mr-1 text-gray-500 font-bold'>Display records</label>
               <select
                 className='input-select'
@@ -357,7 +398,7 @@ const Transactions = () => {
                       {orders.allOrders &&
                         orders.allOrders.map((e) => (
                           <tr key={e._id}>
-                            <td className=''></td>
+                            <td className=''>{e?.invoiceNo || 'N/A'}</td>
                             <td>{e?.customer?.name || 'N/A'}</td>
                             <td className=''>{new Date(e.createdAt).toDateString()}</td>
                             <td className=''>Rs: {Math.round(e.total)}</td>

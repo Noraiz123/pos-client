@@ -7,6 +7,7 @@ import {
   PlusIcon,
   CogIcon,
   ShoppingBagIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/solid';
 
 import { LogoutIcon } from '@heroicons/react/outline';
@@ -24,6 +25,7 @@ import { useDispatch } from 'react-redux';
 import CategoriesModal from '../Modals/CategoriesModal';
 import StoresModal from '../Modals/StoresModal';
 import AddStore from '../Modals/AddStore';
+import AddExpenseModal from '../Modals/AddExpenseModal';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,6 +39,7 @@ const Header = () => {
   const [openStores, setOpenStores] = useState(false);
   const [openAddVendors, setOpenAddVendors] = useState(false);
   const [openAddStores, setOpenAddStores] = useState(false);
+  const [openAddExpense, setOpenAddExpense] = useState(false);
   const location = useLocation();
   const dispatch = useDispatch();
   const user = JSON.parse(localStorage.getItem('user'));
@@ -78,19 +81,16 @@ const Header = () => {
               </button>
             </div>
           )}
-          {/* <button className='flex align-middle btn-blue'>
-            <ViewBoardsIcon className='mr-2 h-6' />
-            Open Tabs
-          </button> */}
           <button className='flex align-middle btn-blue' onClick={() => setOpenCustomers(true)}>
             <UserIcon className='mr-2 h-6' />
             Customers
           </button>
+          <button className='flex align-middle btn-blue' onClick={() => setOpenAddExpense(true)}>
+            <DocumentTextIcon className='mr-2 h-6' />
+            Add Expense
+          </button>
         </div>
         <div className='flex space-x-2 xl:justify-end'>
-          <button className='flex btn-green'>
-            <CogIcon className='h-6' />
-          </button>
           {user?.role === 'admin' &&
             (!location.pathname.includes('/transactions') ? (
               <Link to='/transactions'>
@@ -148,6 +148,7 @@ const Header = () => {
       <CategoriesModal isOpen={openCategories} setIsOpen={setOpenCategories} />
       <StoresModal isOpen={openStores} setIsOpen={setOpenStores} />
       <AddStore isOpen={openAddStores} setIsOpen={setOpenAddStores} />
+      <AddExpenseModal isOpen={openAddExpense} setIsOpen={setOpenAddExpense} />
     </div>
   );
 };

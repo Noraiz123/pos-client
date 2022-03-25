@@ -49,9 +49,13 @@ export default (state = initialState.orders, action) => {
         alreadyExists = state.currentOrder.filter((e) => e._id === action.payload._id);
         if (alreadyExists.length > 0) {
           if (alreadyExists.length === 1) {
+            const previousDiscountedPrice =
+              (Number(alreadyExists[0].currentPrice) * Number(alreadyExists[0].currentDiscount)) / 100;
+            const currentDiscountedPrice = (Number(action.payload.price) * Number(action.payload.discount)) / 100;
             if (
-              (alreadyExists[0]?.currentPrice && alreadyExists[0].currentPrice !== action.payload.price) ||
-              (alreadyExists[0]?.currentDiscount && alreadyExists[0].currentDiscount !== action.payload.discount)
+              alreadyExists[0].currentPrice &&
+              alreadyExists[0].currentDiscount &&
+              previousDiscountedPrice !== currentDiscountedPrice
             ) {
               createNew = state.currentOrder.concat({
                 ...action.payload,
@@ -68,9 +72,8 @@ export default (state = initialState.orders, action) => {
             }
           } else {
             updateItem = state.currentOrder.map((e) =>
-              e._id === action.payload._id &&
-              ((e.currentPrice && e?.currentPrice === e.price) || e?.currentPrice === undefined)
-                ? { ...e, orderQuantity: action.payload.orderQuantity }
+              e.uuid === alreadyExists[alreadyExists.length - 1].uuid
+                ? { ...e, orderQuantity: action.payload.orderQuantity, delete: undefined }
                 : e
             );
           }
@@ -92,7 +95,7 @@ export default (state = initialState.orders, action) => {
     case actionTypes.deleteCurrentOrderItem: {
       return {
         ...state,
-        currentOrder: state.currentOrder.filter((e) => e.uuid !== action.payload.uuid && e._id === action.payload._id),
+        currentOrder: state.currentOrder.filter((e) => e.uuid !== action.payload.uuid || e._id !== action.payload._id),
       };
     }
     case actionTypes.deleteAllOrderItems: {
