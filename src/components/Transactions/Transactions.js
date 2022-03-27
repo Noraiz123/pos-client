@@ -371,7 +371,7 @@ const Transactions = () => {
               <div className='w-56 h-40 bg-blue-100 rounded-md'>
                 <div className='text-2xl text-blue-900 flex flex-col h-full items-center justify-center'>
                   <h1>Profit</h1>
-                  <h1>Rs {totalProfit}</h1>
+                  <h1>Rs {Math.round(totalProfit)}</h1>
                 </div>
               </div>
             </div>
@@ -391,7 +391,7 @@ const Transactions = () => {
                         <th>Status</th>
                         <th>Cashier</th>
                         <th>Salesman</th>
-                        <th>View</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -420,9 +420,11 @@ const Transactions = () => {
                               <button className='btn-sm-yellow ml-3' onClick={() => handleOrdersView(e)}>
                                 <EyeIcon className='h-4' />
                               </button>
-                              <button className='btn-sm-green ml-3' onClick={() => OrderUpdateHandler(e)}>
-                                <PencilAltIcon className='h-4' />
-                              </button>
+                              {user?.role === 'admin' && (
+                                <button className='btn-sm-green ml-3' onClick={() => OrderUpdateHandler(e)}>
+                                  <PencilAltIcon className='h-4' />
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))}

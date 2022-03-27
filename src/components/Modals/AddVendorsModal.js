@@ -1,6 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ModalTemplate from '.';
 import { CreateVendor, UpdateVendor } from '../../actions/vendors.action';
 

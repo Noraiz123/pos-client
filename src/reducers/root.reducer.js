@@ -9,6 +9,7 @@ import vendorsReducer from './vendors.reducer';
 import storeReducer from './storeReducer';
 import loaderReducer from './loader.reducer';
 import expensesReducer from './expenses.reducer';
+import onlineReducer from './onlineReducer';
 
 export default combineReducers({
   isLoading: loaderReducer,
@@ -21,4 +22,6 @@ export default combineReducers({
   users: usersReducer,
   vendors: vendorsReducer,
   expenses: expensesReducer,
+  onlineStatus: onlineReducer,
+
 });

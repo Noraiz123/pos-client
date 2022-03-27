@@ -8,7 +8,7 @@ const PosPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user.role === 'superAdmin') {
+    if (user?.role === 'superAdmin') {
       window.location.href = '/transactions';
     }
   }, []);

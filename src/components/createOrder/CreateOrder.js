@@ -20,6 +20,7 @@ import {
   deleteCurrentOrderItemAction,
   deleteOrderItemAction,
   editOnHoldAction,
+  GetOnHold,
   getOrderAction,
   UpdateOrder,
   updateOrderStatusAction,
@@ -33,24 +34,35 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import OnHoldOrdersModal from '../Modals/OnholdModal';
 import PaymentModal from '../Modals/PaymentModal';
 import Select from 'react-select';
-import { GetProducts } from '../../actions/products.actions';
+import { GetAllProducts, GetProducts, updateProductsQuantityAction } from '../../actions/products.actions';
 import { useReactToPrint } from 'react-to-print';
 import OrderInvoice from './Invoice';
 
 const CreateOrder = () => {
   const dispatch = useDispatch();
-  const { currentOrder, currentCustomer, customers, users, order, orderStatus, productsFilter, onHold, products } =
-    useSelector((state) => ({
-      currentOrder: state.orders.currentOrder,
-      order: state.orders.order,
-      orderStatus: state.orders.orderStatus,
-      currentCustomer: state.customers.currentCustomer,
-      customers: state.customers.allCustomers,
-      users: state.users.filter((e) => e.role === 'salesman'),
-      productsFilter: state.products.productsFilter,
-      products: state.products.products,
-      onHold: state.orders.onHold,
-    }));
+  const {
+    currentOrder,
+    currentCustomer,
+    customers,
+    users,
+    order,
+    orderStatus,
+    productsFilter,
+    onHold,
+    products,
+    onlineStatus,
+  } = useSelector((state) => ({
+    currentOrder: state.orders.currentOrder,
+    order: state.orders.order,
+    orderStatus: state.orders.orderStatus,
+    currentCustomer: state.customers.currentCustomer,
+    customers: state.customers.allCustomers,
+    users: state.users.filter((e) => e.role === 'salesman'),
+    productsFilter: state.products.productsFilter,
+    products: state.products.products,
+    onHold: state.orders.onHold,
+    onlineStatus: state.onlineStatus.onlineStatus,
+  }));
   const [currentSalesman, setCurrentSalesman] = useState('');
   const [openOnHold, setOpenOnHold] = useState(false);
   const [openPaymentModal, setOpenPaymentModal] = useState(false);
@@ -102,7 +114,11 @@ const CreateOrder = () => {
       dispatch(updateOrderStatusAction('CREATE_ORDER'));
     }
     dispatch(deleteAllOrderItemsAction());
-    dispatch(GetProducts(productsFilter));
+    if (onlineStatus) {
+      dispatch(GetProducts(productsFilter));
+      dispatch(GetAllProducts());
+      dispatch(GetOnHold());
+    }
     dispatch(currentCustomerAction({}));
     setOpenPaymentModal(false);
     setCurrentSalesman('');
@@ -164,30 +180,79 @@ const CreateOrder = () => {
         }
       });
     } else {
-      dispatch(
-        ConfirmOrder({
-          status: status,
-          salesman: currentSalesman || undefined,
-          customer: currentCustomer?._id || undefined,
-          change: change ? change : undefined,
-          orderItems: currentOrder.map((e) => ({
-            id: e?.orderItemId ? e.orderItemId : undefined,
-            product: e._id,
-            quantity: e.orderQuantity,
-            currentDiscount: e.discount,
-            paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
-            currentPrice: e.price,
-          })),
-          total: totalPrice,
-          totalRetailPrice,
-        })
-      ).then((res) => {
-        if (res.status === 201) {
-          setInvoiceNo(res.data.invoiceNo);
-          printOrder();
-          handleAfterOrder();
-        }
-      });
+      if (onlineStatus) {
+        dispatch(
+          ConfirmOrder({
+            status: status,
+            salesman: currentSalesman || undefined,
+            customer: currentCustomer?._id || undefined,
+            change: change ? change : undefined,
+            orderItems: currentOrder.map((e) => ({
+              id: e?.orderItemId ? e.orderItemId : undefined,
+              product: e._id,
+              quantity: e.orderQuantity,
+              currentDiscount: e.discount,
+              paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
+              currentPrice: e.price,
+            })),
+            total: totalPrice,
+            totalRetailPrice,
+          })
+        ).then((res) => {
+          if (res.status === 201) {
+            setInvoiceNo(res.data.invoiceNo);
+            printOrder();
+            handleAfterOrder();
+          }
+        });
+      } else {
+        dispatch(updateProductsQuantityAction(currentOrder));
+        const existing = localStorage.getItem('orders');
+        const data = existing
+          ? [
+              ...JSON.parse(existing),
+              {
+                status: status,
+                salesman: currentSalesman || undefined,
+                customer: currentCustomer?._id || undefined,
+                customerAttributes: !onlineStatus ? currentCustomer : undefined,
+                change: change ? change : undefined,
+                createdAt: new Date(),
+                orderItems: currentOrder.map((e) => ({
+                  id: e?.orderItemId ? e.orderItemId : undefined,
+                  product: e._id,
+                  quantity: e.orderQuantity,
+                  currentDiscount: e.discount,
+                  paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
+                  currentPrice: e.price,
+                })),
+                total: totalPrice,
+                totalRetailPrice,
+              },
+            ]
+          : [
+              {
+                status: status,
+                salesman: currentSalesman || undefined,
+                customer: currentCustomer?._id || undefined,
+                customerAttributes: !onlineStatus ? currentCustomer : undefined,
+                createdAt: new Date(),
+                change: change ? change : undefined,
+                orderItems: currentOrder.map((e) => ({
+                  id: e?.orderItemId ? e.orderItemId : undefined,
+                  product: e._id,
+                  quantity: e.orderQuantity,
+                  currentDiscount: e.discount,
+                  paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
+                  currentPrice: e.price,
+                })),
+                total: totalPrice,
+                totalRetailPrice,
+              },
+            ];
+        localStorage.setItem('orders', JSON.stringify(data));
+        handleAfterOrder();
+      }
     }
   };
 
@@ -450,7 +515,12 @@ const CreateOrder = () => {
       <div className='hidden'>
         <OrderInvoice
           ref={invoiceRef}
-          invoiceData={{ orderItems: currentOrder.filter(e => !e.delete), customer: currentCustomer, total: totalPrice, invoiceNo: invoiceNo }}
+          invoiceData={{
+            orderItems: currentOrder.filter((e) => !e.delete),
+            customer: currentCustomer,
+            total: totalPrice,
+            invoiceNo: invoiceNo,
+          }}
         />
       </div>
       <CustomerModal isOpen={openCustomerModal} setIsOpen={setOpenCustomerModal} />
@@ -459,7 +529,12 @@ const CreateOrder = () => {
       <InvoiceModal
         isOpen={openInvoiceModal}
         setIsOpen={setOpenInvoiceModal}
-        invoiceData={{ orderItems: currentOrder.filter(e => !e.delete), customer: currentCustomer, total: totalPrice, invoiceNo: invoiceNo }}
+        invoiceData={{
+          orderItems: currentOrder.filter((e) => !e.delete),
+          customer: currentCustomer,
+          total: totalPrice,
+          invoiceNo: invoiceNo,
+        }}
       />
       <PaymentModal
         isOpen={openPaymentModal}

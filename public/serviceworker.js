@@ -1,5 +1,14 @@
 const CACHE_NAME = 'version-1';
-const filesToCache = ['index.html'];
+const filesToCache = [
+  '/index.html',
+  '/static/js/main.chunk.js',
+  '/static/js/bundle.js',
+  '/static/js/main.chunk.js.map',
+  '/static/js/vendors~main.chunk.js',
+  '/favicon.ico',
+  '/manifest.json',
+  '/',
+];
 const self = this;
 
 // Install SW
@@ -7,7 +16,6 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Opened cache');
-
       return cache.addAll(filesToCache);
     })
   );
@@ -17,7 +25,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then(() => {
-      return fetch(event.request).catch(() => caches.match('index.html'));
+      return fetch(event.request).catch(() => caches.match(event.request));
     })
   );
 });

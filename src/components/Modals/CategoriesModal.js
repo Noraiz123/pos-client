@@ -40,7 +40,7 @@ const CategoriesModal = ({ isOpen, setIsOpen }) => {
           <Dialog.Title as='h3' className='text-lg font-medium leading-6 text-gray-900 border-b pb-2'>
             Categories
           </Dialog.Title>
-          {categories.length ? (
+          {categories.length > 0 ? (
             <div className='mt-10 h-30v overflow-y-auto'>
               <table className='table-fixed product-table border-2'>
                 <thead className='sticky top-0 z-10 bg-white'>
@@ -73,7 +73,7 @@ const CategoriesModal = ({ isOpen, setIsOpen }) => {
               </table>
             </div>
           ) : (
-            <h1 className='p-4'>No Vendors available</h1>
+            <h1 className='p-4'>No Categories available</h1>
           )}
           <div className='mt-4'>
             <button

@@ -38,10 +38,10 @@ export const CreateCategory = (data) => async (dispatch) => {
   }
 };
 
-export const GetCategories = (data) => async (dispatch) => {
-  const res = await getCategories(data);
+export const GetCategories = () => async (dispatch) => {
+  const res = await getCategories();
   if (res.status === 200) {
-    dispatch(getCategoriesAction(res.data));
+    dispatch(getCategoriesAction(res?.data));
   }
 };
 

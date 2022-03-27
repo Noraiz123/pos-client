@@ -1,11 +1,28 @@
 import initialState from './initialState';
 import { actionTypes } from '../constants/actionTypes';
 
+const updateProductsQuantity = (payload, products) => {
+  for (let product of products) {
+    if (product._id === payload._id) {
+      // for (let i = 0; i < product.skus.length; i++) {
+      //   if (product.skus[i].id === payload.skus.id) {
+      //     product.skus[i] = { ...product.skus[i], quantity: product.skus[i].quantity - payload.quantity };
+      //   }
+      // }
+      product = { ...product, quantity: product.quantity - payload.orderQuantity };
+    }
+  }
+  return products;
+};
+
 export default (state = initialState.products, action) => {
   switch (action.type) {
     case actionTypes.getProducts: {
       const { currentPage, products, totalPages } = action.payload;
       return { ...state, products: products, currentPage, totalPages };
+    }
+    case actionTypes.getAllProduct: {
+      return { ...state, allProducts: action.payload };
     }
     case actionTypes.getProduct: {
       return { ...state, product: action.payload };
@@ -36,6 +53,12 @@ export default (state = initialState.products, action) => {
         ...state,
         products: state.products.map((e) => (e._id === action.payload._id ? action.payload : e)),
       };
+    }
+    case actionTypes.updateProductsQuantity: {
+      for (let items of action.payload) {
+        updateProductsQuantity(items, state.allProducts);
+      }
+      return { ...state, allProducts: state.allProducts };
     }
     case actionTypes.createSize: {
       return { ...state, productSizes: state.productSizes.concat(action.payload) };

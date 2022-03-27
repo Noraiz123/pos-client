@@ -2,6 +2,8 @@ export const actionTypes = {
   getProducts: 'GET_PRODUCTS',
   getTags: 'GET_TAGS',
   getProduct: 'GET_PRODUCT',
+  updateProductsQuantity: 'UPDATE_PRODUCT_QUANTITY',
+  getAllProduct: 'GET_ALL_PRODUCT',
   createProduct: 'CREATE_PRODUCTS',
   createTag: 'CREATE_TAG',
   addCustomerDetails: 'ADD_CUSTOMER_DETAILS',
@@ -53,4 +55,6 @@ export const actionTypes = {
   startLoading: 'START_LOADING',
   stopLoading: 'STOP_LOADING',
   deleteCurrentOrderItem: 'DELETE_CURRENT_ORDER_ITEM',
+  setOnline: 'SET_ONLINE_STATUS',
+  setOffline: 'SET_OFFLINE_STATUS',
 };

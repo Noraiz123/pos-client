@@ -4,16 +4,16 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import ModalTemplate from '.';
-import { CreateProduct, EditProduct } from '../../actions/products.actions';
+import { CreateProduct, EditProduct, GetAllProducts } from '../../actions/products.actions';
 import { GetCategories } from '../../actions/categories.actions';
 
 const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const initState = {
     imgUrl: null,
-    category_id: null,
+    category: null,
     barcode: '',
     store: '',
-    vendor_id: null,
+    vendor: null,
     discount: null,
     name: '',
     size: '',
@@ -35,27 +35,15 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
 
   useEffect(() => {
     if (productData && productData._id) {
-      const {
-        imgUrl,
-        name,
-        category_id,
-        vendor_id,
-        discount,
-        store,
-        size,
-        color,
-        price,
-        quantity,
-        retailPrice,
-        barcode,
-      } = productData;
+      const { imgUrl, name, category, vendor, discount, store, size, color, price, quantity, retailPrice, barcode } =
+        productData;
 
       setProductDetails({
         ...initState,
         imgUrl,
         name,
-        category_id,
-        vendor_id,
+        category,
+        vendor,
         store: store?._id ? store._id : '',
         discount,
         size,
@@ -100,11 +88,13 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
       dispatch(EditProduct(productData._id, productDetails)).then(() => {
         setIsOpen(false);
         setProductDetails(initState);
+        dispatch(GetAllProducts());
       });
     } else {
       dispatch(CreateProduct(productDetails)).then((res) => {
         setIsOpen(false);
         setProductDetails(initState);
+        dispatch(GetAllProducts());
       });
     }
   };
@@ -112,6 +102,8 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
   const btnStyle = (color) => {
     return `inline-flex justify-center px-4 py-2 text-sm font-medium text-${color}-900 bg-${color}-100 border border-transparent rounded-md hover:bg-${color}-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-${color}-500 ml-3`;
   };
+
+  console.log(productDetails);
 
   return (
     <div>
@@ -153,30 +145,35 @@ const AddProducts = ({ isOpen, setIsOpen, productData }) => {
                 <label className='mb-1 text-gray-500 font-bold'>Category</label>
                 <select
                   className='input-select w-full'
-                  name='category_id'
+                  name='category'
                   onChange={handleAddProduct}
-                  value={productDetails.category_id}
+                  value={productDetails.category}
                 >
                   <option value='' selected disabled>
                     Select Category
                   </option>
-                  {categories && categories.map((e) => <option key={e._id}>{e.name}</option>)}
+                  {categories.length > 0 &&
+                    categories.map((e) => (
+                      <option key={e._id} value={e._id}>
+                        {e.name}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div className='flex flex-col my-2'>
                 <label className='mb-1 text-gray-500 font-bold'>Vendors</label>
                 <select
                   className='input-select w-full'
-                  name='vendor_id'
+                  name='vendor'
                   onChange={handleAddProduct}
-                  value={productDetails.vendor_id}
+                  value={productDetails.vendor}
                 >
                   <option value='' selected disabled>
                     Select Vendor
                   </option>
                   {vendors &&
                     vendors.map((e) => (
-                      <option key={e._id} data-value={e._id}>
+                      <option key={e._id} data-value={e._id} value={e._id}>
                         {e.name}
                       </option>
                     ))}

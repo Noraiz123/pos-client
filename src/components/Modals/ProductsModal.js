@@ -4,15 +4,15 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ModalTemplate from '.';
-import { DeleteProduct, GetProduct, GetProducts } from '../../actions/products.actions';
+import { DeleteProduct, GetAllProducts, GetProduct, GetProducts } from '../../actions/products.actions';
 import { appConstants } from '../../constants/appConstants';
 import AddProducts from './AddProductModal';
 import Barcode from 'react-barcode';
 
 const ProductsModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const { product, categories, productsFilter, vendors } = useSelector((state) => ({
-    product: state.products.product,
+  const { product, categories, productsFilter, vendors, allProducts } = useSelector((state) => ({
+    product: state.products.allProducts,
     productsFilter: state.products.productsFilter,
     categories: state.categories,
     vendors: state.vendors,
@@ -22,10 +22,11 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
   const [openAddProduct, setOpenAddProduct] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
   const { products } = useSelector((state) => ({
-    products: state.products.products,
+    products: state.products.allProducts,
   }));
   useEffect(() => {
     dispatch(GetProducts(productsFilter));
+    dispatch(GetAllProducts());
   }, [dispatch, productsFilter]);
 
   const productDeleteHandler = (id) => {
@@ -74,14 +75,14 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
                 </tr>
               </thead>
               <tbody>
-                {products &&
+                {products.length > 0 &&
                   products.map((e, index) => (
                     <tr key={e._id}>
                       <td className=''>{e.barcode && <Barcode value={e.barcode} />}</td>
                       <td>{index + 1}</td>
                       <td>{e.name}</td>
-                      <td>{getCategory(e.category_id)}</td>
-                      <td>{getVendor(e.vendor_id)}</td>
+                      <td>{e.category?.name}</td>
+                      <td>{e.vendor?.name}</td>
                       {(user?.role === 'superAdmin' || user?.role === 'admin') && (
                         <td>
                           <button className='btn-sm-red h-full' onClick={() => productDeleteHandler(e._id)}>

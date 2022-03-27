@@ -12,7 +12,7 @@ const VendorsModal = ({ isOpen, setIsOpen }) => {
   const { vendors } = useSelector((state) => ({
     vendors: state.vendors,
   }));
-  const [vendorData, setVendorData] = useState({ id: null, name: '', description: '' });
+  const [vendorData, setVendorData] = useState({ id: null, name: '', description: '', store: null });
   const [openAddVendor, setOpenAddVendor] = useState(false);
 
   useEffect(() => {
@@ -24,8 +24,8 @@ const VendorsModal = ({ isOpen, setIsOpen }) => {
   };
 
   const handleVendorEdit = (data) => {
-    const { _id, name, description } = data;
-    setVendorData({ id: _id, name, description });
+    const { _id, name, description, store } = data;
+    setVendorData({ id: _id, name, description, store });
     setIsOpen(false);
     setTimeout(() => {
       setOpenAddVendor(true);

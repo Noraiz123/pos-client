@@ -6,14 +6,18 @@ import DefaultPage from './pages/DefaultPage';
 import { Provider } from 'react-redux';
 import reportWebVitals from './config/reportWebVitals';
 import { ToastContainer } from 'react-toastify';
-import store from './config/store';
+import { store, persistor } from './config/store';
 import 'react-toastify/dist/ReactToastify.css';
+import { PersistGate } from 'redux-persist/integration/react';
+import Loader from './components/Loader';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ToastContainer position='top-right' />
-      <DefaultPage />
+      <PersistGate loading={<Loader />} persistor={persistor}>
+        <ToastContainer position='top-right' />
+        <DefaultPage />
+      </PersistGate>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

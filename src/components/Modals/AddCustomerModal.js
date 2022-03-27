@@ -1,8 +1,8 @@
 import { Dialog } from '@headlessui/react';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ModalTemplate from '.';
-import { CreateCustomer, UpdateCustomer } from '../../actions/customers.actions';
+import { CreateCustomer, currentCustomerAction, UpdateCustomer } from '../../actions/customers.actions';
 
 const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
   const initState = {
@@ -12,6 +12,7 @@ const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
   };
   const dispatch = useDispatch();
   const [customerDetails, setCustomerDetails] = useState(initState);
+  const onlineStatus = useSelector((state) => state.onlineStatus.onlineStatus);
 
   const handleCustomerFields = (e) => {
     const { name, value } = e.target;
@@ -28,17 +29,23 @@ const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
   }, [customerData]);
 
   const handleCreateCustomer = () => {
-    if (customerData) {
-      const { _id, name, email, phoneNo } = customerDetails;
-      dispatch(UpdateCustomer(_id, { name, email, phoneNo })).then(() => {
-        setIsOpen(false);
-        setCustomerDetails(initState);
-      });
+    if (onlineStatus) {
+      if (customerData) {
+        const { _id, name, email, phoneNo } = customerDetails;
+        dispatch(UpdateCustomer(_id, { name, email, phoneNo })).then(() => {
+          setIsOpen(false);
+          setCustomerDetails(initState);
+        });
+      } else {
+        dispatch(CreateCustomer(customerDetails)).then(() => {
+          setIsOpen(false);
+          setCustomerDetails(initState);
+        });
+      }
     } else {
-      dispatch(CreateCustomer(customerDetails)).then(() => {
-        setIsOpen(false);
-        setCustomerDetails(initState);
-      });
+      dispatch(currentCustomerAction(customerDetails));
+      setIsOpen(false);
+      setCustomerDetails(initState);
     }
   };
 
@@ -74,7 +81,7 @@ const CustomerModal = ({ isOpen, setIsOpen, customerData }) => {
               <label className='mb-1 text-gray-500 font-bold'>Customer Phone number</label>
               <input
                 className='input-field'
-                name='phone_no'
+                name='phoneNo'
                 type='text'
                 onChange={handleCustomerFields}
                 value={customerDetails.phoneNo}

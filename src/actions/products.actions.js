@@ -2,6 +2,7 @@ import { toast } from 'react-toastify';
 import {
   createProduct,
   deleteProduct,
+  getAllProducts,
   getProduct,
   getProducts,
   getProductsStats,
@@ -12,6 +13,13 @@ import { actionTypes } from '../constants/actionTypes';
 const getProductsAction = (payload) => {
   return {
     type: actionTypes.getProducts,
+    payload,
+  };
+};
+
+const getAllProductsAction = (payload) => {
+  return {
+    type: actionTypes.getAllProduct,
     payload,
   };
 };
@@ -58,10 +66,17 @@ export const filterProductsStatsAction = (payload) => {
   };
 };
 
+export const updateProductsQuantityAction = (payload) => {
+  return {
+    type: actionTypes.updateProductsQuantity,
+    payload,
+  };
+};
+
 export const GetProducts = (data) => async (dispatch) => {
   const res = await getProducts(data);
   if (res.status === 200) {
-    dispatch(getProductsAction(res.data));
+    dispatch(getProductsAction(res?.data));
   }
 };
 
@@ -79,6 +94,14 @@ export const GetProduct = (id) => async (dispatch) => {
   }
 };
 
+export const GetAllProducts = (data) => async (dispatch) => {
+  const res = await getAllProducts(data);
+  if (res.status === 200) {
+    dispatch(getAllProductsAction(res.data));
+  }
+
+  return res;
+};
 
 export const CreateProduct = (data) => async (dispatch) => {
   const res = await createProduct(data);

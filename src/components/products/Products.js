@@ -5,21 +5,37 @@ import { filterProductsAction } from '../../actions/products.actions';
 
 const Products = () => {
   const dispatch = useDispatch();
-  const { products, productsFilter, categories, currentPage, totalPages, currentOrder, orderStatus } = useSelector(
-    (state) => ({
-      products: state.products.products,
-      productsFilter: state.products.productsFilter,
-      categories: state.categories,
-      currentPage: state.products.currentPage,
-      totalPages: state.products.totalPages,
-      currentOrder: state.orders.currentOrder,
-      orderStatus: state.orders.orderStatus,
-    })
-  );
+  const {
+    products,
+    productsFilter,
+    categories,
+    currentPage,
+    totalPages,
+    currentOrder,
+    orderStatus,
+    onlineStatus,
+    allProducts,
+  } = useSelector((state) => ({
+    products: state.products.products,
+    productsFilter: state.products.productsFilter,
+    categories: state.categories,
+    currentPage: state.products.currentPage,
+    totalPages: state.products.totalPages,
+    currentOrder: state.orders.currentOrder,
+    orderStatus: state.orders.orderStatus,
+    onlineStatus: state.onlineStatus.onlineStatus,
+    allProducts: state.products.allProducts,
+  }));
+  const [offlineFilters, setOfflineFilters] = useState({ category_id: null, name: '' });
 
   const handleCategoryChange = (e) => {
     const { value } = e.target;
-    dispatch(filterProductsAction({ ...productsFilter, category_id: value }));
+
+    if (onlineStatus) {
+      dispatch(filterProductsAction({ ...productsFilter, category_id: value }));
+    } else {
+      setOfflineFilters((pre) => ({ ...pre, category_id: value === '' ? null : Number(value) }));
+    }
   };
 
   function debounce(func, timeout = 2000) {
@@ -35,6 +51,12 @@ const Products = () => {
   const handleKeywordChange = (e) => {
     const { value } = e.target;
     dispatch(filterProductsAction({ ...productsFilter, keyword: value }));
+
+    if (onlineStatus) {
+      dispatch(filterProductsAction({ ...productsFilter, keyword: value }));
+    } else {
+      setOfflineFilters((pre) => ({ ...pre, name: value }));
+    }
   };
 
   const optimizedSearch = debounce(handleKeywordChange);
@@ -65,6 +87,12 @@ const Products = () => {
     }
   };
 
+  const productsData = onlineStatus
+    ? products
+    : allProducts
+        .filter((e) => e.name.toLowerCase().includes(offlineFilters.name.toLowerCase()))
+        .filter((e) => (offlineFilters.category_id ? e.category_id === offlineFilters.category_id : true));
+
   return (
     <div className='p-10 bg-white ml-4 mt-6 lg:col-span-2'>
       <div className='grid xl:grid-cols-3   sm:grid-cols-1'>
@@ -81,7 +109,7 @@ const Products = () => {
             className='input-select w-full'
             name='category_id'
             onChange={handleCategoryChange}
-            value={productsFilter.category_id}
+            value={onlineStatus ? productsFilter.category_id : offlineFilters.category_id}
           >
             <option value='' selected disabled>
               Select Category
@@ -95,26 +123,28 @@ const Products = () => {
               ))}
           </select>
         </div>
-        <div className='space-x-2 flex justify-end'>
-          <select
-            className='input-select xl:w-2/4 sm:w-full'
-            name='per_page'
-            onChange={handlePerPageChange}
-            value={productsFilter.per_page}
-          >
-            <option value='' selected disabled>
-              Per Page
-            </option>
-            <option>5</option>
-            <option>10</option>
-            <option>15</option>
-            <option>20</option>
-          </select>
-        </div>
+        {onlineStatus && (
+          <div className='space-x-2 flex justify-end'>
+            <select
+              className='input-select xl:w-2/4 sm:w-full'
+              name='per_page'
+              onChange={handlePerPageChange}
+              value={productsFilter.per_page}
+            >
+              <option value='' selected disabled>
+                Per Page
+              </option>
+              <option>5</option>
+              <option>10</option>
+              <option>15</option>
+              <option>20</option>
+            </select>
+          </div>
+        )}
       </div>
       <div className='grid xl:grid-cols-5 sm:grid-cols-1'>
-        {products &&
-          products.map((e) => (
+        {productsData &&
+          productsData.map((e) => (
             <div
               key={e._id}
               className='flex flex-col justify-center border mt-6 p-4 w-full cursor-pointer shadow-md rounded-sm'
@@ -129,13 +159,18 @@ const Products = () => {
                 <p className='text-center text-gray-400 font-bold'>{e.name}</p>
               </div>
               <div className='mt-3 mx-auto'>
-                <p className='text-center text-red-400 font-extrabold'>Available: {e.quantity}</p>
+                <p className='text-center text-yellow-600 font-extrabold'>Available: {e.quantity}</p>
                 <p className='text-center text-green-400 font-mono font-extrabold'>Rs {e.price}</p>
+                {e.discount > 0 && (
+                  <div className=''>
+                    <p className='text-center text-purple-400 font-mono font-extrabold'>Discount {e.discount}%</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
       </div>
-      {products.length > 0 && (
+      {products.length > 0 && onlineStatus && (
         <div className='flex my-3 justify-center'>
           <nav aria-label='Page navigation example'>
             <ul className='pagination'>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BASE_URL } from '../constants/apiUrl';
-import store from '../config/store';
+import { store } from '../config/store';
 import { loginAction, LogoutRequest } from '../actions/auth.actions';
 import { toast } from 'react-toastify';
 import { actionTypes } from '../constants/actionTypes';
@@ -30,8 +30,8 @@ instance.interceptors.response.use(
       store.dispatch(LogoutRequest());
     }
     store.dispatch({ type: actionTypes.stopLoading });
-    toast.error(error.response.data.message);
-    return Promise.reject(error.response.data);
+    toast.error(error.response?.data.message);
+    return Promise.reject(error.response?.data);
   }
 );
 

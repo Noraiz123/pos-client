@@ -6,6 +6,10 @@ export function getProducts(data) {
   );
 }
 
+export function getAllProducts() {
+  return instance.get(`/products/all`);
+}
+
 export function getProduct(id) {
   return instance.get(`/api/products/${id}`);
 }

@@ -3,9 +3,11 @@ const initialState = {
     isSignedIn: false,
   },
   isLoading: false,
+  online: { onlineStatus: navigator.onLine },
   products: {
     product: {},
     products: [],
+    allProducts: [],
     productSizes: [],
     productColors: [],
     productsStats: {
