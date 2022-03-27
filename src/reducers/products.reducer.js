@@ -2,16 +2,12 @@ import initialState from './initialState';
 import { actionTypes } from '../constants/actionTypes';
 
 const updateProductsQuantity = (payload, products) => {
-  for (let product of products) {
-    if (product._id === payload._id) {
-      // for (let i = 0; i < product.skus.length; i++) {
-      //   if (product.skus[i].id === payload.skus.id) {
-      //     product.skus[i] = { ...product.skus[i], quantity: product.skus[i].quantity - payload.quantity };
-      //   }
-      // }
-      product = { ...product, quantity: product.quantity - payload.orderQuantity };
+  for (let i = 0; i < products.length; i++) {
+    if (products[i]._id === payload._id) {
+      products[i] = { ...products[i], quantity: products[i].quantity - payload.orderQuantity };
     }
   }
+
   return products;
 };
 

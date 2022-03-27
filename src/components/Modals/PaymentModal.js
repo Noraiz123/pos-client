@@ -14,24 +14,24 @@ const PaymentModal = ({ isOpen, setIsOpen, totalPrice, confirmOrder }) => {
           <div className='mt-10 h-30v overflow-y-auto'>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Total</label>
-              <input className='input-field' type='text' disabled value={totalPrice} />
+              <input className='input-field' type='text' disabled value={Math.round(totalPrice)} />
             </div>
             <div className='flex flex-col my-2'>
               <label className='mb-1 text-gray-500 font-bold'>Payment</label>
               <input className='input-field' type='text' onChange={(e) => setPayment(e.target.value)} value={payment} />
             </div>
-            {Number(payment) > totalPrice && (
+            {Number(payment) > Math.round(totalPrice) && (
               <div className='w-full p-2 text-center text-2xl text-green-900 bg-green-100 rounded mt-10'>
                 Change Rs {Math.round(totalPrice - Number(payment))}
               </div>
             )}
           </div>
           <div className='mt-4 space-x-2 flex items-end h-auto'>
-            {Number(payment) >= totalPrice && (
+            {Number(payment) >= Math.round(totalPrice) && (
               <button
                 type='button'
                 onClick={() => {
-                  confirmOrder(Math.round(totalPrice - Number(payment)));
+                  confirmOrder(Math.round(totalPrice - Number(payment)), Number(payment));
                   setPayment('');
                 }}
                 className='inline-flex justify-center px-4 py-2 text-sm font-medium text-blue-900 bg-blue-100 border border-transparent rounded-md hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500'

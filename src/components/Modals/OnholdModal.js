@@ -38,7 +38,11 @@ const OnHoldOrdersModal = ({ isOpen, setIsOpen }) => {
     dispatch(editOnHoldAction(manipulateProducts(data.orderItems)));
     dispatch(currentCustomerAction(data?.customer));
     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
-    navigate('/', { state: { salesman: data?.salesman._id } });
+    if (data?.salesman) {
+      navigate('/', { state: { salesman: data?.salesman?._id } });
+    } else {
+      navigate('/');
+    }
   };
 
   useEffect(() => {

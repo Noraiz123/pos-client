@@ -32,4 +32,6 @@ export const LogoutRequest = () => async (dispatch) => {
   dispatch(logoutAction());
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  localStorage.removeItem('persist:app');
+  localStorage.removeItem('orders');
 };

@@ -11,11 +11,8 @@ import Barcode from 'react-barcode';
 
 const ProductsModal = ({ isOpen, setIsOpen }) => {
   const dispatch = useDispatch();
-  const { product, categories, productsFilter, vendors, allProducts } = useSelector((state) => ({
-    product: state.products.allProducts,
+  const { productsFilter } = useSelector((state) => ({
     productsFilter: state.products.productsFilter,
-    categories: state.categories,
-    vendors: state.vendors,
   }));
   const user = JSON.parse(localStorage.getItem('user'));
 
@@ -32,6 +29,7 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
   const productDeleteHandler = (id) => {
     dispatch(DeleteProduct(id)).then(() => {
       dispatch(GetProducts(productsFilter));
+      dispatch(GetAllProducts());
     });
   };
 
@@ -41,18 +39,6 @@ const ProductsModal = ({ isOpen, setIsOpen }) => {
     setTimeout(() => {
       setOpenAddProduct(true);
     }, appConstants.TIME_OUT);
-  };
-
-  const getCategory = (id) => {
-    const category = categories && categories.find((e) => e.id === id);
-
-    return category ? category.name : 'N/A';
-  };
-
-  const getVendor = (id) => {
-    const vendor = vendors && vendors.find((e) => e.id === id);
-
-    return vendor ? vendor.name : 'N/A';
   };
 
   return (

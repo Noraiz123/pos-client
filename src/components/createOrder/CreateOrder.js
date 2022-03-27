@@ -134,9 +134,14 @@ const CreateOrder = () => {
     copyStyles: true,
   });
 
-  const handleOrderCreate = (status, change) => {
-    const invoice = Math.random();
-    setInvoiceNo(invoice);
+  const getRandomId = (min = 0, max = 500000) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    const num = Math.floor(Math.random() * (max - min + 1)) + min;
+    return num.toString().padStart(6, '0');
+  };
+
+  const handleOrderCreate = async (status, change, paid) => {
     if (orderStatus === 'UPDATE_ORDER') {
       dispatch(
         UpdateOrder(
@@ -145,6 +150,7 @@ const CreateOrder = () => {
             salesman: currentSalesman || undefined,
             customer: currentCustomer?._id || undefined,
             change: change ? change : undefined,
+            paid: paid ? paid : undefined,
             orderItems: currentOrder.map((e) => {
               const previousDiscountedPrice = (Number(e.currentPrice) * Number(e.currentDiscount)) / 100;
               const currentDiscountedPrice = (Number(e.price) * Number(e.discount)) / 100;
@@ -167,15 +173,17 @@ const CreateOrder = () => {
                 delete: e?.delete ? true : undefined,
               };
             }),
-            total: totalPrice,
+            total: Math.round(totalPrice),
             totalRetailPrice,
           },
           order._id
         )
       ).then((res) => {
         if (res.status === 200) {
-          setInvoiceNo(res.data.invoiceNo);
-          printOrder();
+          if (status === 'paid') {
+            setInvoiceNo(res.data.invoiceNo);
+            printOrder();
+          }
           handleAfterOrder();
         }
       });
@@ -187,6 +195,7 @@ const CreateOrder = () => {
             salesman: currentSalesman || undefined,
             customer: currentCustomer?._id || undefined,
             change: change ? change : undefined,
+            paid: paid ? paid : undefined,
             orderItems: currentOrder.map((e) => ({
               id: e?.orderItemId ? e.orderItemId : undefined,
               product: e._id,
@@ -195,17 +204,20 @@ const CreateOrder = () => {
               paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
               currentPrice: e.price,
             })),
-            total: totalPrice,
+            total: Math.round(totalPrice),
             totalRetailPrice,
           })
         ).then((res) => {
           if (res.status === 201) {
-            setInvoiceNo(res.data.invoiceNo);
-            printOrder();
+            if (status === 'paid') {
+              setInvoiceNo(res.data.invoiceNo);
+              printOrder();
+            }
             handleAfterOrder();
           }
         });
       } else {
+        const invoice = getRandomId();
         dispatch(updateProductsQuantityAction(currentOrder));
         const existing = localStorage.getItem('orders');
         const data = existing
@@ -215,6 +227,8 @@ const CreateOrder = () => {
                 status: status,
                 salesman: currentSalesman || undefined,
                 customer: currentCustomer?._id || undefined,
+                paid: paid ? paid : undefined,
+                invoiceNo: invoice,
                 customerAttributes: !onlineStatus ? currentCustomer : undefined,
                 change: change ? change : undefined,
                 createdAt: new Date(),
@@ -226,7 +240,7 @@ const CreateOrder = () => {
                   paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
                   currentPrice: e.price,
                 })),
-                total: totalPrice,
+                total: Math.round(totalPrice),
                 totalRetailPrice,
               },
             ]
@@ -235,9 +249,11 @@ const CreateOrder = () => {
                 status: status,
                 salesman: currentSalesman || undefined,
                 customer: currentCustomer?._id || undefined,
+                invoiceNo: invoice,
                 customerAttributes: !onlineStatus ? currentCustomer : undefined,
                 createdAt: new Date(),
                 change: change ? change : undefined,
+                paid: paid ? paid : undefined,
                 orderItems: currentOrder.map((e) => ({
                   id: e?.orderItemId ? e.orderItemId : undefined,
                   product: e._id,
@@ -246,18 +262,23 @@ const CreateOrder = () => {
                   paidPrice: Math.round((e.price - (e.price * e.discount) / 100) * e.orderQuantity),
                   currentPrice: e.price,
                 })),
-                total: totalPrice,
+                total: Math.round(totalPrice),
                 totalRetailPrice,
               },
             ];
         localStorage.setItem('orders', JSON.stringify(data));
+        if (status === 'paid') {
+          await setInvoiceNo(invoice);
+          printOrder();
+        }
         handleAfterOrder();
       }
     }
   };
 
-  const handleOrderConfirmation = (change) => {
-    handleOrderCreate('paid', change);
+  const handleOrderConfirmation = (change, paid) => {
+    console.log(paid);
+    handleOrderCreate('paid', change, paid);
   };
   const [openCustomerModal, setOpenCustomerModal] = useState(false);
   const [openUserModal, setOpenUserModal] = useState(false);
@@ -304,7 +325,12 @@ const CreateOrder = () => {
     dispatch(editOnHoldAction(manipulateProducts(data.orderItems)));
     dispatch(currentCustomerAction(data?.customer));
     dispatch(updateOrderStatusAction('UPDATE_ORDER'));
-    navigate('/', { state: { salesman: data?.salesman._id } });
+    if (data?.salesman) {
+      navigate('/', { state: { salesman: data?.salesman._id } });
+    } else {
+      setCurrentSalesman('');
+      navigate('/');
+    }
   };
 
   const handleKeyBindings = (event) => {

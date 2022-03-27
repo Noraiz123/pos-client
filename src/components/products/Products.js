@@ -158,7 +158,7 @@ const Products = () => {
                 />
                 <p className='text-center text-gray-400 font-bold'>{e.name}</p>
               </div>
-              <div className='mt-3 mx-auto'>
+              <div className='flex flex-col mt-3 h-full justify-end mx-auto'>
                 <p className='text-center text-yellow-600 font-extrabold'>Available: {e.quantity}</p>
                 <p className='text-center text-green-400 font-mono font-extrabold'>Rs {e.price}</p>
                 {e.discount > 0 && (

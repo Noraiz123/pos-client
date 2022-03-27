@@ -402,7 +402,7 @@ const Transactions = () => {
                             <td>{e?.customer?.name || 'N/A'}</td>
                             <td className=''>{new Date(e.createdAt).toDateString()}</td>
                             <td className=''>Rs: {Math.round(e.total)}</td>
-                            <td className=''>Rs: {Math.round(e.total)}</td>
+                            <td className=''> Rs: {Math.round(e?.paid) || Math.round(e.total)}</td>
                             <td>Rs: {e?.change ? e.change : 0}</td>
                             <td>Cash</td>
                             <td>

@@ -40,7 +40,6 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
   };
   const user = JSON.parse(localStorage.getItem('user'));
 
-
   return (
     <div>
       <ModalTemplate isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -55,6 +54,7 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Role</th>
+                  <th>Store</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -65,6 +65,7 @@ const UsersModal = ({ isOpen, setIsOpen }) => {
                       <td>{e.name}</td>
                       <td>{e.email}</td>
                       <td>{e.role}</td>
+                      <td>{e?.store?.name || 'N/A'}</td>
                       <td>
                         {e.role !== 'admin' && (
                           <button className='btn-sm-red' onClick={() => handleUserDelete(e._id)}>

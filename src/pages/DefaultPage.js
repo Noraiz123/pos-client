@@ -21,7 +21,6 @@ function App() {
   const onlinePollingInterval = 50000;
 
   const checkOnlineStatus = async () => {
-    console.log(onlineStatus, 'hello');
     const controller = new AbortController();
     const { signal } = controller;
 
@@ -92,6 +91,8 @@ function App() {
       clearInterval(id);
     };
   }, [onlineStatus]);
+
+  useEffect(() => {}, []);
 
   return (
     <Router>
