@@ -49,7 +49,7 @@ const Header = () => {
       <div className='grid xl:grid-cols-2 sm:grid-cols-1 space-x-3 sm:space-y-4 xl:space-y-0'>
         <div className='flex space-x-2'>
           <div className='flex'>
-            <button className='flex align-middle btn-green' onClick={() => setIsOpen(true)}>
+            <button className='flex align-middle btn-green'onClick={() => setIsOpen(true)}>
               <FolderAddIcon className='mr-2 h-6' />
               Products
             </button>
