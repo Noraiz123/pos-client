@@ -1,5 +1,6 @@
 const CACHE_NAME = 'version-1';
 const filesToCache = [
+  '/',
   '/index.html',
   '/static/js/main.chunk.js',
   '/static/js/bundle.js',
@@ -7,8 +8,6 @@ const filesToCache = [
   '/static/js/vendors~main.chunk.js',
   '/favicon.ico',
   '/manifest.json',
-  '/',
-  '/home',
 ];
 const self = this;
 
