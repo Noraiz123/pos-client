@@ -26,7 +26,7 @@ ReactDOM.render(
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
-      .register('./serviceworker.js')
+      .register(`${process.env.PUBLIC_URL}/serviceworker.js`)
       .then((reg) => console.log('Success: ', reg.scope))
       .catch((err) => console.log('Failure: ', err));
   });
