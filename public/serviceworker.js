@@ -8,6 +8,7 @@ const filesToCache = [
   '/favicon.ico',
   '/manifest.json',
   '/',
+  '/home',
 ];
 const self = this;
 
